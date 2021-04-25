@@ -3,8 +3,84 @@
 <head>
   <meta charset="utf-8">
   <title>Greatest Party</title>
+  <script src="./flags.js"></script>
   <script src="./greatestparty.js"></script>
-</title>
+  <script src="./roll.js"></script>
+  <script src="./ui.js"></script>
+  <style>
+    html, body {
+      margin: 0px;
+      padding: 0px;
+    }
+
+    .container {
+      height: 100vh;
+
+      display: grid;
+      grid-template-columns: auto auto auto;
+      grid-template-rows: auto auto auto;
+    }
+
+    .panel {
+      overflow-y: scroll;
+    }
+
+    .panel div {
+      display: inline;
+    }
+
+    #panel-log {
+      grid-column: 2 / span 2;
+    }
+  </style>
+</head>
 <body>
+  <div class="container">
+    <div id="panel-party" class="panel">
+      <div>Party</div>
+      <br>
+      <div>Date: <div id="panel-party-date-value">Spring 0</div></div>
+      <br>
+      <div>Size: <div id="panel-party-size-value">0</div></div>
+      <br>
+      <div>Quests: <div id="panel-party-quests-value">0</div></div>
+      <br>
+      <div>Gold: <div id="panel-party-gold-value">0</div></div>
+      <br>
+      <div>Food: <div id="panel-party-food-value">0</div></div>
+      <br>
+      <div>Water: <div id="panel-party-water-value">0</div></div>
+    </div>
+    <div id="panel-equipment" class="panel">
+      Equipment
+    </div>
+    <div id="panel-skills" class="panel">
+      Skills
+    </div>
+    <div id="panel-stats" class="panel">
+      Stats
+    </div>
+    <div id="panel-town" class="panel">
+      <div>Town</div>
+      <br>
+      <div>Townsfolk: <div id="panel-town-townsfolk-value">0</div></div>
+      <br>
+      <div>Need: <div id="panel-town-need-value">0</div>
+        <button id="panel-town-take-quest-button">Take</button></div>
+      <br>
+      <div>Boss: <div id="panel-town-boss-value">0</div>
+        <button id="panel-town-fight-boss-button">Fight</button></div>
+      </div>
+    </div>
+    <div id="panel-shop" class="panel">
+      Shop
+    </div>
+    <div id="panel-status" class="panel">
+      Status
+    </div>
+    <div id="panel-log" class="panel">
+      Log
+    </div>
+  </div>
 </body>
 </html>
