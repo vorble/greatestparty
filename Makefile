@@ -8,4 +8,4 @@ all:
 
 .PHONY: clean
 clean:
-	-rm -r build/
+	-rm -rf build/

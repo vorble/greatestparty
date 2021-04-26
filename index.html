@@ -3,10 +3,12 @@
 <head>
   <meta charset="utf-8">
   <title>Greatest Party</title>
+  <script src="./fight.js"></script>
   <script src="./flags.js"></script>
   <script src="./greatestparty.js"></script>
   <script src="./roll.js"></script>
   <script src="./ui.js"></script>
+  <script src="./utils.js"></script>
   <style>
     html, body {
       margin: 0px;
@@ -31,6 +33,14 @@
 
     #panel-log {
       grid-column: 2 / span 2;
+    }
+
+    button {
+      font-size: 75%;
+    }
+
+    .log {
+      white-space: pre-wrap;
     }
   </style>
 </head>
@@ -59,6 +69,32 @@
     </div>
     <div id="panel-stats" class="panel">
       Stats
+      <table>
+        <tr>
+          <td>STR</td>
+          <td><div id="panel-stats-str-value">0</div></td>
+        </tr>
+        </tr>
+        <tr>
+          <td>DEX</td>
+          <td><div id="panel-stats-dex-value">0</div></td>
+        </tr>
+        <tr>
+          <td>CON</td>
+          <td><div id="panel-stats-con-value">0</div></td>
+        </tr>
+        <tr>
+          <td>INT</td>
+          <td><div id="panel-stats-int-value">0</div></td>
+        <tr>
+          <td>WIS</td>
+          <td><div id="panel-stats-wis-value">0</div></td>
+        </tr>
+        <tr>
+          <td>CHA</td>
+          <td><div id="panel-stats-cha-value">0</div></td>
+        </tr>
+      </table>
     </div>
     <div id="panel-town" class="panel">
       <div>Town</div>
@@ -70,16 +106,156 @@
       <br>
       <div>Boss: <div id="panel-town-boss-value">0</div>
         <button id="panel-town-fight-boss-button">Fight</button></div>
-      </div>
     </div>
     <div id="panel-shop" class="panel">
-      Shop
+      <div>Shop</div>
+      <br>
+      <div>
+        <button id="panel-shop-food-buy-button">Buy
+          <div id="panel-shop-food-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-food-sell-button">Sell
+          <div id="panel-shop-food-sell-cost-value">0</div>g
+        </button>
+        Food
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-water-buy-button">Buy
+          <div id="panel-shop-water-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-water-sell-button">Sell
+          <div id="panel-shop-water-sell-cost-value">0</div>g
+        </button>
+        Water
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-weapon-blunt-buy-button">Buy
+          <div id="panel-shop-weapon-blunt-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-weapon-blunt-sell-button">Sell
+          <div id="panel-shop-weapon-blunt-sell-cost-value">0</div>g
+        </button>
+        Weapon Blunt
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-weapon-slice-buy-button">Buy
+          <div id="panel-shop-weapon-slice-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-weapon-slice-sell-button">Sell
+          <div id="panel-shop-weapon-slice-sell-cost-value">0</div>g
+        </button>
+        Weapon Slice
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-weapon-dark-buy-button">Buy
+          <div id="panel-shop-weapon-dark-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-weapon-dark-sell-button">Sell
+          <div id="panel-shop-weapon-dark-sell-cost-value">0</div>g
+        </button>
+        Weapon Dark
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-weapon-light-buy-button">Buy
+          <div id="panel-shop-weapon-light-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-weapon-light-sell-button">Sell
+          <div id="panel-shop-weapon-light-sell-cost-value">0</div>g
+        </button>
+        Weapon Light
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-weapon-fire-buy-button">Buy
+          <div id="panel-shop-weapon-fire-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-weapon-fire-sell-button">Sell
+          <div id="panel-shop-weapon-fire-sell-cost-value">0</div>g
+        </button>
+        Weapon Fire
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-weapon-ice-buy-button">Buy
+          <div id="panel-shop-weapon-ice-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-weapon-ice-sell-button">Sell
+          <div id="panel-shop-weapon-ice-sell-cost-value">0</div>g
+        </button>
+        Weapon Ice
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-armor-blunt-buy-button">Buy
+          <div id="panel-shop-armor-blunt-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-armor-blunt-sell-button">Sell
+          <div id="panel-shop-armor-blunt-sell-cost-value">0</div>g
+        </button>
+        Armor Blunt
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-armor-slice-buy-button">Buy
+          <div id="panel-shop-armor-slice-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-armor-slice-sell-button">Sell
+          <div id="panel-shop-armor-slice-sell-cost-value">0</div>g
+        </button>
+        Armor Slice
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-armor-dark-buy-button">Buy
+          <div id="panel-shop-armor-dark-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-armor-dark-sell-button">Sell
+          <div id="panel-shop-armor-dark-sell-cost-value">0</div>g
+        </button>
+        Armor Dark
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-armor-light-buy-button">Buy
+          <div id="panel-shop-armor-light-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-armor-light-sell-button">Sell
+          <div id="panel-shop-armor-light-sell-cost-value">0</div>g
+        </button>
+        Armor Light
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-armor-fire-buy-button">Buy
+          <div id="panel-shop-armor-fire-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-armor-fire-sell-button">Sell
+          <div id="panel-shop-armor-fire-sell-cost-value">0</div>g
+        </button>
+        Armor Fire
+      </div>
+      <br>
+      <div>
+        <button id="panel-shop-armor-ice-buy-button">Buy
+          <div id="panel-shop-armor-ice-buy-cost-value">0</div>g
+        </button>
+        <button id="panel-shop-armor-ice-sell-button">Sell
+          <div id="panel-shop-armor-ice-sell-cost-value">0</div>g
+        </button>
+        Armor Ice
+      </div>
     </div>
     <div id="panel-status" class="panel">
       Status
     </div>
     <div id="panel-log" class="panel">
-      Log
+      <div id="panel-log-log" class="log">
+      </div>
     </div>
   </div>
 </body>
