@@ -73,6 +73,76 @@ class UIParty {
   }
 }
 
+class UIEquipment {
+  game: Game;
+
+  weapon: HTMLElement;
+  armor: HTMLElement;
+
+  weaponPhysicalSlider: HTMLInputElement;
+  weaponMagicalSlider: HTMLInputElement;
+  weaponElementalSlider: HTMLInputElement;
+  armorPhysicalSlider: HTMLInputElement;
+  armorMagicalSlider: HTMLInputElement;
+  armorElementalSlider: HTMLInputElement;
+
+  constructor(game: Game) {
+    this.game = game;
+
+    this.weapon = getElementById('panel-equipment-weapon-value');
+    this.armor = getElementById('panel-equipment-armor-value');
+
+    this.weaponPhysicalSlider = getElementByIdAsType('panel-equipment-weapon-physical-slider', HTMLInputElement);
+    this.weaponPhysicalSlider.onchange = this.onSliderChange.bind(this);
+    this.weaponPhysicalSlider.value = '0';
+    this.weaponMagicalSlider = getElementByIdAsType('panel-equipment-weapon-magical-slider', HTMLInputElement);
+    this.weaponMagicalSlider.onchange = this.onSliderChange.bind(this);
+    this.weaponMagicalSlider.value = '0';
+    this.weaponElementalSlider = getElementByIdAsType('panel-equipment-weapon-elemental-slider', HTMLInputElement);
+    this.weaponElementalSlider.onchange = this.onSliderChange.bind(this);
+    this.weaponElementalSlider.value = '0';
+    this.armorPhysicalSlider = getElementByIdAsType('panel-equipment-armor-physical-slider', HTMLInputElement);
+    this.armorPhysicalSlider.onchange = this.onSliderChange.bind(this);
+    this.armorPhysicalSlider.value = '0';
+    this.armorMagicalSlider = getElementByIdAsType('panel-equipment-armor-magical-slider', HTMLInputElement);
+    this.armorMagicalSlider.onchange = this.onSliderChange.bind(this);
+    this.armorMagicalSlider.value = '0';
+    this.armorElementalSlider = getElementByIdAsType('panel-equipment-armor-elemental-slider', HTMLInputElement);
+    this.armorElementalSlider.onchange = this.onSliderChange.bind(this);
+    this.armorElementalSlider.value = '0';
+  }
+
+  onSliderChange(e: Event) {
+    const weapon = {
+      physical: parseInt(this.weaponPhysicalSlider.value),
+      magical: parseInt(this.weaponMagicalSlider.value),
+      elemental: parseInt(this.weaponElementalSlider.value),
+    };
+    const armor = {
+      physical: parseInt(this.armorPhysicalSlider.value),
+      magical: parseInt(this.armorMagicalSlider.value),
+      elemental: parseInt(this.armorElementalSlider.value),
+    };
+    this.game.adjustPartyEquipmentRelative(weapon, armor);
+  }
+
+  show() {
+    const game = this.game;
+
+    const { weapon, armor } = game.party;
+    const weaponSize = Math.abs(weapon.physical) + Math.abs(weapon.magical) + Math.abs(weapon.elemental);
+    const armorSize = Math.abs(armor.physical) + Math.abs(armor.magical) + Math.abs(armor.elemental);
+
+    this.weapon.innerText = '' + weaponSize;
+    this.armor.innerText = '' + armorSize;
+
+    if (FLAGS.SHOW_EQ_DETAILS) {
+      this.weapon.innerText += ` (${ weapon.physical }/${ weapon.magical }/${ weapon.elemental })`;
+      this.armor.innerText += ` (${ armor.physical }/${ armor.magical }/${ armor.elemental })`;
+    }
+  }
+}
+
 class UIStats {
   game: Game;
 
@@ -413,6 +483,29 @@ class UIShop {
   }
 }
 
+class UIStatus {
+  game: Game;
+
+  listing: HTMLElement;
+
+  constructor(game: Game) {
+    this.game = game;
+
+    this.listing = getElementById('panel-status-listing-value');
+  }
+
+  show() {
+    const active: Array<string> = [];
+    for (const status of STATUSES) {
+      const s = this.game.party.status[status];
+      if (s.active) {
+        active.push(s.name);
+      }
+    }
+    this.listing.innerText = active.join('\n');
+  }
+}
+
 class UILog {
   game: Game;
 
@@ -433,16 +526,20 @@ class UILog {
 
 class UI {
   party: UIParty;
+  equipment: UIEquipment;
   stats: UIStats;
   town: UITown;
   shop: UIShop;
+  status: UIStatus;
   log: UILog;
 
   constructor(game: Game) {
     this.party = new UIParty(game);
+    this.equipment = new UIEquipment(game);
     this.stats = new UIStats(game);
     this.town = new UITown(game);
     this.shop = new UIShop(game);
+    this.status = new UIStatus(game);
     this.log = new UILog(game);
 
     // Whenever any button is clicked, the data being displayed will be updated.
@@ -455,9 +552,11 @@ class UI {
 
   show() {
     this.party.show();
+    this.equipment.show();
     this.stats.show();
     this.town.show();
     this.shop.show();
+    this.status.show();
     this.log.show();
   }
 }

@@ -31,6 +31,97 @@ class Equipment {
   }
 }
 
+interface RoundActions {
+  doTickActions?: (game: Game) => void;
+  doTockActions?: (game: Game) => void;
+  doTermActions?: (game: Game) => void;
+  doYearActions?: (game: Game) => void;
+}
+
+interface PartyStatusItem extends RoundActions {
+  active: boolean;
+  yearExp: number;
+  termExp: number;
+  tockExp: number;
+  tickExp: number;
+
+  name: string;
+}
+
+function isStatusExpired(game: Game, status: PartyStatusItem) {
+  if (status.yearExp == 0 && status.termExp == 0 && status.tockExp == 0 && status.tickExp == 0)
+    return false;
+  else if (game.year < status.yearExp) return false;
+  else if (game.year > status.yearExp) return true;
+  else if (game.term < status.termExp) return false;
+  else if (game.term > status.termExp) return true;
+  else if (game.tock < status.tockExp) return false;
+  else if (game.tock > status.tockExp) return true;
+  return game.tick >= status.tickExp;
+}
+
+type PartyStatusType = 'berzerk';
+const STATUSES: Array<PartyStatusType> = ['berzerk'];
+
+class Status {
+  berzerk: PartyStatusItem;
+
+  constructor() {
+    const defaults = { active: false, yearExp: 0, termExp: 0, tockExp: 0, tickExp: 0 };
+    this.berzerk = {
+      ...defaults,
+      name: 'Berzerk',
+      doTickActions: (game: Game) => {
+        if (!game.fightingBoss) {
+          if (FLAGS.DEBUG.STATUS.BERZERK) {
+            game.log('Berzerk: I didn\'t hear a bell! You fight the boss.');
+          }
+          game.fightBoss();
+        }
+      },
+    };
+  }
+}
+
+interface Skill extends RoundActions {
+  level: number;
+
+  name: string;
+  levelMax: number;
+  costTier: number;
+
+  // Do I want an action for when the level goes up and down?
+  doBuyActions?: (game: Game) => void;
+}
+
+type SkillNameType = 'initiative';
+const SKILLS: Array<SkillNameType> = ['initiative'];
+
+class Skills {
+  initiative: Skill;
+
+  constructor() {
+    const defaults = { level: 0 };
+    this.initiative = {
+      ...defaults,
+      name: 'Initiative',
+      levelMax: 9999,
+      costTier: 1,
+      doTickActions: (game: Game) => {
+        // Party members show initiative and will pick up quests on their own periodically.
+        // TODO: How will this handle really high levels where multiple quests should be
+        //       taken per tick?
+        if (rollRatio() < 0.01 * this.initiative.level) {
+          if (FLAGS.DEBUG.SKILL.INITIATIVE) {
+            game.log('Initiative tried to take a quest.');
+          }
+          game.takeQuest();
+        }
+      },
+    };
+  }
+}
+
 class PartyMember {
   str: number;
   dex: number;
@@ -65,7 +156,6 @@ class Party {
   quests: number;
   questPoints: number;
   damage: number;
-  partyMembers: Array<PartyMember>;
 
   str: number;
   dex: number;
@@ -79,6 +169,9 @@ class Party {
   weapon: Equipment;
   armor: Equipment;
 
+  status: Status;
+  skills: Skills;
+
   constructor() {
     this.size = 0;
     this.gold = 0;
@@ -89,7 +182,6 @@ class Party {
     this.quests = 0;
     this.questPoints = 0;
     this.damage = 0;
-    this.partyMembers = [];
 
     this.str = 0;
     this.dex = 0;
@@ -102,6 +194,9 @@ class Party {
     this.inventoryArmor = new Inventory();
     this.weapon = new Equipment();
     this.armor = new Equipment();
+
+    this.status = new Status();
+    this.skills = new Skills();
   }
 }
 
@@ -147,6 +242,7 @@ class BossState {
 
 class Boss {
   size: number;
+  name: string;
   state: BossState;
   events: Array<BossEvent>;
 
@@ -162,6 +258,7 @@ class Boss {
 
   constructor() {
     this.size = 0;
+    this.name = '';
     this.events = [];
     this.state = new BossState();
 
@@ -261,6 +358,7 @@ class Game {
     if (!this.fightingBoss) {
       this.boss.size = this.town.boss;
       this.fightingBoss = true;
+      this.log('You pick a fight with ' + this.boss.name + '.');
     }
   }
 
@@ -340,6 +438,40 @@ class Game {
       partyInventory[name] -= 1;
       townInventory[name] += 1;
     }
+    this.capEquipment();
+  }
+
+  capEquipment() {
+    if (this.party.weapon.physical > 0) {
+      this.party.weapon.physical = Math.min(this.party.weapon.physical, this.party.inventoryWeapon.slice);
+    } else if (this.party.weapon.physical < 0) {
+      this.party.weapon.physical = -Math.min(-this.party.weapon.physical, this.party.inventoryWeapon.blunt);
+    }
+    if (this.party.weapon.magical > 0) {
+      this.party.weapon.magical = Math.min(this.party.weapon.magical, this.party.inventoryWeapon.slice);
+    } else if (this.party.weapon.magical < 0) {
+      this.party.weapon.magical = -Math.min(-this.party.weapon.magical, this.party.inventoryWeapon.blunt);
+    }
+    if (this.party.weapon.elemental > 0) {
+      this.party.weapon.elemental = Math.min(this.party.weapon.elemental, this.party.inventoryWeapon.slice);
+    } else if (this.party.weapon.elemental < 0) {
+      this.party.weapon.elemental = -Math.min(-this.party.weapon.elemental, this.party.inventoryWeapon.blunt);
+    }
+    if (this.party.armor.physical > 0) {
+      this.party.armor.physical = Math.min(this.party.armor.physical, this.party.inventoryArmor.slice);
+    } else if (this.party.armor.physical < 0) {
+      this.party.armor.physical = -Math.min(-this.party.armor.physical, this.party.inventoryArmor.blunt);
+    }
+    if (this.party.armor.magical > 0) {
+      this.party.armor.magical = Math.min(this.party.armor.magical, this.party.inventoryArmor.slice);
+    } else if (this.party.armor.magical < 0) {
+      this.party.armor.magical = -Math.min(-this.party.armor.magical, this.party.inventoryArmor.blunt);
+    }
+    if (this.party.armor.elemental > 0) {
+      this.party.armor.elemental = Math.min(this.party.armor.elemental, this.party.inventoryArmor.slice);
+    } else if (this.party.armor.elemental < 0) {
+      this.party.armor.elemental = -Math.min(-this.party.armor.elemental, this.party.inventoryArmor.blunt);
+    }
   }
 
   log(text: string) {
@@ -365,6 +497,48 @@ class Game {
             this.year += 1
           }
         }
+      }
+    }
+
+    // ----------------------------------------------------
+    // ROUND ACTIONS
+    // ----------------------------------------------------
+    const doActions = (s: RoundActions) => {
+      if (s.doTickActions) {
+        s.doTickActions(this);
+      }
+      if (this.tick == 0) {
+        if (s.doTockActions) {
+          s.doTockActions(this);
+        }
+        if (this.tock == 0) {
+          if (s.doTermActions) {
+            s.doTermActions(this);
+          }
+          if (this.term == 0) {
+            if (s.doYearActions) {
+              s.doYearActions(this);
+            }
+          }
+        }
+      }
+    };
+
+    for (const status of STATUSES) {
+      const s = game.party.status[status];
+      if (s.active) {
+        if (isStatusExpired(game, s)) {
+          s.active = false;
+        } else {
+          doActions(s);
+        }
+      }
+    }
+
+    for (const skill of SKILLS) {
+      const s = game.party.skills[skill];
+      if (s.level > 0) {
+        doActions(s);
       }
     }
 
@@ -417,13 +591,15 @@ class Game {
     // FIGHTING BOSS
     // ----------------------------------------------------
     if (this.fightingBoss) {
-      const PARTY_MEMBER_HP = 20;
+      const PARTY_MEMBER_HP = 40;
       const damageToBoss = fightCalculateAttack(this.party, this.boss);
       const damageToParty = fightCalculateAttack(this.boss, this.party);
       this.party.damage += damageToParty;
       this.boss.size = Math.max(0, this.boss.size - damageToBoss);
       if (this.boss.size <= 0) {
         this.fightingBoss = false;
+        // TODO: Should only do this if you the party doesn't die on the last round
+        this.log('Your party is victorious!');
         // TODO: Need to trigger town change somehow.
       }
       const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
@@ -498,6 +674,7 @@ class Game {
     // TODO: Temporary implementation, stop the game when the party is dead.
     if (this.party.size == 0) {
       this.running = false;
+      this.log('Your party has been vanquished.');
     }
   }
 
@@ -523,7 +700,7 @@ class Game {
     throw new Error('Assertion error. Could not pick town event.');
   }
 
-  pickBossEvent(): null | TownEvent {
+  pickBossEvent(): null | BossEvent {
     let totalWeight = 0;
     const events = [];
     for (const event of this.boss.events) {
@@ -544,6 +721,65 @@ class Game {
     }
     throw new Error('Assertion error. Could not pick boss event.');
   }
+
+  adjustPartyEquipmentRelative(weapon: Equipment, armor: Equipment) {
+    // Value on equipment is from -100 to 100 and values are scaled into
+    // actually equippable amounts.
+    let weaponTotal = Math.abs(weapon.physical) + Math.abs(weapon.magical) + Math.abs(weapon.elemental);
+    let weaponMax = this.party.size;
+    let armorTotal = Math.abs(armor.physical) + Math.abs(armor.magical) + Math.abs(armor.elemental);
+    let armorMax = this.party.size;
+    if (weaponTotal == 0) {
+      this.party.weapon.physical = 0;
+      this.party.weapon.magical = 0;
+      this.party.weapon.elemental = 0;
+    } else {
+      const physicalUse = Math.floor((Math.abs(weapon.physical) / weaponTotal) * weaponMax);
+      // TODO: Flip condition so they're in the usual order.
+      if (weapon.physical > 0) {
+        this.party.weapon.physical = Math.min(this.party.inventoryWeapon.slice, physicalUse);
+      } else {
+        this.party.weapon.physical = -Math.min(this.party.inventoryWeapon.blunt, physicalUse);
+      }
+      const magicalUse = Math.floor((Math.abs(weapon.magical) / weaponTotal) * weaponMax);
+      if (weapon.magical > 0) {
+        this.party.weapon.magical = Math.min(this.party.inventoryWeapon.light, magicalUse);
+      } else {
+        this.party.weapon.magical = -Math.min(this.party.inventoryWeapon.dark, magicalUse);
+      }
+      const elementalUse = Math.floor((Math.abs(weapon.elemental) / weaponTotal) * weaponMax);
+      if (weapon.elemental > 0) {
+        this.party.weapon.elemental = Math.min(this.party.inventoryWeapon.ice, elementalUse);
+      } else {
+        this.party.weapon.elemental = -Math.min(this.party.inventoryWeapon.fire, elementalUse);
+      }
+    }
+    if (armorTotal == 0) {
+      this.party.armor.physical = 0;
+      this.party.armor.magical = 0;
+      this.party.armor.elemental = 0;
+    } else {
+      const physicalUse = Math.floor((Math.abs(armor.physical) / armorTotal) * armorMax);
+      // TODO: Flip condition so they're in the usual order.
+      if (armor.physical > 0) {
+        this.party.armor.physical = Math.min(this.party.inventoryArmor.slice, physicalUse);
+      } else {
+        this.party.armor.physical = -Math.min(this.party.inventoryArmor.blunt, physicalUse);
+      }
+      const magicalUse = Math.floor((Math.abs(armor.magical) / armorTotal) * armorMax);
+      if (armor.magical > 0) {
+        this.party.armor.magical = Math.min(this.party.inventoryArmor.light, magicalUse);
+      } else {
+        this.party.armor.magical = -Math.min(this.party.inventoryArmor.dark, magicalUse);
+      }
+      const elementalUse = Math.floor((Math.abs(armor.elemental) / armorTotal) * armorMax);
+      if (armor.elemental > 0) {
+        this.party.armor.elemental = Math.min(this.party.inventoryArmor.ice, elementalUse);
+      } else {
+        this.party.armor.elemental = -Math.min(this.party.inventoryArmor.fire, elementalUse);
+      }
+    }
+  }
 }
 
 let game = new Game();
@@ -553,7 +789,7 @@ game.running = true;
 game.year = 311;
 game.party.size = 4;
 game.party.gold = 100;
-game.party.quests =1;
+game.party.quests = 1;
 game.party.food = 15;
 game.party.water = 20;
 game.party.str = 10;
@@ -562,8 +798,6 @@ game.party.con = 10;
 game.party.int = 10;
 game.party.wis = 10;
 game.party.cha = 10;
-game.party.weapon.physical = 2;
-game.party.armor.physical = 1;
 game.town.townsfolk = 100;
 game.town.foodStock = 100;
 game.town.foodSupport = 3;
@@ -582,7 +816,7 @@ for (const cat of EQ_FINE_CATEGORIES) {
   game.town.inventoryArmorSell[cat] = 3;
 }
 game.town.need = 5;
-game.town.boss = 50;
+game.town.boss = 200;
 game.town.events = [
   {
     name: 'Deep in Depression',
@@ -611,6 +845,7 @@ game.boss.con = 10;
 game.boss.int = 10;
 game.boss.wis = 10;
 game.boss.cha = 10;
+game.boss.name = 'Octopod';
 game.boss.events = [
   {
     name: 'Staring Contest',

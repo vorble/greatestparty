@@ -62,7 +62,56 @@
       <div>Water: <div id="panel-party-water-value">0</div></div>
     </div>
     <div id="panel-equipment" class="panel">
-      Equipment
+      <table>
+        <tr>
+          <td colspan="3">Weapon <div id="panel-equipment-weapon-value">0</div></td>
+        </td>
+        <tr>
+          <td>Blunt</td>
+          <td>
+            <input id="panel-equipment-weapon-physical-slider" type="range" min="-100", max="100" value="0">
+          </td>
+          <td>Slice</td>
+        </tr>
+        <tr>
+          <td>Dark</td>
+          <td>
+            <input id="panel-equipment-weapon-magical-slider" type="range" min="-100", max="100" value="0">
+          </td>
+          <td>Light</td>
+        </tr>
+        <tr>
+          <td>Fire</td>
+          <td>
+            <input id="panel-equipment-weapon-elemental-slider" type="range" min="-100", max="100" value="0">
+          </td>
+          <td>Ice</td>
+        </tr>
+        <tr>
+          <td colspan="3">Armor <div id="panel-equipment-armor-value">0</div></td>
+        </td>
+        <tr>
+          <td>Blunt</td>
+          <td>
+            <input id="panel-equipment-armor-physical-slider" type="range" min="-100", max="100" value="0">
+          </td>
+          <td>Slice</td>
+        </tr>
+        <tr>
+          <td>Dark</td>
+          <td>
+            <input id="panel-equipment-armor-magical-slider" type="range" min="-100", max="100" value="0">
+          </td>
+          <td>Light</td>
+        </tr>
+        <tr>
+          <td>Fire</td>
+          <td>
+            <input id="panel-equipment-armor-elemental-slider" type="range" min="-100", max="100" value="0">
+          </td>
+          <td>Ice</td>
+        </tr>
+      </table>
     </div>
     <div id="panel-skills" class="panel">
       Skills
@@ -251,7 +300,7 @@
       </div>
     </div>
     <div id="panel-status" class="panel">
-      Status
+      <div id="panel-status-listing-value"></div>
     </div>
     <div id="panel-log" class="panel">
       <div id="panel-log-log" class="log">
