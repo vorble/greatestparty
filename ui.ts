@@ -506,6 +506,35 @@ class UIStatus {
   }
 }
 
+class UISkills {
+  game: Game;
+
+  initiativeBuy: HTMLElement;
+  initiativeLevel: HTMLElement;
+  initiativeBuyButton: HTMLButtonElement;
+
+  constructor(game: Game) {
+    this.game = game;
+
+    this.initiativeBuy = getElementById('panel-skills-initiative-buy-cost-value');
+    this.initiativeLevel = getElementById('panel-skills-initiative-level-value');
+    this.initiativeBuyButton = getElementByIdAsType('panel-skills-initiative-buy-button', HTMLButtonElement);
+    this.initiativeBuyButton.onclick = (e) => {
+      game.buySkill('initiative');
+    };
+  }
+
+  show() {
+    {
+      // TODO: Maybe iterate over SKILLS
+      const cost = this.game.getSkillCost('initiative');
+      this.initiativeBuy.innerText = '' + cost;
+      this.initiativeLevel.innerText = '' + this.game.party.skills.initiative.level;
+      this.initiativeBuyButton.disabled = !this.game.canBuySkill('initiative');
+    }
+  }
+}
+
 class UILog {
   game: Game;
 
@@ -527,6 +556,7 @@ class UILog {
 class UI {
   party: UIParty;
   equipment: UIEquipment;
+  skills: UISkills;
   stats: UIStats;
   town: UITown;
   shop: UIShop;
@@ -536,6 +566,7 @@ class UI {
   constructor(game: Game) {
     this.party = new UIParty(game);
     this.equipment = new UIEquipment(game);
+    this.skills = new UISkills(game);
     this.stats = new UIStats(game);
     this.town = new UITown(game);
     this.shop = new UIShop(game);
@@ -553,6 +584,7 @@ class UI {
   show() {
     this.party.show();
     this.equipment.show();
+    this.skills.show();
     this.stats.show();
     this.town.show();
     this.shop.show();

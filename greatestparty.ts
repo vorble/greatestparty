@@ -320,6 +320,11 @@ class Town {
   }
 }
 
+interface Level {
+  level: number;
+  newTown: (game: Game) => { town: Town, boss: Boss };
+}
+
 class Game {
   party: Party;
   town: Town;
@@ -332,6 +337,7 @@ class Game {
   fightingBoss: boolean;
   running: boolean;
   textLog: Array<string>;
+  levels: Array<Level>;
 
   constructor() {
     this.party = new Party();
@@ -345,6 +351,11 @@ class Game {
     this.fightingBoss = false;
     this.running = false;
     this.textLog = [];
+    this.levels = [];
+  }
+
+  registerTown(level: Level) {
+    this.levels.push(level);
   }
 
   takeQuest() {
@@ -777,6 +788,27 @@ class Game {
         this.party.armor.elemental = Math.min(this.party.inventoryArmor.ice, elementalUse);
       } else {
         this.party.armor.elemental = -Math.min(this.party.inventoryArmor.fire, elementalUse);
+      }
+    }
+  }
+
+  getSkillCost(skill: SkillNameType): number {
+    return 50 * (this.party.skills[skill].level + 1) * this.party.skills[skill].costTier;
+  }
+
+  canBuySkill(skill: SkillNameType): boolean {
+    const s = this.party.skills[skill];
+    return this.party.gold >= this.getSkillCost(skill)
+      && s.level < s.levelMax;
+  }
+
+  buySkill(skill: SkillNameType) {
+    const s = this.party.skills[skill];
+    if (this.canBuySkill(skill)) {
+      this.party.gold -= this.getSkillCost(skill);
+      s.level += 1;
+      if (s.doBuyActions) {
+        s.doBuyActions(this);
       }
     }
   }
