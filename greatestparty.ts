@@ -35,6 +35,7 @@ interface RoundActions {
   doTickActions?: (game: Game) => void;
   doTockActions?: (game: Game) => void;
   doTermActions?: (game: Game) => void;
+  doSeasonActions?: (game: Game) => void;
   doYearActions?: (game: Game) => void;
 }
 
@@ -275,6 +276,7 @@ class Boss {
 }
 
 class Town {
+  name: string;
   townsfolk: number;
   need: number;
   boss: number;
@@ -297,6 +299,7 @@ class Town {
   events: Array<TownEvent>;
 
   constructor() {
+    this.name = 'Town';
     this.townsfolk = 0;
     this.need = 0;
     this.boss = 0;
@@ -338,6 +341,7 @@ class Game {
   running: boolean;
   textLog: Array<string>;
   levels: Array<Level>;
+  level: number;
 
   constructor() {
     this.party = new Party();
@@ -352,10 +356,62 @@ class Game {
     this.running = false;
     this.textLog = [];
     this.levels = [];
+    this.level = 0;
   }
 
-  registerTown(level: Level) {
+  registerLevel(level: Level) {
     this.levels.push(level);
+  }
+
+  newGame() {
+    this.year = 311; // TODO: Randomize year and season.
+    this.season = 0; // TODO: Randomize year and season.
+    this.term = 0;
+    this.tock = 0;
+    this.tick = 0;
+    this.fightingBoss = false;
+    this.running = true;
+    this.textLog = [];
+    this.level = 1;
+
+    this.party = new Party();
+    this.party.size = 4;
+    this.party.gold = 100;
+    this.party.quests = 0;
+    this.party.food = 15;
+    this.party.water = 20;
+    // TODO: Roll for stats.
+    this.party.str = 10;
+    this.party.dex = 10;
+    this.party.con = 10;
+    this.party.int = 10;
+    this.party.wis = 10;
+    this.party.cha = 10;
+
+    this.startLevel();
+  }
+
+  startLevel() {
+    const levels = this.levels.filter(x => x.level == this.level);
+    if (levels.length == 0) {
+      throw new Error('Couldn\'t find level ' + this.level + '.');
+    }
+    const which = rollDie(levels.length) - 1;
+    const level = levels[which];
+    const { boss, town } = level.newTown(this);
+    this.town = town;
+    this.boss = boss;
+
+    this.log('Welcome to ' + this.town.name + '!');
+  }
+
+  killPartyMember(count: number) {
+    if (this.party.size >= count) {
+      this.party.size -= count;
+    } else {
+      this.party.size = 0;
+    }
+    this.capEquipment();
   }
 
   takeQuest() {
@@ -527,8 +583,13 @@ class Game {
             s.doTermActions(this);
           }
           if (this.term == 0) {
-            if (s.doYearActions) {
-              s.doYearActions(this);
+            if (s.doSeasonActions) {
+              s.doSeasonActions(this);
+            }
+            if (this.season == 0) {
+              if (s.doYearActions) {
+                s.doYearActions(this);
+              }
             }
           }
         }
@@ -602,7 +663,7 @@ class Game {
     // FIGHTING BOSS
     // ----------------------------------------------------
     if (this.fightingBoss) {
-      const PARTY_MEMBER_HP = 40;
+      const PARTY_MEMBER_HP = 100;
       const damageToBoss = fightCalculateAttack(this.party, this.boss);
       const damageToParty = fightCalculateAttack(this.boss, this.party);
       this.party.damage += damageToParty;
@@ -816,120 +877,9 @@ class Game {
 
 let game = new Game();
 
-// XXX: Testing values
-game.running = true;
-game.year = 311;
-game.party.size = 4;
-game.party.gold = 100;
-game.party.quests = 1;
-game.party.food = 15;
-game.party.water = 20;
-game.party.str = 10;
-game.party.dex = 10;
-game.party.con = 10;
-game.party.int = 10;
-game.party.wis = 10;
-game.party.cha = 10;
-game.town.townsfolk = 100;
-game.town.foodStock = 100;
-game.town.foodSupport = 3;
-game.town.foodCostBuy = 10;
-game.town.foodCostSell = 7;
-game.town.waterStock = 100;
-game.town.waterSupport = 3;
-game.town.waterCostBuy = 12;
-game.town.waterCostSell = 9;
-for (const cat of EQ_FINE_CATEGORIES) {
-  game.town.inventoryWeapon[cat] = 100;
-  game.town.inventoryWeaponBuy[cat] = 5;
-  game.town.inventoryWeaponSell[cat] = 3;
-  game.town.inventoryArmor[cat] = 100;
-  game.town.inventoryArmorBuy[cat] = 5;
-  game.town.inventoryArmorSell[cat] = 3;
-}
-game.town.need = 5;
-game.town.boss = 200;
-game.town.events = [
-  {
-    name: 'Deep in Depression',
-    weight: 1,
-    action: (game: Game) => {
-      const conRoll = rollDie(20);
-      const chaRoll = rollDie(20);
-      if (conRoll < 5 && chaRoll < 17) {
-        game.log('A party member was suffering from a deep depression and has committed suicide.');
-        // TODO: Make a "killPartyMembers" method or something that does party size checks.
-        game.party.size -= 1;
-      } else {
-        game.log('A party member is suffering from a deep depression.');
-      }
-    },
-  },
-];
-
-game.boss.weapon.physical = -1; // 1 blunt damage
-game.boss.weapon.elemental = 1; // 1 ice damage
-game.boss.armor.physical = -1; // 1 blunt armor
-game.boss.armor.elemental = 1; // 1 ice armor
-game.boss.str = 10;
-game.boss.dex = 10;
-game.boss.con = 10;
-game.boss.int = 10;
-game.boss.wis = 10;
-game.boss.cha = 10;
-game.boss.name = 'Octopod';
-game.boss.events = [
-  {
-    name: 'Staring Contest',
-    weight: 1,
-    predicate: (game: Game) => {
-      return !game.boss.state.flag1 && !game.boss.state.flag2;
-    },
-    action: (game: Game) => {
-      game.boss.state.flag1 = true;
-      game.log('Octopod becomes still as it gazes over the party...');
-    },
-  },
-  {
-    name: 'Lose Staring Contest',
-    weight: 1,
-    predicate: (game: Game) => {
-      return game.boss.state.flag1;
-    },
-    action: (game: Game) => {
-      game.boss.state.flag1 = false;
-      game.log('Octopod blinks!');
-    },
-  },
-  {
-    name: 'Win Staring Contest',
-    weight: 1,
-    predicate: (game: Game) => {
-      return game.boss.state.flag1;
-    },
-    action: (game: Game) => {
-      game.boss.state.flag1 = false;
-      game.boss.state.flag2 = true;
-      game.log('Octopod squirms with delight!');
-    },
-  },
-  {
-    name: 'Tentacle Swipe',
-    weight: 1,
-    predicate: (game: Game) => {
-      return game.boss.state.flag2;
-    },
-    action: (game: Game) => {
-      game.boss.state.flag2 = false;
-      game.log('A member of your party disappears under Octopod\'s tentacle.');
-      // TODO: Make a "killPartyMembers" method or something that does party size checks.
-      game.party.size -= 1;
-    },
-  },
-];
-game.log('Game initialized with test values.');
-
 function gameStart() {
+  game.newGame();
+
   initUI(game);
   ui.show();
 
@@ -941,15 +891,4 @@ function gameStart() {
   }, 250);
 }
 
-// TODO: Cheat code to stay alive.
-/*
-setInterval(() => {
-  if (game.party.size < 4) {
-    game.party.size = 4;
-  }
-}, 1000);
-*/
-
-// TODO: Do some research: the DOM should be fully laid out
-// before this callback is called, right?
 window.onload = gameStart;
