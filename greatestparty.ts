@@ -41,34 +41,90 @@ interface RoundActions {
 
 interface PartyStatusItem extends RoundActions {
   active: boolean;
-  yearExp: number;
-  termExp: number;
-  tockExp: number;
-  tickExp: number;
+  year: number; // Expiry time.
+  season: number;
+  term: number;
+  tock: number;
+  tick: number;
 
   name: string;
 }
 
 function isStatusExpired(game: Game, status: PartyStatusItem) {
-  if (status.yearExp == 0 && status.termExp == 0 && status.tockExp == 0 && status.tickExp == 0)
+  if (status.year == 0 && status.term == 0 && status.tock == 0 && status.tick == 0)
     return false;
-  else if (game.year < status.yearExp) return false;
-  else if (game.year > status.yearExp) return true;
-  else if (game.term < status.termExp) return false;
-  else if (game.term > status.termExp) return true;
-  else if (game.tock < status.tockExp) return false;
-  else if (game.tock > status.tockExp) return true;
-  return game.tick >= status.tickExp;
+  else if (game.year < status.year) return false;
+  else if (game.year > status.year) return true;
+  else if (game.season < status.season) return false;
+  else if (game.season > status.season) return true;
+  else if (game.term < status.term) return false;
+  else if (game.term > status.term) return true;
+  else if (game.tock < status.tock) return false;
+  else if (game.tock > status.tock) return true;
+  return game.tick >= status.tick;
 }
 
-type PartyStatusType = 'berzerk';
-const STATUSES: Array<PartyStatusType> = ['berzerk'];
+interface Clock {
+  year: number;
+  season: number;
+  term: number;
+  tock: number;
+  tick: number;
+}
+
+function setStatusExpiry(game: Game, status: PartyStatusItem, length: {
+    tick?: number, tock?: number, term?: number, season?: number, year?: number }) {
+  status.year = game.year;
+  status.season = game.season;
+  status.term = game.term;
+  status.tock = game.tock;
+  status.tick = game.tick;
+  if (length.year != null) {
+    status.year += length.year;
+  }
+  if (length.season != null) {
+    status.season += length.season;
+  }
+  if (length.term != null) {
+    status.term += length.term;
+  }
+  if (length.tock != null) {
+    status.tock += length.tock;
+  }
+  if (length.tick != null) {
+    status.tick += length.tick;
+  }
+  unwrapClock(status);
+}
+
+function unwrapClock(clock: Clock) {
+  while (clock.tick >= TICKS_PER_TOCK) {
+    clock.tick -= TICKS_PER_TOCK;
+    clock.tock += 1;
+    while (clock.tock >= TOCKS_PER_TERM) {
+      clock.tock -= TOCKS_PER_TERM;
+      clock.term += 1;
+      while (clock.term >= TERMS_PER_SEASON) {
+        clock.term -= TERMS_PER_SEASON;
+        clock.season += 1;
+        while (clock.season >= SEASONS_PER_YEAR) {
+          clock.season -= SEASONS_PER_YEAR;
+          clock.year += 1
+        }
+      }
+    }
+  }
+}
+
+type PartyStatusType = 'berzerk' | 'islandCurse';
+const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse'];
 
 class Status {
   berzerk: PartyStatusItem;
+  islandCurse: PartyStatusItem;
 
   constructor() {
-    const defaults = { active: false, yearExp: 0, termExp: 0, tockExp: 0, tickExp: 0 };
+    const defaults = { active: false, year: 0, season: 0, term: 0, tock: 0, tick: 0 };
     this.berzerk = {
       ...defaults,
       name: 'Berzerk',
@@ -80,6 +136,10 @@ class Status {
           game.fightBoss();
         }
       },
+    };
+    this.islandCurse = {
+      ...defaults,
+      name: 'Island Curse',
     };
   }
 }
@@ -113,10 +173,12 @@ class Skills {
         // TODO: How will this handle really high levels where multiple quests should be
         //       taken per tick?
         if (rollRatio() < 0.01 * this.initiative.level) {
-          if (FLAGS.DEBUG.SKILL.INITIATIVE) {
-            game.log('Initiative tried to take a quest.');
+          if (game.town.need > 0) {
+            if (FLAGS.DEBUG.SKILL.INITIATIVE) {
+              game.log('Initiative tried to take a quest.');
+            }
+            game.takeQuest();
           }
-          game.takeQuest();
         }
       },
     };
@@ -279,6 +341,8 @@ class Town {
   name: string;
   townsfolk: number;
   need: number;
+  needMax: number;
+  needRatio: number;
   boss: number;
   foodStock: number;
   foodSupport: number;
@@ -302,6 +366,8 @@ class Town {
     this.name = 'Town';
     this.townsfolk = 0;
     this.need = 0;
+    this.needMax = 0;
+    this.needRatio = 0;
     this.boss = 0;
     this.foodStock = 0;
     this.foodSupport = 0;
@@ -328,15 +394,20 @@ interface Level {
   newTown: (game: Game) => { town: Town, boss: Boss };
 }
 
+const TICKS_PER_TOCK = 20;
+const TOCKS_PER_TERM = 20;
+const TERMS_PER_SEASON = 25;
+const SEASONS_PER_YEAR = 4;
+
 class Game {
   party: Party;
   town: Town;
   boss: Boss;
   year: number;
   season: number; // 0 spring, 1 summer, 2 fall, 3 winter
-  term: number; // 25 terms per season
-  tock: number; // 20 tock per term
-  tick: number; // 20 ticks per tock
+  term: number;
+  tock: number;
+  tick: number;
   fightingBoss: boolean;
   running: boolean;
   textLog: Array<string>;
@@ -381,12 +452,23 @@ class Game {
     this.party.food = 15;
     this.party.water = 20;
     // TODO: Roll for stats.
-    this.party.str = 10;
-    this.party.dex = 10;
-    this.party.con = 10;
-    this.party.int = 10;
-    this.party.wis = 10;
-    this.party.cha = 10;
+    const mods = [0, 0, 0, 0, 0, 0];
+    function topThreeOfFourD6() {
+      let a = rollDie(6);
+      let b = rollDie(6);
+      let c = rollDie(6);
+      let d = rollDie(6);
+      if (d > a) a = d;
+      else if (d > b) b = d;
+      else if (d > c) c = d;
+      return a + b + c;
+    }
+    this.party.str = topThreeOfFourD6();
+    this.party.dex = topThreeOfFourD6();
+    this.party.con = topThreeOfFourD6();
+    this.party.int = topThreeOfFourD6();
+    this.party.wis = topThreeOfFourD6();
+    this.party.cha = topThreeOfFourD6();
 
     this.startLevel();
   }
@@ -405,7 +487,7 @@ class Game {
     this.log('Welcome to ' + this.town.name + '!');
   }
 
-  killPartyMember(count: number) {
+  killPartyMembers(count: number) {
     if (this.party.size >= count) {
       this.party.size -= count;
     } else {
@@ -550,22 +632,7 @@ class Game {
     // TIME KEEPING
     // ----------------------------------------------------
     this.tick += 1;
-    if (this.tick >= 20) {
-      this.tick = 0;
-      this.tock += 1;
-      if (this.tock >= 20) {
-        this.tock = 0;
-        this.term += 1;
-        if (this.term >= 25) {
-          this.term = 0;
-          this.season += 1;
-          if (this.season >= 4) {
-            this.season = 0;
-            this.year += 1
-          }
-        }
-      }
-    }
+    unwrapClock(this);
 
     // ----------------------------------------------------
     // ROUND ACTIONS
@@ -699,6 +766,15 @@ class Game {
     // ----------------------------------------------------
     // QUESTING
     // ----------------------------------------------------
+    if (this.town.needRatio > 0 && this.town.need < this.town.needMax) {
+      if (rollRatio() < this.town.needRatio) {
+        if (FLAGS.LOG_NEW_NEED) {
+          this.log('The town\'s need grows.');
+        }
+        this.town.need += 1;
+      }
+    }
+
     if (this.party.quests > 0) {
       const POINTS_PER_QUEST = 100;
       const GOLD_PER_QUEST = 1;
@@ -736,7 +812,7 @@ class Game {
     // ----------------------------------------------------
     // TOWN EVENTS
     // ----------------------------------------------------
-    if (this.tick == 0 && this.tock == 0) {
+    if (this.tick == 0 && this.tock % 5 == 0) { // TODO: tock % 5, what if tock max isn't multiple of 5?
       const event = this.pickTownEvent();
       if (event != null) {
         event.action(this);

@@ -35,3 +35,21 @@ function rollDie(sides: number): number {
 function rollRatio(): number {
   return _randomInt(65536) / 65536;
 }
+
+type ModifierTableEntry = [number, number];
+type ModifierTable = Array<ModifierTableEntry>;
+function calcmod(stat: number, table: ModifierTable): number {
+  if (table.length == 0) {
+    return 0;
+  }
+  let mod = table[0][1];
+  for (let i = 1; i < table.length; ++i) {
+    const [threshold, modifier] = table[i];
+    if (stat >= threshold) {
+      mod = modifier;
+    } else {
+      break;
+    }
+  }
+  return mod;
+}
