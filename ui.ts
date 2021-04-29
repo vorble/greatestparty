@@ -208,7 +208,7 @@ class UITown {
     this.need.innerText = '' + game.town.need;
     this.boss.innerText = '' + (game.fightingBoss ? game.boss.size : game.town.boss);
 
-    this.takeQuest.disabled = game.town.need <= 0;
+    this.takeQuest.disabled = game.town.need <= 0 || game.party.quests >= game.party.size;
     this.fightBoss.disabled = game.fightingBoss;
   }
 }
@@ -512,6 +512,9 @@ class UISkills {
   initiativeBuy: HTMLElement;
   initiativeLevel: HTMLElement;
   initiativeBuyButton: HTMLButtonElement;
+  inspireBuy: HTMLElement;
+  inspireLevel: HTMLElement;
+  inspireBuyButton: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -522,6 +525,12 @@ class UISkills {
     this.initiativeBuyButton.onclick = (e) => {
       game.buySkill('initiative');
     };
+    this.inspireBuy = getElementById('panel-skills-inspire-buy-cost-value');
+    this.inspireLevel = getElementById('panel-skills-inspire-level-value');
+    this.inspireBuyButton = getElementByIdAsType('panel-skills-inspire-buy-button', HTMLButtonElement);
+    this.inspireBuyButton.onclick = (e) => {
+      game.buySkill('inspire');
+    };
   }
 
   show() {
@@ -531,6 +540,12 @@ class UISkills {
       this.initiativeBuy.innerText = '' + cost;
       this.initiativeLevel.innerText = '' + this.game.party.skills.initiative.level;
       this.initiativeBuyButton.disabled = !this.game.canBuySkill('initiative');
+    }
+    {
+      const cost = this.game.getSkillCost('inspire');
+      this.inspireBuy.innerText = '' + cost;
+      this.inspireLevel.innerText = '' + this.game.party.skills.inspire.level;
+      this.inspireBuyButton.disabled = !this.game.canBuySkill('inspire');
     }
   }
 }

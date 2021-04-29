@@ -155,11 +155,12 @@ interface Skill extends RoundActions {
   doBuyActions?: (game: Game) => void;
 }
 
-type SkillNameType = 'initiative';
-const SKILLS: Array<SkillNameType> = ['initiative'];
+type SkillNameType = 'initiative' | 'inspire';
+const SKILLS: Array<SkillNameType> = ['initiative', 'inspire'];
 
 class Skills {
   initiative: Skill;
+  inspire: Skill;
 
   constructor() {
     const defaults = { level: 0 };
@@ -181,6 +182,23 @@ class Skills {
           }
         }
       },
+    };
+    this.inspire = {
+      ...defaults,
+      name: 'Inspire',
+      levelMax: 9999,
+      costTier: 2,
+      doTickActions: (game: Game) => {
+        if (rollRatio() < 0.005 * this.inspire.level) {
+          if (game.town.townsfolk > 0) {
+            if (FLAGS.DEBUG.SKILL.INSPIRE) {
+              game.log('Your party inspires some from the town to join.');
+            }
+            const count = Math.max(1, Math.floor(game.town.townsfolk * 0.01));
+            game.joinPartyFromTown(count);
+          }
+        }
+      }
     };
   }
 }
@@ -344,6 +362,7 @@ class Town {
   needMax: number;
   needRatio: number;
   boss: number;
+  bossReward: number;
   foodStock: number;
   foodSupport: number;
   foodCostBuy: number;
@@ -369,6 +388,7 @@ class Town {
     this.needMax = 0;
     this.needRatio = 0;
     this.boss = 0;
+    this.bossReward = 0;
     this.foodStock = 0;
     this.foodSupport = 0;
     this.foodCostBuy = 0;
@@ -487,6 +507,24 @@ class Game {
     this.log('Welcome to ' + this.town.name + '!');
   }
 
+  winLevel() {
+    this.log('You have helped ' + this.town.name + ' overcome ' + this.boss.name + ' and receive ' + this.town.bossReward + ' gold.');
+    this.party.gold += this.town.bossReward;
+    this.log(this.town.name + ' wishes you the best on your adventures!');
+  }
+
+  nextLevel() {
+    this.level += 1;
+    if (this.level <= this.levels.reduce((result, l) => Math.max(result, l.level), 0)) {
+      this.startLevel();
+    } else {
+      // You win the game.
+      this.log('Congratulations, you have beaten the final level!');
+      this.log('Thanks for playing!');
+      this.running = false;
+    }
+  }
+
   killPartyMembers(count: number) {
     if (this.party.size >= count) {
       this.party.size -= count;
@@ -496,8 +534,18 @@ class Game {
     this.capEquipment();
   }
 
+  joinPartyFromTown(count: number) {
+    if (this.town.townsfolk >= count) {
+      this.party.size += count;
+      this.town.townsfolk -= count;
+    } else {
+      this.party.size += this.town.townsfolk;
+      this.town.townsfolk = 0;
+    }
+  }
+
   takeQuest() {
-    if (this.town.need > 0) {
+    if (this.town.need > 0 && this.party.quests < game.party.size) {
       this.town.need -= 1;
       this.party.quests += 1;
     }
@@ -592,34 +640,34 @@ class Game {
 
   capEquipment() {
     if (this.party.weapon.physical > 0) {
-      this.party.weapon.physical = Math.min(this.party.weapon.physical, this.party.inventoryWeapon.slice);
+      this.party.weapon.physical = Math.min(this.party.size, this.party.weapon.physical, this.party.inventoryWeapon.slice);
     } else if (this.party.weapon.physical < 0) {
-      this.party.weapon.physical = -Math.min(-this.party.weapon.physical, this.party.inventoryWeapon.blunt);
+      this.party.weapon.physical = -Math.min(this.party.size, -this.party.weapon.physical, this.party.inventoryWeapon.blunt);
     }
     if (this.party.weapon.magical > 0) {
-      this.party.weapon.magical = Math.min(this.party.weapon.magical, this.party.inventoryWeapon.slice);
+      this.party.weapon.magical = Math.min(this.party.size, this.party.weapon.magical, this.party.inventoryWeapon.slice);
     } else if (this.party.weapon.magical < 0) {
-      this.party.weapon.magical = -Math.min(-this.party.weapon.magical, this.party.inventoryWeapon.blunt);
+      this.party.weapon.magical = -Math.min(this.party.size, -this.party.weapon.magical, this.party.inventoryWeapon.blunt);
     }
     if (this.party.weapon.elemental > 0) {
-      this.party.weapon.elemental = Math.min(this.party.weapon.elemental, this.party.inventoryWeapon.slice);
+      this.party.weapon.elemental = Math.min(this.party.size, this.party.weapon.elemental, this.party.inventoryWeapon.slice);
     } else if (this.party.weapon.elemental < 0) {
-      this.party.weapon.elemental = -Math.min(-this.party.weapon.elemental, this.party.inventoryWeapon.blunt);
+      this.party.weapon.elemental = -Math.min(this.party.size, -this.party.weapon.elemental, this.party.inventoryWeapon.blunt);
     }
     if (this.party.armor.physical > 0) {
-      this.party.armor.physical = Math.min(this.party.armor.physical, this.party.inventoryArmor.slice);
+      this.party.armor.physical = Math.min(this.party.size, this.party.armor.physical, this.party.inventoryArmor.slice);
     } else if (this.party.armor.physical < 0) {
-      this.party.armor.physical = -Math.min(-this.party.armor.physical, this.party.inventoryArmor.blunt);
+      this.party.armor.physical = -Math.min(this.party.size, -this.party.armor.physical, this.party.inventoryArmor.blunt);
     }
     if (this.party.armor.magical > 0) {
-      this.party.armor.magical = Math.min(this.party.armor.magical, this.party.inventoryArmor.slice);
+      this.party.armor.magical = Math.min(this.party.size, this.party.armor.magical, this.party.inventoryArmor.slice);
     } else if (this.party.armor.magical < 0) {
-      this.party.armor.magical = -Math.min(-this.party.armor.magical, this.party.inventoryArmor.blunt);
+      this.party.armor.magical = -Math.min(this.party.size, -this.party.armor.magical, this.party.inventoryArmor.blunt);
     }
     if (this.party.armor.elemental > 0) {
-      this.party.armor.elemental = Math.min(this.party.armor.elemental, this.party.inventoryArmor.slice);
+      this.party.armor.elemental = Math.min(this.party.size, this.party.armor.elemental, this.party.inventoryArmor.slice);
     } else if (this.party.armor.elemental < 0) {
-      this.party.armor.elemental = -Math.min(-this.party.armor.elemental, this.party.inventoryArmor.blunt);
+      this.party.armor.elemental = -Math.min(this.party.size, -this.party.armor.elemental, this.party.inventoryArmor.blunt);
     }
   }
 
@@ -684,10 +732,10 @@ class Game {
     // ----------------------------------------------------
     // EATING AND DRINKING
     // ----------------------------------------------------
-    const HUNGER_PER_FOOD = 100;
-    const HUNGER_PER_PERSON = 100; // Hunger for 1 member death
-    const THIRST_PER_WATER = 75;
-    const THIRST_PER_PERSON = 75; // Thirst for 1 member death
+    const HUNGER_PER_FOOD = TICKS_PER_TOCK * TOCKS_PER_TERM;
+    const HUNGER_PER_PERSON = TICKS_PER_TOCK * TOCKS_PER_TERM; // Hunger for 1 member death
+    const THIRST_PER_WATER = Math.floor(HUNGER_PER_FOOD * 0.75);
+    const THIRST_PER_PERSON = Math.floor(HUNGER_PER_PERSON * 0.75); // Thirst for 1 member death
     // Every member of your party needs to eat and dring,
     // contributing hunger and thirst points.
     this.party.hunger += this.party.size;
@@ -737,14 +785,15 @@ class Game {
       this.boss.size = Math.max(0, this.boss.size - damageToBoss);
       if (this.boss.size <= 0) {
         this.fightingBoss = false;
-        // TODO: Should only do this if you the party doesn't die on the last round
         this.log('Your party is victorious!');
-        // TODO: Need to trigger town change somehow.
-      }
-      const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
-      if (willDie > 0) {
-        this.party.size = Math.max(0, this.party.size - willDie);
-        this.party.damage -= willDie * PARTY_MEMBER_HP;
+        this.winLevel();
+        this.nextLevel();
+      } else {
+        const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
+        if (willDie > 0) {
+          this.party.size = Math.max(0, this.party.size - willDie);
+          this.party.damage -= willDie * PARTY_MEMBER_HP;
+        }
       }
     } else {
       // Slowly heal party damage when out of battle.
@@ -777,7 +826,7 @@ class Game {
 
     if (this.party.quests > 0) {
       const POINTS_PER_QUEST = 100;
-      const GOLD_PER_QUEST = 1;
+      const GOLD_PER_QUEST = 10;
       // A random percentage of your party is effective this
       // turn, gain a quest point for each effective party
       // member.

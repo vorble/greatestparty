@@ -6,6 +6,7 @@ const FLAGS = {
   DEBUG: {
     SKILL: {
       INITIATIVE: true,
+      INSPIRE: true,
     },
     STATUS: {
       BERZERK: true,

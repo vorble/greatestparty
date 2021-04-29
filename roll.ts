@@ -36,6 +36,11 @@ function rollRatio(): number {
   return _randomInt(65536) / 65536;
 }
 
+function rollChoice<T>(items: Array<T>) {
+  const index = _randomInt(items.length);
+  return items[index];
+}
+
 type ModifierTableEntry = [number, number];
 type ModifierTable = Array<ModifierTableEntry>;
 function calcmod(stat: number, table: ModifierTable): number {
