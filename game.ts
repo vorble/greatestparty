@@ -422,6 +422,7 @@ class Game {
       const questsCompleted = Math.min(this.party.quests, Math.floor(this.party.questPoints / POINTS_PER_QUEST));
       if (questsCompleted > 0) {
         this.party.quests -= questsCompleted;
+        this.party.questsCompleted += questsCompleted;
         this.party.gold += questsCompleted * GOLD_PER_QUEST;
         this.party.questPoints -= POINTS_PER_QUEST * questsCompleted;
       }

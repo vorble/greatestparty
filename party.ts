@@ -6,6 +6,7 @@ class Party implements Fighter {
   water: number;
   thirst: number;
   quests: number;
+  questsCompleted: number;
   questPoints: number;
   damage: number;
 
@@ -32,6 +33,7 @@ class Party implements Fighter {
     this.water = 0;
     this.thirst = 0;
     this.quests = 0;
+    this.questsCompleted = 0;
     this.questPoints = 0;
     this.damage = 0;
 
