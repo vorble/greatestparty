@@ -553,18 +553,26 @@ class UISkills {
 class UILog {
   game: Game;
 
+  oldInnerText: string;
+
   log: HTMLElement;
 
   constructor(game: Game) {
     this.game = game;
+
+    this.oldInnerText = '';
 
     this.log = getElementById('panel-log-log');
   }
 
   show() {
     const start = Math.max(game.textLog.length - 100, 0);
-    this.log.innerText = game.textLog.slice(start).join('\n');
-    this.log.scrollIntoView({ block: 'end' });
+    const newInnerText = game.textLog.slice(start).join('\n');
+    if (newInnerText != this.oldInnerText) {
+      this.log.innerText = game.textLog.slice(start).join('\n');
+      this.log.scrollIntoView({ block: 'end' });
+      this.oldInnerText = newInnerText;
+    }
   }
 }
 
