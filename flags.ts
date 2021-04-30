@@ -5,7 +5,7 @@ const FLAGS = {
   LOG_NEW_NEED: true, // Log when new town needs have been added.
   DEBUG: {
     SKILL: {
-      INITIATIVE: true,
+      INITIATIVE: false,
       INSPIRE: true,
     },
     STATUS: {
