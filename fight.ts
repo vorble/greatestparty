@@ -1,4 +1,16 @@
-function fightCalculateAttack(attacker: PartyMember, defender: PartyMember): number {
+interface Fighter {
+  str: number;
+  dex: number;
+  con: number;
+  int: number;
+  wis: number;
+  cha: number;
+
+  weapon: Equipment;
+  armor: Equipment;
+}
+
+function fightCalculateAttack(attacker: Fighter, defender: Fighter): number {
   let damagePhysical = Math.abs(attacker.weapon.physical);
   let damageMagical = Math.abs(attacker.weapon.magical);
   let damageElemental = Math.abs(attacker.weapon.elemental);

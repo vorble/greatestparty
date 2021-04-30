@@ -28,6 +28,9 @@ game.registerLevel({
     town.boss = 2000;
     town.bossReward = 200;
 
+    // Town State:
+    //   game.town.state.number1 - Number of bodies still out to sea from 'Call of the Sea'.
+
     function maybeInflictIslandCurse(game: Game) {
       if (!game.party.status.islandCurse.active) {
         // Being wise lets you avoid picking up the cursed item, avoiding the curse.
@@ -46,11 +49,10 @@ game.registerLevel({
       }
     }
 
-    let bodiesOutToSea = 0;
     function returnFromTheSea(game: Game) {
-      if (bodiesOutToSea > 0) {
+      if (game.town.state.number1 > 0) {
         if (rollDie(8) == 1) {
-          --bodiesOutToSea;
+          --game.town.state.number1;
           game.log('A body washes ashore.');
         }
       }
@@ -81,7 +83,7 @@ game.registerLevel({
           if (r <= 5) {
             game.log('A member of your party is drawn toward the sea, swims toward the horizon, and dies.');
             game.killPartyMembers(1);
-            ++bodiesOutToSea;
+            ++game.town.state.number1;
           } else {
             game.log('A member of your party is drawn toward the sea.');
           }
@@ -164,6 +166,10 @@ game.registerLevel({
         },
       },
     ];
+
+    // Boss State:
+    //   game.boss.state.flag1 - Staring contest active.
+    //   game.boss.state.flag2 - Octopod won staring contest.
 
     boss.name = 'Octopod';
     boss.str = 17;
