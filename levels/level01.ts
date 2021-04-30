@@ -57,7 +57,7 @@ game.registerLevel({
     }
 
     function loot(game: Game) {
-      if (rollRatio() <= 0.10) {
+      if (rollRatio() <= 0.4) {
         const typ = rollChoice(['weapon', 'armor']);
         const fine = rollChoice(EQ_FINE_CATEGORIES);
         const inv = typ == 'weapon' ? game.party.inventoryWeapon : game.party.inventoryArmor;
