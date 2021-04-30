@@ -28,6 +28,9 @@ function fightCalculateAttack(attacker: Fighter, defender: Fighter): number {
   if ((attacker.weapon.magical < 0 && defender.armor.magical < 0)
       || (attacker.weapon.magical > 0 && defender.armor.magical > 0)) {
     damageMagical = 0;
+  // Not being aligned magically takes straight damage.
+  } else if (defender.armor.magical == 0) {
+    // Intentionally blank.
   // Magical disalignment produces double damage, but the magical armor mitigates
   // one-to-one damage points.
   } else {
@@ -36,8 +39,12 @@ function fightCalculateAttack(attacker: Fighter, defender: Fighter): number {
   }
 
   // Elemental alignment offsets damage at double the defender's armor.
-  if ((attacker.weapon.elemental < 0) == (defender.armor.elemental < 0)) {
+  if ((attacker.weapon.elemental < 0 && defender.armor.elemental < 0)
+      || (attacker.weapon.elemental > 0 && defender.armor.elemental > 0)) {
     damageElemental = Math.max(0, damageElemental - Math.abs(defender.armor.elemental) * 2);
+  // Not being aligned elementally takes straight damage.
+  } else if (defender.armor.elemental == 0) {
+    // Intentionally blank.
   // Elemental disalignment offsets damage points one-to-one, but doubles the resulting damage.
   } else {
     damageElemental = Math.max(0, damageElemental - Math.abs(defender.armor.elemental));
