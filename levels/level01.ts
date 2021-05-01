@@ -195,7 +195,7 @@ game.registerLevel({
       },
       {
         name: 'Unwelcome Here',
-        weight: 1,
+        weight: 10,
         predicate: (game: Game) => game.town.alignment <= -20,
         action: (game: Game) => {
           const roll = (rollDie(20)
