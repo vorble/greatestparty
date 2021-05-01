@@ -31,6 +31,7 @@ class TownState {
   }
 }
 
+// Quantities for spring, summer, fall, and then winter.
 type TownSeasonVector = [number, number, number, number];
 
 class Town {
