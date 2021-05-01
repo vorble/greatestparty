@@ -128,6 +128,16 @@ class Game {
     }
   }
 
+  joinTownFromParty(count: number) {
+    if (this.party.size >= count) {
+      this.party.size -= count;
+      this.town.townsfolk += count;
+    } else {
+      this.town.townsfolk += this.party.size;
+      this.party.size = 0;
+    }
+  }
+
   takeQuest() {
     if (this.town.need > 0 && this.party.quests < game.party.size) {
       this.town.need -= 1;
