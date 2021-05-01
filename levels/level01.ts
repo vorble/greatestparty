@@ -7,13 +7,13 @@ game.registerLevel({
     town.name = 'Palm Town';
     town.townsfolk = 100;
     town.foodStock = 100;
-    town.foodSupport = 3;
-    town.foodCostBuy = 2;
-    town.foodCostSell = 1;
+    town.foodSupport = [3, 4, 3, 1];
+    town.foodCostBuy = [2, 2, 3, 6];
+    town.foodCostSell = [1, 1, 1, 4];
     town.waterStock = 100;
-    town.waterSupport = 3;
-    town.waterCostBuy = 3;
-    town.waterCostSell = 2;
+    town.waterSupport = [4, 5, 5, 4];
+    town.waterCostBuy = [3, 3, 3, 3];
+    town.waterCostSell = [2, 2, 2, 2];
     for (const cat of EQ_FINE_CATEGORIES) {
       town.inventoryWeapon[cat] = 100;
       town.inventoryWeaponBuy[cat] = 5;

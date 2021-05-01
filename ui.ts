@@ -51,8 +51,8 @@ class UIParty {
       switch (game.season) {
         case 0: text = 'Spring'; break;
         case 1: text = 'Summer'; break;
-        case 2: text = 'Winter'; break;
-        case 3: text = 'Fall'; break;
+        case 2: text = 'Fall'; break;
+        case 3: text = 'Winter'; break;
         default:
           throw new Error('Game season is out of bounds.');
       }
@@ -426,10 +426,10 @@ class UIShop {
   show() {
     const game = this.game;
 
-    this.foodCostBuy.innerText = '' + game.town.foodCostBuy;
-    this.foodCostSell.innerText = '' + game.town.foodCostSell;
-    this.waterCostBuy.innerText = '' + game.town.waterCostBuy;
-    this.waterCostSell.innerText = '' + game.town.waterCostSell;
+    this.foodCostBuy.innerText = '' + game.town.foodCostBuy[game.season];
+    this.foodCostSell.innerText = '' + game.town.foodCostSell[game.season];
+    this.waterCostBuy.innerText = '' + game.town.waterCostBuy[game.season];
+    this.waterCostSell.innerText = '' + game.town.waterCostSell[game.season];
     this.weaponBluntCostBuy.innerText = '' + game.town.inventoryWeaponBuy.blunt;
     this.weaponBluntCostSell.innerText = '' + game.town.inventoryWeaponSell.blunt;
     this.weaponSliceCostBuy.innerText = '' + game.town.inventoryWeaponBuy.slice;
@@ -455,9 +455,9 @@ class UIShop {
     this.armorIceCostBuy.innerText = '' + game.town.inventoryArmorBuy.ice;
     this.armorIceCostSell.innerText = '' + game.town.inventoryArmorSell.ice;
 
-    this.foodBuyButton.disabled = game.party.gold < game.town.foodCostBuy || game.town.foodStock <= 0;
+    this.foodBuyButton.disabled = game.party.gold < game.town.foodCostBuy[game.season] || game.town.foodStock <= 0;
     this.foodSellButton.disabled = game.party.food <= 0;
-    this.waterBuyButton.disabled = game.party.gold < game.town.waterCostBuy || game.town.waterStock <= 0;
+    this.waterBuyButton.disabled = game.party.gold < game.town.waterCostBuy[game.season] || game.town.waterStock <= 0;
     this.waterSellButton.disabled = game.party.water <= 0;
     this.weaponBluntBuyButton.disabled = game.party.gold < game.town.inventoryWeaponBuy.blunt || game.town.inventoryWeapon.blunt <= 0;
     this.weaponBluntSellButton.disabled = game.party.inventoryWeapon.blunt <= 0;

@@ -144,8 +144,8 @@ class Game {
   }
 
   buyFood() {
-    if (this.party.gold >= this.town.foodCostBuy && this.town.foodStock > 0) {
-      this.party.gold -= this.town.foodCostBuy;
+    if (this.party.gold >= this.town.foodCostBuy[this.season] && this.town.foodStock > 0) {
+      this.party.gold -= this.town.foodCostBuy[this.season];
       this.party.food += 1;
       this.town.foodStock -= 1;
     }
@@ -153,15 +153,15 @@ class Game {
 
   sellFood() {
     if (this.party.food > 0) {
-      this.party.gold += this.town.foodCostSell;
+      this.party.gold += this.town.foodCostSell[this.season];
       this.party.food -= 1;
       this.town.foodStock += 1;
     }
   }
 
   buyWater() {
-    if (this.party.gold >= this.town.waterCostBuy && this.town.waterStock > 0) {
-      this.party.gold -= this.town.waterCostBuy;
+    if (this.party.gold >= this.town.waterCostBuy[this.season] && this.town.waterStock > 0) {
+      this.party.gold -= this.town.waterCostBuy[this.season];
       this.party.water += 1;
       this.town.waterStock -= 1;
     }
@@ -169,7 +169,7 @@ class Game {
 
   sellWater() {
     if (this.party.water > 0) {
-      this.party.gold += this.town.waterCostSell;
+      this.party.gold += this.town.waterCostSell[this.season];
       this.party.water -= 1;
       this.town.waterStock += 1;
     }
@@ -326,11 +326,11 @@ class Game {
     this.party.thirst += this.party.size;
     // Hunger and thirst points are satisfied by the land
     // first, then the party's food and water stores.
-    this.party.hunger -= this.town.foodSupport;
+    this.party.hunger -= this.town.foodSupport[this.season];
     if (this.party.hunger < 0) {
       this.party.hunger = 0;
     }
-    this.party.thirst -= this.town.waterSupport;
+    this.party.thirst -= this.town.waterSupport[this.season];
     if (this.party.thirst < 0) {
       this.party.thirst = 0;
     }

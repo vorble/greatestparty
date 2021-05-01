@@ -31,6 +31,8 @@ class TownState {
   }
 }
 
+type TownSeasonVector = [number, number, number, number];
+
 class Town {
   name: string;
   townsfolk: number;
@@ -40,13 +42,13 @@ class Town {
   boss: number;
   bossReward: number;
   foodStock: number;
-  foodSupport: number;
-  foodCostBuy: number;
-  foodCostSell: number;
+  foodSupport: TownSeasonVector;
+  foodCostBuy: TownSeasonVector;
+  foodCostSell: TownSeasonVector;
   waterStock: number;
-  waterSupport: number;
-  waterCostBuy: number;
-  waterCostSell: number;
+  waterSupport: TownSeasonVector;
+  waterCostBuy: TownSeasonVector;
+  waterCostSell: TownSeasonVector;
 
   inventoryWeapon: Inventory;
   inventoryWeaponBuy: Inventory;
@@ -67,13 +69,13 @@ class Town {
     this.boss = 0;
     this.bossReward = 0;
     this.foodStock = 0;
-    this.foodSupport = 0;
-    this.foodCostBuy = 0;
-    this.foodCostSell = 0;
+    this.foodSupport = [0, 0, 0, 0];
+    this.foodCostBuy = [0, 0, 0, 0];
+    this.foodCostSell = [0, 0, 0, 0];
     this.waterStock = 0;
-    this.waterSupport = 0;
-    this.waterCostBuy = 0;
-    this.waterCostSell = 0;
+    this.waterSupport = [0, 0, 0, 0];
+    this.waterCostBuy = [0, 0, 0, 0];
+    this.waterCostSell = [0, 0, 0, 0];
 
     this.inventoryWeapon = new Inventory();
     this.inventoryWeaponBuy = new Inventory();
