@@ -12,6 +12,7 @@ class Game {
   term: number;
   tock: number;
   tick: number;
+  playtime: Clock;
   fightingBoss: boolean;
   running: boolean;
   textLog: Array<string>;
@@ -27,6 +28,7 @@ class Game {
     this.term = 0;
     this.tock = 0;
     this.tick = 0;
+    this.playtime = { year: 0, season: 0, term: 0, tock: 0, tick: 0 };
     this.fightingBoss = false;
     this.running = false;
     this.textLog = [];
@@ -55,8 +57,6 @@ class Game {
     this.party.quests = 0;
     this.party.food = 15;
     this.party.water = 20;
-    // TODO: Roll for stats.
-    const mods = [0, 0, 0, 0, 0, 0];
     function topThreeOfFourD6() {
       let a = rollDie(6);
       let b = rollDie(6);
@@ -275,6 +275,8 @@ class Game {
     // ----------------------------------------------------
     this.tick += 1;
     unwrapClock(this);
+    this.playtime.tick += 1;
+    unwrapClock(this.playtime);
 
     // ----------------------------------------------------
     // ROUND ACTIONS
