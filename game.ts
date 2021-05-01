@@ -138,6 +138,41 @@ class Game {
     }
   }
 
+  canHire(): boolean {
+    return this.party.gold >= this.town.hireCost && this.town.townsfolk > 0;
+  }
+
+  hire() {
+    if (this.canHire()) {
+      this.party.gold -= this.town.hireCost;
+      this.joinPartyFromTown(1);
+    }
+  }
+
+  canConscript() {
+    return this.town.townsfolk > 0;
+  }
+
+  conscript() {
+    if (this.canConscript()) {
+      if (rollRatio() < this.town.conscriptRatio) {
+        this.joinPartyFromTown(1);
+        game.log('Your party conscripts someone from town forcefully.');
+      } else {
+        game.log('Your party tries to forcefully conscript someone from town, but fail.');
+      }
+      if (this.town.townsfolk > 0 && rollRatio() < this.town.conscriptViolenceRatio) {
+        if (rollDie(2) == 1) {
+          game.log('A townsperson dies in the violence.');
+          this.town.townsfolk -= 1;
+        } else {
+          game.log('A member of your party dies in the violence.');
+          this.killPartyMembers(1);
+        }
+      }
+    }
+  }
+
   takeQuest() {
     if (this.town.need > 0 && this.party.quests < game.party.size) {
       this.town.need -= 1;

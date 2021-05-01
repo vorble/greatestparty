@@ -6,6 +6,9 @@ game.registerLevel({
 
     town.name = 'Palm Town';
     town.townsfolk = 100;
+    town.hireCost = 200;
+    town.conscriptRatio = 0.4;
+    town.conscriptViolenceRatio = 0.5;
     town.foodStock = 100;
     town.foodSupport = [3, 4, 3, 1];
     town.foodCostBuy = [2, 2, 3, 6];

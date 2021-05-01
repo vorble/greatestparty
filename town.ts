@@ -37,6 +37,9 @@ type TownSeasonVector = [number, number, number, number];
 class Town {
   name: string;
   townsfolk: number;
+  hireCost: number;
+  conscriptRatio: number;
+  conscriptViolenceRatio: number;
   need: number;
   needMax: number;
   needRatio: number;
@@ -64,6 +67,9 @@ class Town {
   constructor() {
     this.name = 'Town';
     this.townsfolk = 0;
+    this.hireCost = 0;
+    this.conscriptRatio = 0;
+    this.conscriptViolenceRatio = 0;
     this.need = 0;
     this.needMax = 0;
     this.needRatio = 0;

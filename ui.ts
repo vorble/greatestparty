@@ -181,9 +181,12 @@ class UITown {
   game: Game;
 
   townsfolk: HTMLElement;
+  hireCost: HTMLElement;
   need: HTMLElement;
   boss: HTMLElement;
 
+  hire: HTMLButtonElement;
+  conscript: HTMLButtonElement;
   takeQuest: HTMLButtonElement;
   fightBoss: HTMLButtonElement;
 
@@ -191,9 +194,18 @@ class UITown {
     this.game = game;
 
     this.townsfolk = getElementById('panel-town-townsfolk-value');
+    this.hireCost = getElementById('panel-town-hire-cost-value');
     this.need = getElementById('panel-town-need-value');
     this.boss = getElementById('panel-town-boss-value');
 
+    this.hire = getElementByIdAsType('panel-town-hire-button', HTMLButtonElement);
+    this.hire.onclick = (e) => {
+      game.hire();
+    };
+    this.conscript = getElementByIdAsType('panel-town-conscript-button', HTMLButtonElement);
+    this.conscript.onclick = (e) => {
+      game.conscript();
+    };
     this.takeQuest = getElementByIdAsType('panel-town-take-quest-button', HTMLButtonElement);
     this.takeQuest.onclick = (e) => {
       game.takeQuest();
@@ -208,9 +220,12 @@ class UITown {
     const game = this.game;
 
     this.townsfolk.innerText = '' + game.town.townsfolk;
+    this.hireCost.innerText = '' + game.town.hireCost;
     this.need.innerText = '' + game.town.need;
     this.boss.innerText = '' + (game.fightingBoss ? game.boss.size : game.town.boss);
 
+    this.hire.disabled = !game.canHire();
+    this.conscript.disabled = !game.canConscript();
     this.takeQuest.disabled = game.town.need <= 0 || game.party.quests >= game.party.size;
     this.fightBoss.disabled = game.fightingBoss;
   }
