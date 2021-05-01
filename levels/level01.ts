@@ -186,6 +186,7 @@ game.registerLevel({
             game.log('The townsfolk cheer you on as you make your way through town.');
           } else {
             game.log('The townsfolk shower you with 10 gold and items as you make your way through town.');
+            game.party.gold += 10;
             loot(game);
             loot(game);
             loot(game);
