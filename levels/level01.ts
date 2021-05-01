@@ -191,6 +191,8 @@ game.registerLevel({
             loot(game);
             game.adjustAlignment(-1);
           }
+          returnFromTheSea(game); // Do this in every event.
+          maybeInflictIslandCurse(game);
         },
       },
       {
@@ -209,6 +211,8 @@ game.registerLevel({
             game.log('The townsfolk chase a member of your party through the streets.');
             game.adjustAlignment(1);
           }
+          returnFromTheSea(game); // Do this in every event.
+          maybeInflictIslandCurse(game);
         },
       },
       {
@@ -228,6 +232,8 @@ game.registerLevel({
               game.joinTownFromParty(1);
             }
           }
+          returnFromTheSea(game); // Do this in every event.
+          maybeInflictIslandCurse(game);
         },
       },
       {
@@ -242,6 +248,8 @@ game.registerLevel({
           } else {
             game.log('Dark clouds roll in from the sea whipping up raging winds nearly carrying someone away.');
           }
+          returnFromTheSea(game); // Do this in every event.
+          maybeInflictIslandCurse(game);
         },
       },
     ];
