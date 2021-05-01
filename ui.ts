@@ -76,18 +76,24 @@ class UIParty {
   }
 }
 
+type UIEquipmentCheckboxes = [HTMLInputElement, HTMLInputElement, HTMLInputElement];
+interface UIEquipmentType {
+  blunt: UIEquipmentCheckboxes;
+  slice: UIEquipmentCheckboxes;
+  dark: UIEquipmentCheckboxes;
+  light: UIEquipmentCheckboxes;
+  fire: UIEquipmentCheckboxes;
+  ice: UIEquipmentCheckboxes;
+}
+
 class UIEquipment {
   game: Game;
 
   weapon: HTMLElement;
   armor: HTMLElement;
 
-  weaponPhysicalSlider: HTMLInputElement;
-  weaponMagicalSlider: HTMLInputElement;
-  weaponElementalSlider: HTMLInputElement;
-  armorPhysicalSlider: HTMLInputElement;
-  armorMagicalSlider: HTMLInputElement;
-  armorElementalSlider: HTMLInputElement;
+  weaponConfig: UIEquipmentType;
+  armorConfig: UIEquipmentType;
 
   constructor(game: Game) {
     this.game = game;
@@ -95,44 +101,176 @@ class UIEquipment {
     this.weapon = getElementById('panel-equipment-weapon-value');
     this.armor = getElementById('panel-equipment-armor-value');
 
-    this.weaponPhysicalSlider = getElementByIdAsType('panel-equipment-weapon-physical-slider', HTMLInputElement);
-    this.weaponPhysicalSlider.onchange = this.onSliderChange.bind(this);
-    this.weaponPhysicalSlider.value = '0';
-    this.weaponMagicalSlider = getElementByIdAsType('panel-equipment-weapon-magical-slider', HTMLInputElement);
-    this.weaponMagicalSlider.onchange = this.onSliderChange.bind(this);
-    this.weaponMagicalSlider.value = '0';
-    this.weaponElementalSlider = getElementByIdAsType('panel-equipment-weapon-elemental-slider', HTMLInputElement);
-    this.weaponElementalSlider.onchange = this.onSliderChange.bind(this);
-    this.weaponElementalSlider.value = '0';
-    this.armorPhysicalSlider = getElementByIdAsType('panel-equipment-armor-physical-slider', HTMLInputElement);
-    this.armorPhysicalSlider.onchange = this.onSliderChange.bind(this);
-    this.armorPhysicalSlider.value = '0';
-    this.armorMagicalSlider = getElementByIdAsType('panel-equipment-armor-magical-slider', HTMLInputElement);
-    this.armorMagicalSlider.onchange = this.onSliderChange.bind(this);
-    this.armorMagicalSlider.value = '0';
-    this.armorElementalSlider = getElementByIdAsType('panel-equipment-armor-elemental-slider', HTMLInputElement);
-    this.armorElementalSlider.onchange = this.onSliderChange.bind(this);
-    this.armorElementalSlider.value = '0';
+    this.weaponConfig = {
+      blunt: [
+        getElementByIdAsType('panel-equipment-weapon-blunt-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-blunt-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-blunt-3-checkbox', HTMLInputElement),
+      ],
+      slice: [
+        getElementByIdAsType('panel-equipment-weapon-slice-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-slice-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-slice-3-checkbox', HTMLInputElement),
+      ],
+      dark: [
+        getElementByIdAsType('panel-equipment-weapon-dark-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-dark-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-dark-3-checkbox', HTMLInputElement),
+      ],
+      light: [
+        getElementByIdAsType('panel-equipment-weapon-light-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-light-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-light-3-checkbox', HTMLInputElement),
+      ],
+      fire: [
+        getElementByIdAsType('panel-equipment-weapon-fire-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-fire-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-fire-3-checkbox', HTMLInputElement),
+      ],
+      ice: [
+        getElementByIdAsType('panel-equipment-weapon-ice-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-ice-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-weapon-ice-3-checkbox', HTMLInputElement),
+      ],
+    };
+
+    this.armorConfig = {
+      blunt: [
+        getElementByIdAsType('panel-equipment-armor-blunt-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-blunt-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-blunt-3-checkbox', HTMLInputElement),
+      ],
+      slice: [
+        getElementByIdAsType('panel-equipment-armor-slice-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-slice-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-slice-3-checkbox', HTMLInputElement),
+      ],
+      dark: [
+        getElementByIdAsType('panel-equipment-armor-dark-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-dark-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-dark-3-checkbox', HTMLInputElement),
+      ],
+      light: [
+        getElementByIdAsType('panel-equipment-armor-light-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-light-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-light-3-checkbox', HTMLInputElement),
+      ],
+      fire: [
+        getElementByIdAsType('panel-equipment-armor-fire-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-fire-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-fire-3-checkbox', HTMLInputElement),
+      ],
+      ice: [
+        getElementByIdAsType('panel-equipment-armor-ice-1-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-ice-2-checkbox', HTMLInputElement),
+        getElementByIdAsType('panel-equipment-armor-ice-3-checkbox', HTMLInputElement),
+      ],
+    };
+
+    for (const fine of EQ_FINE_CATEGORIES) {
+      for (let i = 0; i < 3; ++i) {
+        this.weaponConfig[fine][i].checked = false;
+        this.weaponConfig[fine][i].onclick = this.onChange.bind(this);
+        // TODO: I'd like to have these in the HTML, but I don't want to type them there right now.
+        this.weaponConfig[fine][i].setAttribute('data-type', 'weapon');
+        this.weaponConfig[fine][i].setAttribute('data-fine', fine);
+        this.weaponConfig[fine][i].setAttribute('data-number', '' + i);
+        this.armorConfig[fine][i].checked = false;
+        this.armorConfig[fine][i].onclick = this.onChange.bind(this);
+        this.armorConfig[fine][i].setAttribute('data-type', 'armor');
+        this.armorConfig[fine][i].setAttribute('data-fine', fine);
+        this.armorConfig[fine][i].setAttribute('data-number', '' + i);
+      }
+    }
   }
 
-  onSliderChange(e: Event) {
-    const weapon = {
-      physical: parseInt(this.weaponPhysicalSlider.value),
-      magical: parseInt(this.weaponMagicalSlider.value),
-      elemental: parseInt(this.weaponElementalSlider.value),
-    };
-    const armor = {
-      physical: parseInt(this.armorPhysicalSlider.value),
-      magical: parseInt(this.armorMagicalSlider.value),
-      elemental: parseInt(this.armorElementalSlider.value),
-    };
-    this.game.adjustPartyEquipmentRelative(weapon, armor);
+  onChange(e: Event) {
+    // e.target should be one of the check boxes.
+    if (e.target instanceof HTMLInputElement && !e.target.disabled) {
+      const num = parseInt(e.target.getAttribute('data-number') || '0');
+      const fine = e.target.getAttribute('data-fine');
+      const typ = e.target.getAttribute('data-type');
+      if (typ != 'weapon' && typ != 'armor') {
+        throw new Error('Invalid equipment type ' + JSON.stringify(typ) + '.');
+      }
+      if (fine == null) {
+        throw new Error('Missing equipment fine category.');
+      }
+      // TODO: Couldn't do EQ_FINE_CATEGORIES.indexOf() to determine if is a fine category, had to expand all
+      if (fine != 'blunt' && fine != 'slice' && fine != 'dark' && fine != 'light' && fine != 'fire' && fine != 'ice') {
+        throw new Error('Invalid equipment fine category ' + JSON.stringify(fine) + '.');
+      }
+      const fineOpposite = { blunt: 'slice', slice: 'blunt', dark: 'light', light: 'dark', fire: 'ice', ice: 'fire' }[fine];
+      if (fineOpposite != 'blunt' && fineOpposite != 'slice' && fineOpposite != 'dark' && fineOpposite != 'light' && fineOpposite != 'fire' && fineOpposite != 'ice') {
+        throw new Error('Invalid equipment fine category ' + JSON.stringify(fineOpposite) + '.');
+      }
+      let decreased = false;
+      const conf: UIEquipmentType = typ == 'weapon' ? this.weaponConfig : this.armorConfig;
+      for (let n = 2; n > num; --n) {
+        if (conf[fine][n].checked) {
+          conf[fine][n].checked = false;
+          decreased = true;
+        }
+      }
+      for (let n = 0; n < 3; ++n) {
+        conf[fineOpposite][n].checked = false;
+      }
+      if (decreased) {
+        e.target.checked = true;
+      }
+    }
+
+    if (this.weaponConfig.blunt[2].checked) { this.game.party.weaponConfig.physical = -3; }
+    else if (this.weaponConfig.slice[2].checked) { this.game.party.weaponConfig.physical = 3; }
+    else if (this.weaponConfig.blunt[1].checked) { this.game.party.weaponConfig.physical = -2; }
+    else if (this.weaponConfig.slice[1].checked) { this.game.party.weaponConfig.physical = 2; }
+    else if (this.weaponConfig.blunt[0].checked) { this.game.party.weaponConfig.physical = -1; }
+    else if (this.weaponConfig.slice[0].checked) { this.game.party.weaponConfig.physical = 1; }
+    else { this.game.party.weaponConfig.physical = 0; }
+    if (this.weaponConfig.dark[2].checked) { this.game.party.weaponConfig.magical = -3; }
+    else if (this.weaponConfig.light[2].checked) { this.game.party.weaponConfig.magical = 3; }
+    else if (this.weaponConfig.dark[1].checked) { this.game.party.weaponConfig.magical = -2; }
+    else if (this.weaponConfig.light[1].checked) { this.game.party.weaponConfig.magical = 2; }
+    else if (this.weaponConfig.dark[0].checked) { this.game.party.weaponConfig.magical = -1; }
+    else if (this.weaponConfig.light[0].checked) { this.game.party.weaponConfig.magical = 1; }
+    else { this.game.party.weaponConfig.magical = 0; }
+    if (this.weaponConfig.fire[2].checked) { this.game.party.weaponConfig.elemental = -3; }
+    else if (this.weaponConfig.ice[2].checked) { this.game.party.weaponConfig.elemental = 3; }
+    else if (this.weaponConfig.fire[1].checked) { this.game.party.weaponConfig.elemental = -2; }
+    else if (this.weaponConfig.ice[1].checked) { this.game.party.weaponConfig.elemental = 2; }
+    else if (this.weaponConfig.fire[0].checked) { this.game.party.weaponConfig.elemental = -1; }
+    else if (this.weaponConfig.ice[0].checked) { this.game.party.weaponConfig.elemental = 1; }
+    else { this.game.party.weaponConfig.elemental = 0; }
+
+    if (this.armorConfig.blunt[2].checked) { this.game.party.armorConfig.physical = -3; }
+    else if (this.armorConfig.slice[2].checked) { this.game.party.armorConfig.physical = 3; }
+    else if (this.armorConfig.blunt[1].checked) { this.game.party.armorConfig.physical = -2; }
+    else if (this.armorConfig.slice[1].checked) { this.game.party.armorConfig.physical = 2; }
+    else if (this.armorConfig.blunt[0].checked) { this.game.party.armorConfig.physical = -1; }
+    else if (this.armorConfig.slice[0].checked) { this.game.party.armorConfig.physical = 1; }
+    else { this.game.party.armorConfig.physical = 0; }
+    if (this.armorConfig.dark[2].checked) { this.game.party.armorConfig.magical = -3; }
+    else if (this.armorConfig.light[2].checked) { this.game.party.armorConfig.magical = 3; }
+    else if (this.armorConfig.dark[1].checked) { this.game.party.armorConfig.magical = -2; }
+    else if (this.armorConfig.light[1].checked) { this.game.party.armorConfig.magical = 2; }
+    else if (this.armorConfig.dark[0].checked) { this.game.party.armorConfig.magical = -1; }
+    else if (this.armorConfig.light[0].checked) { this.game.party.armorConfig.magical = 1; }
+    else { this.game.party.armorConfig.magical = 0; }
+    if (this.armorConfig.fire[2].checked) { this.game.party.armorConfig.elemental = -3; }
+    else if (this.armorConfig.ice[2].checked) { this.game.party.armorConfig.elemental = 3; }
+    else if (this.armorConfig.fire[1].checked) { this.game.party.armorConfig.elemental = -2; }
+    else if (this.armorConfig.ice[1].checked) { this.game.party.armorConfig.elemental = 2; }
+    else if (this.armorConfig.fire[0].checked) { this.game.party.armorConfig.elemental = -1; }
+    else if (this.armorConfig.ice[0].checked) { this.game.party.armorConfig.elemental = 1; }
+    else { this.game.party.armorConfig.elemental = 0; }
+
+    return false;
   }
 
   show() {
     const game = this.game;
 
-    const { weapon, armor } = game.party;
+    const { weapon, weaponConfig, armor, armorConfig } = game.party;
     const weaponSize = Math.abs(weapon.physical) + Math.abs(weapon.magical) + Math.abs(weapon.elemental);
     const armorSize = Math.abs(armor.physical) + Math.abs(armor.magical) + Math.abs(armor.elemental);
 
@@ -143,6 +281,86 @@ class UIEquipment {
       this.weapon.innerText += ` (${ weapon.physical }/${ weapon.magical }/${ weapon.elemental })`;
       this.armor.innerText += ` (${ armor.physical }/${ armor.magical }/${ armor.elemental })`;
     }
+
+    let weaponPhysicalMax = game.party.weaponPoints - Math.abs(weaponConfig.magical) - Math.abs(weaponConfig.elemental);
+    let weaponMagicalMax = game.party.weaponPoints - Math.abs(weaponConfig.physical) - Math.abs(weaponConfig.elemental);
+    let weaponElementalMax = game.party.weaponPoints - Math.abs(weaponConfig.physical) - Math.abs(weaponConfig.magical);
+    this.weaponConfig.blunt[0].checked = weaponConfig.physical <= -1;
+    this.weaponConfig.blunt[1].checked = weaponConfig.physical <= -2;
+    this.weaponConfig.blunt[2].checked = weaponConfig.physical <= -3;
+    this.weaponConfig.blunt[0].disabled = weaponPhysicalMax < 1;
+    this.weaponConfig.blunt[1].disabled = weaponPhysicalMax < 2;
+    this.weaponConfig.blunt[2].disabled = weaponPhysicalMax < 3;
+    this.weaponConfig.slice[0].checked = weaponConfig.physical >= 1;
+    this.weaponConfig.slice[1].checked = weaponConfig.physical >= 2;
+    this.weaponConfig.slice[2].checked = weaponConfig.physical >= 3;
+    this.weaponConfig.slice[0].disabled = weaponPhysicalMax < 1;
+    this.weaponConfig.slice[1].disabled = weaponPhysicalMax < 2;
+    this.weaponConfig.slice[2].disabled = weaponPhysicalMax < 3;
+    this.weaponConfig.dark[0].checked = weaponConfig.magical <= -1;
+    this.weaponConfig.dark[1].checked = weaponConfig.magical <= -2;
+    this.weaponConfig.dark[2].checked = weaponConfig.magical <= -3;
+    this.weaponConfig.dark[0].disabled = weaponMagicalMax < 1;
+    this.weaponConfig.dark[1].disabled = weaponMagicalMax < 2;
+    this.weaponConfig.dark[2].disabled = weaponMagicalMax < 3;
+    this.weaponConfig.light[0].checked = weaponConfig.magical >= 1;
+    this.weaponConfig.light[1].checked = weaponConfig.magical >= 2;
+    this.weaponConfig.light[2].checked = weaponConfig.magical >= 3;
+    this.weaponConfig.light[0].disabled = weaponMagicalMax < 1;
+    this.weaponConfig.light[1].disabled = weaponMagicalMax < 2;
+    this.weaponConfig.light[2].disabled = weaponMagicalMax < 3;
+    this.weaponConfig.fire[0].checked = weaponConfig.elemental <= -1;
+    this.weaponConfig.fire[1].checked = weaponConfig.elemental <= -2;
+    this.weaponConfig.fire[2].checked = weaponConfig.elemental <= -3;
+    this.weaponConfig.fire[0].disabled = weaponElementalMax < 1;
+    this.weaponConfig.fire[1].disabled = weaponElementalMax < 2;
+    this.weaponConfig.fire[2].disabled = weaponElementalMax < 3;
+    this.weaponConfig.ice[0].checked = weaponConfig.elemental >= 1;
+    this.weaponConfig.ice[1].checked = weaponConfig.elemental >= 2;
+    this.weaponConfig.ice[2].checked = weaponConfig.elemental >= 3;
+    this.weaponConfig.ice[0].disabled = weaponElementalMax < 1;
+    this.weaponConfig.ice[1].disabled = weaponElementalMax < 2;
+    this.weaponConfig.ice[2].disabled = weaponElementalMax < 3;
+
+    let armorPhysicalMax = game.party.armorPoints - Math.abs(armorConfig.magical) - Math.abs(armorConfig.elemental);
+    let armorMagicalMax = game.party.armorPoints - Math.abs(armorConfig.physical) - Math.abs(armorConfig.elemental);
+    let armorElementalMax = game.party.armorPoints - Math.abs(armorConfig.physical) - Math.abs(armorConfig.magical);
+    this.armorConfig.blunt[0].checked = armorConfig.physical <= -1;
+    this.armorConfig.blunt[1].checked = armorConfig.physical <= -2;
+    this.armorConfig.blunt[2].checked = armorConfig.physical <= -3;
+    this.armorConfig.blunt[0].disabled = armorPhysicalMax < 1;
+    this.armorConfig.blunt[1].disabled = armorPhysicalMax < 2;
+    this.armorConfig.blunt[2].disabled = armorPhysicalMax < 3;
+    this.armorConfig.slice[0].checked = armorConfig.physical >= 1;
+    this.armorConfig.slice[1].checked = armorConfig.physical >= 2;
+    this.armorConfig.slice[2].checked = armorConfig.physical >= 3;
+    this.armorConfig.slice[0].disabled = armorPhysicalMax < 1;
+    this.armorConfig.slice[1].disabled = armorPhysicalMax < 2;
+    this.armorConfig.slice[2].disabled = armorPhysicalMax < 3;
+    this.armorConfig.dark[0].checked = armorConfig.magical <= -1;
+    this.armorConfig.dark[1].checked = armorConfig.magical <= -2;
+    this.armorConfig.dark[2].checked = armorConfig.magical <= -3;
+    this.armorConfig.dark[0].disabled = armorMagicalMax < 1;
+    this.armorConfig.dark[1].disabled = armorMagicalMax < 2;
+    this.armorConfig.dark[2].disabled = armorMagicalMax < 3;
+    this.armorConfig.light[0].checked = armorConfig.magical >= 1;
+    this.armorConfig.light[1].checked = armorConfig.magical >= 2;
+    this.armorConfig.light[2].checked = armorConfig.magical >= 3;
+    this.armorConfig.light[0].disabled = armorMagicalMax < 1;
+    this.armorConfig.light[1].disabled = armorMagicalMax < 2;
+    this.armorConfig.light[2].disabled = armorMagicalMax < 3;
+    this.armorConfig.fire[0].checked = armorConfig.elemental <= -1;
+    this.armorConfig.fire[1].checked = armorConfig.elemental <= -2;
+    this.armorConfig.fire[2].checked = armorConfig.elemental <= -3;
+    this.armorConfig.fire[0].disabled = armorElementalMax < 1;
+    this.armorConfig.fire[1].disabled = armorElementalMax < 2;
+    this.armorConfig.fire[2].disabled = armorElementalMax < 3;
+    this.armorConfig.ice[0].checked = armorConfig.elemental >= 1;
+    this.armorConfig.ice[1].checked = armorConfig.elemental >= 2;
+    this.armorConfig.ice[2].checked = armorConfig.elemental >= 3;
+    this.armorConfig.ice[0].disabled = armorElementalMax < 1;
+    this.armorConfig.ice[1].disabled = armorElementalMax < 2;
+    this.armorConfig.ice[2].disabled = armorElementalMax < 3;
   }
 }
 

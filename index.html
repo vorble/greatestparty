@@ -53,6 +53,10 @@
     .log {
       white-space: pre-wrap;
     }
+
+    .text-left { text-align: left; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
   </style>
 </head>
 <body>
@@ -77,52 +81,76 @@
     <div id="panel-equipment" class="panel">
       <table>
         <tr>
-          <td colspan="3">Weapon <div id="panel-equipment-weapon-value">0</div></td>
-        </td>
-        <tr>
-          <td>Blunt</td>
-          <td>
-            <input id="panel-equipment-weapon-physical-slider" type="range" min="-100", max="100" value="0">
-          </td>
-          <td>Slice</td>
+          <td colspan="9">Weapon <div id="panel-equipment-weapon-value">0</div></td>
         </tr>
         <tr>
-          <td>Dark</td>
-          <td>
-            <input id="panel-equipment-weapon-magical-slider" type="range" min="-100", max="100" value="0">
-          </td>
-          <td>Light</td>
+          <td class="text-right">Blunt</td>
+          <td><input id="panel-equipment-weapon-blunt-3-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-blunt-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-blunt-1-checkbox" type="checkbox"></td>
+          <td class="text-center">PHY</td>
+          <td><input id="panel-equipment-weapon-slice-1-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-slice-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-slice-3-checkbox" type="checkbox"></td>
+          <td class="text-left">Slice</td>
         </tr>
         <tr>
-          <td>Fire</td>
-          <td>
-            <input id="panel-equipment-weapon-elemental-slider" type="range" min="-100", max="100" value="0">
-          </td>
-          <td>Ice</td>
+          <td class="text-right">Dark</td>
+          <td><input id="panel-equipment-weapon-dark-3-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-dark-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-dark-1-checkbox" type="checkbox"></td>
+          <td class="text-center">MAG</td>
+          <td><input id="panel-equipment-weapon-light-1-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-light-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-light-3-checkbox" type="checkbox"></td>
+          <td class="text-left">Light</td>
         </tr>
         <tr>
-          <td colspan="3">Armor <div id="panel-equipment-armor-value">0</div></td>
-        </td>
-        <tr>
-          <td>Blunt</td>
-          <td>
-            <input id="panel-equipment-armor-physical-slider" type="range" min="-100", max="100" value="0">
-          </td>
-          <td>Slice</td>
+          <td class="text-right">Fire</td>
+          <td><input id="panel-equipment-weapon-fire-3-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-fire-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-fire-1-checkbox" type="checkbox"></td>
+          <td class="text-center">ELE</td>
+          <td><input id="panel-equipment-weapon-ice-1-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-ice-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-weapon-ice-3-checkbox" type="checkbox"></td>
+          <td class="text-left">Ice</td>
         </tr>
         <tr>
-          <td>Dark</td>
-          <td>
-            <input id="panel-equipment-armor-magical-slider" type="range" min="-100", max="100" value="0">
-          </td>
-          <td>Light</td>
+          <td colspan="9">Armor <div id="panel-equipment-armor-value">0</div></td>
         </tr>
         <tr>
-          <td>Fire</td>
-          <td>
-            <input id="panel-equipment-armor-elemental-slider" type="range" min="-100", max="100" value="0">
-          </td>
-          <td>Ice</td>
+          <td class="text-right">Blunt</td>
+          <td><input id="panel-equipment-armor-blunt-3-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-blunt-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-blunt-1-checkbox" type="checkbox"></td>
+          <td class="text-center">PHY</td>
+          <td><input id="panel-equipment-armor-slice-1-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-slice-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-slice-3-checkbox" type="checkbox"></td>
+          <td class="text-left">Slice</td>
+        </tr>
+        <tr>
+          <td class="text-right">Dark</td>
+          <td><input id="panel-equipment-armor-dark-3-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-dark-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-dark-1-checkbox" type="checkbox"></td>
+          <td class="text-center">MAG</td>
+          <td><input id="panel-equipment-armor-light-1-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-light-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-light-3-checkbox" type="checkbox"></td>
+          <td class="text-left">Light</td>
+        </tr>
+        <tr>
+          <td class="text-right">Fire</td>
+          <td><input id="panel-equipment-armor-fire-3-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-fire-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-fire-1-checkbox" type="checkbox"></td>
+          <td class="text-center">ELE</td>
+          <td><input id="panel-equipment-armor-ice-1-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-ice-2-checkbox" type="checkbox"></td>
+          <td><input id="panel-equipment-armor-ice-3-checkbox" type="checkbox"></td>
+          <td class="text-left">Ice</td>
         </tr>
       </table>
     </div>

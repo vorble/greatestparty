@@ -57,6 +57,8 @@ class Game {
     this.party.quests = 0;
     this.party.food = 15;
     this.party.water = 20;
+    this.party.weaponPoints = 3;
+    this.party.armorPoints = 3;
     function topThreeOfFourD6() {
       let a = rollDie(6);
       let b = rollDie(6);
@@ -115,7 +117,7 @@ class Game {
     } else {
       this.party.size = 0;
     }
-    this.capEquipment();
+    this.calculateEquipment();
   }
 
   joinPartyFromTown(count: number) {
@@ -248,6 +250,7 @@ class Game {
       townInventory[name] -= 1;
       partyInventory[name] += 1;
     }
+    this.calculateEquipment();
   }
 
   sellEquipment(equipmentType: 'weapon' | 'armor', name: EqFineCategory) {
@@ -271,39 +274,41 @@ class Game {
       partyInventory[name] -= 1;
       townInventory[name] += 1;
     }
-    this.capEquipment();
+    this.calculateEquipment();
   }
 
-  capEquipment() {
-    if (this.party.weapon.physical > 0) {
-      this.party.weapon.physical = Math.min(this.party.size, this.party.weapon.physical, this.party.inventoryWeapon.slice);
-    } else if (this.party.weapon.physical < 0) {
-      this.party.weapon.physical = -Math.min(this.party.size, -this.party.weapon.physical, this.party.inventoryWeapon.blunt);
+  calculateEquipment() {
+    const weaponSize = Math.ceil(this.party.size / 3);
+    if (this.party.weaponConfig.physical < 0) {
+      this.party.weapon.physical = -Math.min(this.party.inventoryWeapon.blunt, -this.party.weaponConfig.physical * weaponSize);
+    } else {
+      this.party.weapon.physical = Math.min(this.party.inventoryWeapon.slice, this.party.weaponConfig.physical * weaponSize);
     }
-    if (this.party.weapon.magical > 0) {
-      this.party.weapon.magical = Math.min(this.party.size, this.party.weapon.magical, this.party.inventoryWeapon.slice);
-    } else if (this.party.weapon.magical < 0) {
-      this.party.weapon.magical = -Math.min(this.party.size, -this.party.weapon.magical, this.party.inventoryWeapon.blunt);
+    if (this.party.weaponConfig.magical < 0) {
+      this.party.weapon.magical = -Math.min(this.party.inventoryWeapon.dark, -this.party.weaponConfig.magical * weaponSize);
+    } else {
+      this.party.weapon.magical = Math.min(this.party.inventoryWeapon.light, this.party.weaponConfig.magical * weaponSize);
     }
-    if (this.party.weapon.elemental > 0) {
-      this.party.weapon.elemental = Math.min(this.party.size, this.party.weapon.elemental, this.party.inventoryWeapon.slice);
-    } else if (this.party.weapon.elemental < 0) {
-      this.party.weapon.elemental = -Math.min(this.party.size, -this.party.weapon.elemental, this.party.inventoryWeapon.blunt);
+    if (this.party.weaponConfig.elemental < 0) {
+      this.party.weapon.elemental = -Math.min(this.party.inventoryWeapon.fire, -this.party.weaponConfig.elemental * weaponSize);
+    } else {
+      this.party.weapon.elemental = Math.min(this.party.inventoryWeapon.ice, this.party.weaponConfig.elemental * weaponSize);
     }
-    if (this.party.armor.physical > 0) {
-      this.party.armor.physical = Math.min(this.party.size, this.party.armor.physical, this.party.inventoryArmor.slice);
-    } else if (this.party.armor.physical < 0) {
-      this.party.armor.physical = -Math.min(this.party.size, -this.party.armor.physical, this.party.inventoryArmor.blunt);
+    const armorSize = Math.ceil(this.party.size / 3);
+    if (this.party.armorConfig.physical < 0) {
+      this.party.armor.physical = -Math.min(this.party.inventoryWeapon.blunt, -this.party.armorConfig.physical * armorSize);
+    } else {
+      this.party.armor.physical = Math.min(this.party.inventoryWeapon.slice, this.party.armorConfig.physical * armorSize);
     }
-    if (this.party.armor.magical > 0) {
-      this.party.armor.magical = Math.min(this.party.size, this.party.armor.magical, this.party.inventoryArmor.slice);
-    } else if (this.party.armor.magical < 0) {
-      this.party.armor.magical = -Math.min(this.party.size, -this.party.armor.magical, this.party.inventoryArmor.blunt);
+    if (this.party.armorConfig.magical < 0) {
+      this.party.armor.magical = -Math.min(this.party.inventoryWeapon.dark, -this.party.armorConfig.magical * armorSize);
+    } else {
+      this.party.armor.magical = Math.min(this.party.inventoryWeapon.light, this.party.armorConfig.magical * armorSize);
     }
-    if (this.party.armor.elemental > 0) {
-      this.party.armor.elemental = Math.min(this.party.size, this.party.armor.elemental, this.party.inventoryArmor.slice);
-    } else if (this.party.armor.elemental < 0) {
-      this.party.armor.elemental = -Math.min(this.party.size, -this.party.armor.elemental, this.party.inventoryArmor.blunt);
+    if (this.party.armorConfig.elemental < 0) {
+      this.party.armor.elemental = -Math.min(this.party.inventoryWeapon.fire, -this.party.armorConfig.elemental * armorSize);
+    } else {
+      this.party.armor.elemental = Math.min(this.party.inventoryWeapon.ice, this.party.armorConfig.elemental * armorSize);
     }
   }
 
@@ -319,6 +324,8 @@ class Game {
     unwrapClock(this);
     this.playtime.tick += 1;
     unwrapClock(this.playtime);
+
+    this.calculateEquipment();
 
     // ----------------------------------------------------
     // ROUND ACTIONS

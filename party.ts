@@ -19,8 +19,12 @@ class Party implements Fighter {
 
   inventoryWeapon: Inventory;
   inventoryArmor: Inventory;
-  weapon: Equipment;
-  armor: Equipment;
+  weaponPoints: number; // How many points to distribute.
+  weaponConfig: Equipment; // How player configured.
+  weapon: Equipment; // Computed values.
+  armorPoints: number; // How many points to distribute.
+  armorConfig: Equipment; // How player configured.
+  armor: Equipment; // Computed values.
 
   status: Status;
   skills: Skills;
@@ -46,7 +50,11 @@ class Party implements Fighter {
 
     this.inventoryWeapon = new Inventory();
     this.inventoryArmor = new Inventory();
+    this.weaponPoints = 0;
+    this.weaponConfig = new Equipment();
     this.weapon = new Equipment();
+    this.armorPoints = 0;
+    this.armorConfig = new Equipment();
     this.armor = new Equipment();
 
     this.status = new Status();
