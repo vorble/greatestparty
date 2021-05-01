@@ -39,8 +39,8 @@ class Game {
   }
 
   newGame() {
-    this.year = 311; // TODO: Randomize year and season.
-    this.season = 0; // TODO: Randomize year and season.
+    this.year = 307 + rollDie(SIGNS.length);
+    this.season = rollDie(4) - 1;
     this.term = 0;
     this.tock = 0;
     this.tick = 0;
