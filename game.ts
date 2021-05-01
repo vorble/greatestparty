@@ -41,7 +41,7 @@ class Game {
   newGame() {
     this.year = 307 + rollDie(SIGNS.length);
     this.season = rollDie(4) - 1;
-    this.term = 0;
+    this.term = rollDie(TERMS_PER_SEASON) - 1;
     this.tock = 0;
     this.tick = 0;
     this.fightingBoss = false;
