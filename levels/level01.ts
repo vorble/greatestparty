@@ -31,11 +31,10 @@ game.registerLevel({
     town.boss = 2000;
     town.bossReward = 200;
 
-    class TownStateWrapper {
+    const townState = new (class TownStateWrapper {
       get bodiesOutToSea(): number { return game.town.state.number1; }
       set bodiesOutToSea(value: number) { game.town.state.number1 = value; }
-    }
-    const townState = new TownStateWrapper();
+    });
 
     function maybeInflictIslandCurse(game: Game) {
       if (!game.party.status.islandCurse.active) {
@@ -259,13 +258,12 @@ game.registerLevel({
     boss.armor.physical = -1; // 1 blunt armor
     boss.armor.elemental = 1; // 1 ice armor
 
-    class BossStateWrapper {
+    const bossState = new (class BossStateWrapper {
       get inStaringContest(): boolean { return game.boss.state.flag1; }
       set inStaringContest(value: boolean) { game.boss.state.flag1 = value; }
       get wonStaringContest(): boolean { return game.boss.state.flag2; }
       set wonStaringContest(value: boolean) { game.boss.state.flag2 = value; }
-    }
-    const bossState = new BossStateWrapper();
+    });
 
     boss.events = [
       {
