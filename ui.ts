@@ -58,7 +58,7 @@ class UIParty {
       }
       text += ' ' + game.year;
       if (FLAGS.SHOW_TICKS) {
-        text += ` (${ fmt02d(game.term) }:${ fmt02d(game.tock) }:${ fmt02d(game.tick) })`;
+        text += ` (${ SIGNS[clockToSign(game)] } ${ fmt02d(game.term) }:${ fmt02d(game.tock) }:${ fmt02d(game.tick) })`;
       }
       this.date.innerText = text;
     }

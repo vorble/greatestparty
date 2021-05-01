@@ -23,8 +23,11 @@ function clockIsWinter(clock: Clock): boolean { return clock.season == 3; }
 function clockIsSeason(clock: Clock, season: Season): boolean {
   return season == SEASONS[clock.season % SEASONS.length];
 }
+function clockToSign(clock: Clock) {
+  return clock.year % SIGNS.length;
+}
 function clockIsSign(clock: Clock, sign: SignName) {
-  return sign == SIGNS[clock.year % SIGNS.length];
+  return sign == SIGNS[clockToSign(clock)];
 }
 
 interface ClockActions {
