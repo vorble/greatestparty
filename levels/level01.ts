@@ -22,9 +22,9 @@ game.registerLevel({
       town.inventoryArmorBuy[cat] = 5;
       town.inventoryArmorSell[cat] = 3;
     }
-    town.need = 45;
-    town.needMax = 45;
-    town.needRatio = 0.005;
+    town.need = 10;
+    town.needMax = 10;
+    town.needRatio = 0.010;
     town.boss = 2000;
     town.bossReward = 200;
 
@@ -40,7 +40,7 @@ game.registerLevel({
           setStatusExpiry(game, game.party.status.islandCurse, { year: 1 });
           game.log('A party member grabs something interesting from the ground.');
         } else if (r <= 4) {
-          if (game.party.wis >= 14) {
+          if (game.party.wis >= 16) {
             game.log('A party member notices something interesting on the ground, but its ominous glow gives them pause.');
           } else {
             game.log('A party member overlooks something interesting on the ground.');
@@ -96,8 +96,8 @@ game.registerLevel({
         weight: 1,
         action: (game: Game) => {
           const r = rollDie(20) + calcmod(game.party.wis, [[0, -1], [6, 0]]); // Being unwise could lead you into the crab nest.
-          if (r <= 1) {
-            game.log('Some members of your party comb the short for sea shells and disturbs a giant crab nest, leading to one death.');
+          if (r <= 2) {
+            game.log('Some members of your party comb the shore for sea shells and disturbs a giant crab nest, leading to one death.');
             game.killPartyMembers(1);
           } else if (r <= 10) {
             game.log('Some members of your party comb the shore for sea shells, but don\'t find anything special.');
@@ -159,6 +159,9 @@ game.registerLevel({
           } else {
             game.log('The party scales the cliffs to explore some ruins and discover ancient runes that when spoken summons a light drawing one member into the sky.');
             game.killPartyMembers(1);
+            loot(game);
+            loot(game);
+            loot(game);
           }
           loot(game);
           returnFromTheSea(game); // Do this in every event.

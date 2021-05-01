@@ -7,6 +7,7 @@ interface Skill extends ClockActions {
   name: string;
   levelMax: number;
   costTier: number;
+  unlockAtCompletedQuests: number;
 
   // TODO: Do I want an action for when the level goes up and down?
   doBuyActions?: (game: Game) => void;
@@ -24,6 +25,7 @@ class Skills {
       name: 'Initiative',
       levelMax: 9999,
       costTier: 1,
+      unlockAtCompletedQuests: 10,
       doTickActions: (game: Game) => {
         // Party members show initiative and will pick up quests on their own periodically.
         // TODO: How will this handle really high levels where multiple quests should be
@@ -44,6 +46,7 @@ class Skills {
       name: 'Inspire',
       levelMax: 9999,
       costTier: 2,
+      unlockAtCompletedQuests: 30,
       doTickActions: (game: Game) => {
         const bonus = calcmod(game.party.cha, [[0, 0.000], [16, 0.001]]);
         if (rollRatio() < (0.005 + bonus) * this.inspire.level) {

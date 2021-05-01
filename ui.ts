@@ -512,9 +512,11 @@ class UIStatus {
 class UISkills {
   game: Game;
 
+  initiativeEntry: HTMLElement;
   initiativeBuy: HTMLElement;
   initiativeLevel: HTMLElement;
   initiativeBuyButton: HTMLButtonElement;
+  inspireEntry: HTMLElement;
   inspireBuy: HTMLElement;
   inspireLevel: HTMLElement;
   inspireBuyButton: HTMLButtonElement;
@@ -522,12 +524,14 @@ class UISkills {
   constructor(game: Game) {
     this.game = game;
 
+    this.initiativeEntry = getElementById('panel-skills-initiative');
     this.initiativeBuy = getElementById('panel-skills-initiative-buy-cost-value');
     this.initiativeLevel = getElementById('panel-skills-initiative-level-value');
     this.initiativeBuyButton = getElementByIdAsType('panel-skills-initiative-buy-button', HTMLButtonElement);
     this.initiativeBuyButton.onclick = (e) => {
       game.buySkill('initiative');
     };
+    this.inspireEntry = getElementById('panel-skills-inspire');
     this.inspireBuy = getElementById('panel-skills-inspire-buy-cost-value');
     this.inspireLevel = getElementById('panel-skills-inspire-level-value');
     this.inspireBuyButton = getElementByIdAsType('panel-skills-inspire-buy-button', HTMLButtonElement);
@@ -543,12 +547,14 @@ class UISkills {
       this.initiativeBuy.innerText = '' + cost;
       this.initiativeLevel.innerText = '' + this.game.party.skills.initiative.level;
       this.initiativeBuyButton.disabled = !this.game.canBuySkill('initiative');
+      this.initiativeEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.initiative.unlockAtCompletedQuests ? 'none' : '';
     }
     {
       const cost = this.game.getSkillCost('inspire');
       this.inspireBuy.innerText = '' + cost;
       this.inspireLevel.innerText = '' + this.game.party.skills.inspire.level;
       this.inspireBuyButton.disabled = !this.game.canBuySkill('inspire');
+      this.inspireEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.inspire.unlockAtCompletedQuests ? 'none' : '';
     }
   }
 }

@@ -570,7 +570,8 @@ class Game {
   canBuySkill(skill: SkillIdentifier): boolean {
     const s = this.party.skills[skill];
     return this.party.gold >= this.getSkillCost(skill)
-      && s.level < s.levelMax;
+      && s.level < s.levelMax
+      && this.party.questsCompleted >= s.unlockAtCompletedQuests;
   }
 
   buySkill(skill: SkillIdentifier) {
