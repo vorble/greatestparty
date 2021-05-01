@@ -453,7 +453,7 @@ class Game {
     // ----------------------------------------------------
     // QUESTING
     // ----------------------------------------------------
-    if (this.town.needRatio > 0 && this.town.need < this.town.needMax) {
+    if (this.town.townsfolk > 0 && this.town.needRatio > 0 && this.town.need < this.town.needMax) {
       if (rollRatio() < this.town.needRatio) {
         if (FLAGS.LOG_NEW_NEED) {
           this.log('The town\'s need grows.');
