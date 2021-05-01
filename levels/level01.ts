@@ -28,8 +28,11 @@ game.registerLevel({
     town.boss = 2000;
     town.bossReward = 200;
 
-    // Town State:
-    //   game.town.state.number1 - Number of bodies still out to sea from 'Call of the Sea'.
+    class TownStateWrapper {
+      get bodiesOutToSea(): number { return game.town.state.number1; }
+      set bodiesOutToSea(value: number) { game.town.state.number1 = value; }
+    }
+    const townState = new TownStateWrapper();
 
     function maybeInflictIslandCurse(game: Game) {
       if (!game.party.status.islandCurse.active) {
@@ -50,9 +53,9 @@ game.registerLevel({
     }
 
     function returnFromTheSea(game: Game) {
-      if (game.town.state.number1 > 0) {
+      if (townState.bodiesOutToSea > 0) {
         if (rollDie(8) == 1) {
-          --game.town.state.number1;
+          --townState.bodiesOutToSea;
           game.log('A body washes ashore.');
         }
       }
@@ -83,7 +86,7 @@ game.registerLevel({
           if (r <= 5) {
             game.log('A member of your party is drawn toward the sea, swims toward the horizon, and dies.');
             game.killPartyMembers(1);
-            ++game.town.state.number1;
+            ++townState.bodiesOutToSea;
           } else {
             game.log('A member of your party is drawn toward the sea.');
           }
@@ -168,11 +171,40 @@ game.registerLevel({
           maybeInflictIslandCurse(game);
         },
       },
+      {
+        name: 'Goh\'s Whisper',
+        weight: 1,
+        predicate: (game: Game) => clockIsSign(game, 'Goh'),
+        action: (game: Game) => {
+          const r = rollDie(20);
+          if (r <= 10) {
+            if (game.town.townsfolk > 0) {
+              game.log('A spirited town\'s person joins your party.');
+              game.joinPartyFromTown(1);
+            }
+          } else {
+            if (game.party.size > 0) {
+              game.log('A spirited member of the party joins the town.');
+              game.joinTownFromParty(1);
+            }
+          }
+        },
+      },
+      {
+        name: 'Fall Squall',
+        weight: 1,
+        predicate: (game: Game) => clockIsFall(game),
+        action: (game: Game) => {
+          const r = rollDie(20);
+          if (r <= 10) {
+            game.log('Dark clouds roll in from the sea whipping up raging winds tha carry one party member into the sky.');
+            game.killPartyMembers(1);
+          } else {
+            game.log('Dark clouds roll in from the sea whipping up raging winds nearly carrying someone away.');
+          }
+        },
+      },
     ];
-
-    // Boss State:
-    //   game.boss.state.flag1 - Staring contest active.
-    //   game.boss.state.flag2 - Octopod won staring contest.
 
     boss.name = 'Octopod';
     boss.str = 17;
@@ -186,15 +218,23 @@ game.registerLevel({
     boss.armor.physical = -1; // 1 blunt armor
     boss.armor.elemental = 1; // 1 ice armor
 
+    class BossStateWrapper {
+      get inStaringContest(): boolean { return game.boss.state.flag1; }
+      set inStaringContest(value: boolean) { game.boss.state.flag1 = value; }
+      get wonStaringContest(): boolean { return game.boss.state.flag2; }
+      set wonStaringContest(value: boolean) { game.boss.state.flag2 = value; }
+    }
+    const bossState = new BossStateWrapper();
+
     boss.events = [
       {
         name: 'Staring Contest',
         weight: 1,
         predicate: (game: Game) => {
-          return !game.boss.state.flag1 && !game.boss.state.flag2;
+          return !bossState.inStaringContest && !bossState.wonStaringContest;
         },
         action: (game: Game) => {
-          game.boss.state.flag1 = true;
+          bossState.inStaringContest = true;
           game.log('Octopod becomes still as it gazes over the party...');
         },
       },
@@ -202,10 +242,10 @@ game.registerLevel({
         name: 'Lose Staring Contest',
         weight: 1,
         predicate: (game: Game) => {
-          return game.boss.state.flag1;
+          return bossState.inStaringContest;
         },
         action: (game: Game) => {
-          game.boss.state.flag1 = false;
+          bossState.inStaringContest = false;
           game.log('Octopod blinks!');
         },
       },
@@ -213,11 +253,11 @@ game.registerLevel({
         name: 'Win Staring Contest',
         weight: 1,
         predicate: (game: Game) => {
-          return game.boss.state.flag1;
+          return bossState.inStaringContest;
         },
         action: (game: Game) => {
-          game.boss.state.flag1 = false;
-          game.boss.state.flag2 = true;
+          bossState.inStaringContest = false;
+          bossState.wonStaringContest = true;
           game.log('Octopod squirms with delight!');
         },
       },
@@ -225,10 +265,10 @@ game.registerLevel({
         name: 'Tentacle Swipe',
         weight: 1,
         predicate: (game: Game) => {
-          return game.boss.state.flag2;
+          return bossState.wonStaringContest;
         },
         action: (game: Game) => {
-          game.boss.state.flag2 = false;
+          bossState.wonStaringContest = false;
           game.log('A member of your party disappears under Octopod\'s tentacle.');
           game.killPartyMembers(1);
         },
