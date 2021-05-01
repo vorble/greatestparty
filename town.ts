@@ -40,6 +40,7 @@ class Town {
   hireCost: number;
   conscriptRatio: number;
   conscriptViolenceRatio: number;
+  alignment: number;
   need: number;
   needMax: number;
   needRatio: number;
@@ -70,6 +71,7 @@ class Town {
     this.hireCost = 0;
     this.conscriptRatio = 0;
     this.conscriptViolenceRatio = 0;
+    this.alignment = 0;
     this.need = 0;
     this.needMax = 0;
     this.needRatio = 0;

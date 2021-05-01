@@ -175,6 +175,43 @@ game.registerLevel({
         },
       },
       {
+        name: 'Beloved Heroes',
+        weight: 1,
+        predicate: (game: Game) => game.town.alignment >= 40,
+        action: (game: Game) => {
+          const roll = (rollDie(20)
+            + calcmod(game.town.alignment, [[40, 0], [70, 5], [200, 19]])
+          );
+          if (roll <= 17) {
+            game.log('The townsfolk cheer you on as you make your way through town.');
+          } else {
+            game.log('The townsfolk shower you with 10 gold and items as you make your way through town.');
+            loot(game);
+            loot(game);
+            loot(game);
+            game.adjustAlignment(-1);
+          }
+        },
+      },
+      {
+        name: 'Unwelcome Here',
+        weight: 1,
+        predicate: (game: Game) => game.town.alignment <= -20,
+        action: (game: Game) => {
+          const roll = (rollDie(20)
+            + calcmod(game.town.alignment, [[-100, -19], [-50, -5], [-20, 0]])
+          );
+          if (roll <= 3) {
+            game.log('The townsfolk chase a member of your party through the streets and kill them.');
+            game.killPartyMembers(1);
+            game.adjustAlignment(4);
+          } else {
+            game.log('The townsfolk chase a member of your party through the streets.');
+            game.adjustAlignment(1);
+          }
+        },
+      },
+      {
         name: 'Goh\'s Whisper',
         weight: 1,
         predicate: (game: Game) => clockIsSign(game, 'Goh'),

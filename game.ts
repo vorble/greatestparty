@@ -156,21 +156,28 @@ class Game {
   conscript() {
     if (this.canConscript()) {
       if (rollRatio() < this.town.conscriptRatio) {
-        this.joinPartyFromTown(1);
         game.log('Your party conscripts someone from town forcefully.');
+        this.joinPartyFromTown(1);
+        this.adjustAlignment(-5);
       } else {
         game.log('Your party tries to forcefully conscript someone from town, but fail.');
+        this.adjustAlignment(-4);
       }
       if (this.town.townsfolk > 0 && rollRatio() < this.town.conscriptViolenceRatio) {
         if (rollDie(2) == 1) {
           game.log('A townsperson dies in the violence.');
           this.town.townsfolk -= 1;
+          this.adjustAlignment(-2);
         } else {
           game.log('A member of your party dies in the violence.');
           this.killPartyMembers(1);
         }
       }
     }
+  }
+
+  adjustAlignment(amount: number) {
+    this.town.alignment = Math.max(-100, Math.min(100, this.town.alignment + amount));
   }
 
   takeQuest() {
@@ -472,6 +479,7 @@ class Game {
         this.party.questsCompleted += questsCompleted;
         this.party.gold += questsCompleted * GOLD_PER_QUEST;
         this.party.questPoints -= POINTS_PER_QUEST * questsCompleted;
+        this.adjustAlignment(questsCompleted);
       }
       // If it was possible to complete additional quests
       // this round, the quest points are abandoned since
