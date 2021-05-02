@@ -20,6 +20,10 @@ function getElementByIdAsType<T extends HTMLElement>(id: string, clazz: { new():
   return element;
 }
 
+function _cap(text: string): string {
+  return text.length == 0 ? text : text[0].toUpperCase() + text.slice(1);
+}
+
 class UIParty {
   game: Game;
 
@@ -47,15 +51,7 @@ class UIParty {
     const game = this.game;
 
     {
-      let text = '';
-      switch (game.season) {
-        case 0: text = 'Spring'; break;
-        case 1: text = 'Summer'; break;
-        case 2: text = 'Fall'; break;
-        case 3: text = 'Winter'; break;
-        default:
-          throw new Error('Game season is out of bounds.');
-      }
+      let text = _cap(SEASONS[game.season]);
       text += ' ' + game.year;
       if (FLAGS.SHOW_TICKS) {
         text += ` (${ SIGNS[clockToSign(game)] } ${ fmt02d(game.term) }:${ fmt02d(game.tock) }:${ fmt02d(game.tick) })`;
