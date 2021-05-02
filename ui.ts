@@ -38,6 +38,7 @@ class UIParty {
   water: HTMLElement;
 
   sacrificeButton: HTMLButtonElement;
+  animateButton: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -55,6 +56,10 @@ class UIParty {
     this.sacrificeButton = getElementByIdAsType('panel-party-sacrifice-button', HTMLButtonElement);
     this.sacrificeButton.onclick = (e) => {
       game.sacrifice();
+    };
+    this.animateButton = getElementByIdAsType('panel-party-animate-button', HTMLButtonElement);
+    this.animateButton.onclick = (e) => {
+      game.animate();
     };
   }
 
@@ -85,6 +90,8 @@ class UIParty {
 
     this.sacrificeButton.disabled = !game.canSacrifice();
     this.sacrificeButton.style.display = game.party.skills.sacrifice.level > 0 ? '' : 'none';
+    this.animateButton.disabled = !game.canAnimate();
+    this.animateButton.style.display = game.party.skills.animate.level > 0 ? '' : 'none';
   }
 }
 
@@ -810,6 +817,10 @@ class UISkills {
   conscriptBuy: HTMLElement;
   conscriptLevel: HTMLElement;
   conscriptBuyButton: HTMLButtonElement;
+  animateEntry: HTMLElement;
+  animateBuy: HTMLElement;
+  animateLevel: HTMLElement;
+  animateBuyButton: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -842,6 +853,13 @@ class UISkills {
     this.conscriptBuyButton.onclick = (e) => {
       game.buySkill('conscript');
     };
+    this.animateEntry = getElementById('panel-skills-animate');
+    this.animateBuy = getElementById('panel-skills-animate-buy-cost-value');
+    this.animateLevel = getElementById('panel-skills-animate-level-value');
+    this.animateBuyButton = getElementByIdAsType('panel-skills-animate-buy-button', HTMLButtonElement);
+    this.animateBuyButton.onclick = (e) => {
+      game.buySkill('animate');
+    };
   }
 
   show() {
@@ -873,6 +891,13 @@ class UISkills {
       this.conscriptLevel.innerText = '' + this.game.party.skills.conscript.level;
       this.conscriptBuyButton.disabled = !this.game.canBuySkill('conscript');
       this.conscriptEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.conscript.unlockAtCompletedQuests ? 'none' : '';
+    }
+    {
+      const cost = this.game.getSkillCost('animate');
+      this.animateBuy.innerText = '' + cost;
+      this.animateLevel.innerText = '' + this.game.party.skills.animate.level;
+      this.animateBuyButton.disabled = !this.game.canBuySkill('animate');
+      this.animateEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.animate.unlockAtCompletedQuests ? 'none' : '';
     }
   }
 }

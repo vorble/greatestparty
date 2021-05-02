@@ -120,6 +120,11 @@ class Game {
     this.calculateEquipment();
   }
 
+  addPartyMembers(count: number) {
+    this.party.size += count;
+    this.calculateEquipment();
+  }
+
   joinPartyFromTown(count: number) {
     if (this.town.townsfolk >= count) {
       this.party.size += count;
@@ -128,6 +133,7 @@ class Game {
       this.party.size += this.town.townsfolk;
       this.town.townsfolk = 0;
     }
+    this.calculateEquipment();
   }
 
   joinTownFromParty(count: number) {
@@ -138,6 +144,7 @@ class Game {
       this.town.townsfolk += this.party.size;
       this.party.size = 0;
     }
+    this.calculateEquipment();
   }
 
   canHire(): boolean {
@@ -185,8 +192,36 @@ class Game {
   sacrifice() {
     if (this.canSacrifice()) {
       this.killPartyMembers(1);
-      this.party.blood += 1;
-      game.log('You sacrifice one party member to acquire favor.');
+      const r = rollRatio();
+      if (r < 0.01 * this.party.skills.sacrifice.level) {
+        game.log('You efficiently collect the blood from the sacrifice of one party member.');
+        this.party.blood += 2;
+      } else if (r < 0.94 + 0.01 * this.party.skills.sacrifice.level) {
+        game.log('You collect the blood from the sacrifice of one party member.');
+        this.party.blood += 1;
+      } else {
+        game.log('The blood from the sacrifice of one party member is spilled upon the ground.');
+      }
+    }
+  }
+
+  canAnimate() {
+    return this.party.skills.animate.level > 0 && this.party.blood > 0;
+  }
+
+  animate() {
+    if (this.canAnimate()) {
+      this.party.blood -= 1;
+      const r = rollRatio();
+      if (r < 0.01 * this.party.skills.animate.level) {
+        this.addPartyMembers(1);
+        game.log('Two party member emerge from the pool of blood.');
+      } else if (r < 0.75 + 0.05 * this.party.skills.animate.level) {
+        this.addPartyMembers(1);
+        game.log('A party member emerges from the pool of blood.');
+      } else {
+        game.log('A disfigured horror emerges from the pool of blood, but it dies soon after.');
+      }
     }
   }
 
