@@ -53,7 +53,7 @@ class Skills {
       doTickActions: (game: Game) => {
         let bonus = calcmod(game.party.cha, [[0, 0.000], [16, 0.001]]);
         bonus += calcmod(game.town.alignment, [[-100, -0.002], [-30, 0], [30, 0.001]]);
-        if (rollRatio() < (0.005 + bonus) * this.inspire.level) {
+        if (rollRatio() < (0.0025 + bonus) * this.inspire.level) {
           if (game.town.townsfolk > 0) {
             if (FLAGS.DEBUG.SKILL.INSPIRE) {
               game.log('Your party inspires some from the town to join.');
