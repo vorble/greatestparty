@@ -1,5 +1,7 @@
 type EqFineCategory = 'blunt' | 'slice' | 'dark' | 'light' | 'fire' | 'ice';
 const EQ_FINE_CATEGORIES: Array<EqFineCategory> = ['blunt', 'slice', 'dark', 'light', 'fire', 'ice'];
+type EqBroadCategory = 'physical' | 'magical' | 'elemental';
+const EQ_BROAD_CATEGORIES: Array<EqBroadCategory> = ['physical', 'magical', 'elemental'];
 
 class Inventory {
   blunt: number;
