@@ -135,7 +135,7 @@ game.registerLevel({
           } else if (roll <= 18) {
             game.log('The party moves rocks for the town hermit.');
           } else {
-            game.log('The party moves rocks for the town hermit who is so moved by the design that they gifts you 10 gold.');
+            game.log('The party moves rocks for the town hermit who is so moved by the design that they gift you 10 gold.');
             game.party.gold += 10;
           }
           loot(game);
