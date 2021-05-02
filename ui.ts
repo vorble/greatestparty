@@ -440,6 +440,7 @@ class UITown {
 
     this.hire.disabled = !game.canHire();
     this.conscript.disabled = !game.canConscript();
+    this.conscript.style.display = game.party.skills.conscript.level > 0 ? '' : 'none';
     this.takeQuest.disabled = game.town.need <= 0 || game.party.quests >= game.party.size;
     this.fightBoss.disabled = game.fightingBoss;
   }
@@ -785,6 +786,10 @@ class UISkills {
   inspireBuy: HTMLElement;
   inspireLevel: HTMLElement;
   inspireBuyButton: HTMLButtonElement;
+  conscriptEntry: HTMLElement;
+  conscriptBuy: HTMLElement;
+  conscriptLevel: HTMLElement;
+  conscriptBuyButton: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -803,6 +808,13 @@ class UISkills {
     this.inspireBuyButton.onclick = (e) => {
       game.buySkill('inspire');
     };
+    this.conscriptEntry = getElementById('panel-skills-conscript');
+    this.conscriptBuy = getElementById('panel-skills-conscript-buy-cost-value');
+    this.conscriptLevel = getElementById('panel-skills-conscript-level-value');
+    this.conscriptBuyButton = getElementByIdAsType('panel-skills-conscript-buy-button', HTMLButtonElement);
+    this.conscriptBuyButton.onclick = (e) => {
+      game.buySkill('conscript');
+    };
   }
 
   show() {
@@ -820,6 +832,13 @@ class UISkills {
       this.inspireLevel.innerText = '' + this.game.party.skills.inspire.level;
       this.inspireBuyButton.disabled = !this.game.canBuySkill('inspire');
       this.inspireEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.inspire.unlockAtCompletedQuests ? 'none' : '';
+    }
+    {
+      const cost = this.game.getSkillCost('conscript');
+      this.conscriptBuy.innerText = '' + cost;
+      this.conscriptLevel.innerText = '' + this.game.party.skills.conscript.level;
+      this.conscriptBuyButton.disabled = !this.game.canBuySkill('conscript');
+      this.conscriptEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.conscript.unlockAtCompletedQuests ? 'none' : '';
     }
   }
 }

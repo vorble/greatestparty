@@ -152,12 +152,12 @@ class Game {
   }
 
   canConscript() {
-    return this.town.townsfolk > 0;
+    return this.town.townsfolk > 0 && this.party.skills.conscript.level > 0;
   }
 
   conscript() {
     if (this.canConscript()) {
-      if (rollRatio() < this.town.conscriptRatio) {
+      if (rollRatio() < this.town.conscriptRatio + 0.01 * this.party.skills.conscript.level) {
         game.log('Your party conscripts someone from town forcefully.');
         this.joinPartyFromTown(1);
         this.adjustAlignment(-5);
@@ -165,7 +165,7 @@ class Game {
         game.log('Your party tries to forcefully conscript someone from town, but fail.');
         this.adjustAlignment(-4);
       }
-      if (this.town.townsfolk > 0 && rollRatio() < this.town.conscriptViolenceRatio) {
+      if (this.town.townsfolk > 0 && rollRatio() < this.town.conscriptViolenceRatio - 0.02 * this.party.skills.conscript.level) {
         if (rollDie(2) == 1) {
           game.log('A townsperson dies in the violence.');
           this.town.townsfolk -= 1;
@@ -417,6 +417,8 @@ class Game {
       // need the food and water.
       this.party.hunger -= countStarved * HUNGER_PER_PERSON;
       this.party.thirst -= countDehydrated * THIRST_PER_PERSON;
+      const phrase = '' + countDead + (countDead == 1 ? ' party member has' : ' party members have');
+      game.log(phrase + ' died from lack of basic provisions.');
     }
 
     // ----------------------------------------------------
