@@ -178,6 +178,18 @@ class Game {
     }
   }
 
+  canSacrifice() {
+    return this.party.skills.sacrifice.level > 0 && this.party.size > 0;
+  }
+
+  sacrifice() {
+    if (this.canSacrifice()) {
+      this.killPartyMembers(1);
+      this.party.blood += 1;
+      game.log('You sacrifice one party member to acquire favor.');
+    }
+  }
+
   adjustAlignment(amount: number) {
     this.town.alignment = Math.max(-100, Math.min(100, this.town.alignment + amount));
   }

@@ -1,6 +1,7 @@
 class Party implements Fighter {
   size: number;
   gold: number;
+  blood: number;
   food: number;
   hunger: number;
   water: number;
@@ -32,6 +33,7 @@ class Party implements Fighter {
   constructor() {
     this.size = 0;
     this.gold = 0;
+    this.blood = 0;
     this.food = 0;
     this.hunger = 0;
     this.water = 0;

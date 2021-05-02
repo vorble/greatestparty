@@ -1,5 +1,5 @@
-type SkillIdentifier = 'initiative' | 'inspire' | 'conscript';
-const SKILLS: Array<SkillIdentifier> = ['initiative', 'inspire', 'conscript'];
+type SkillIdentifier = 'initiative' | 'inspire' | 'sacrifice' | 'conscript';
+const SKILLS: Array<SkillIdentifier> = ['initiative', 'inspire', 'sacrifice', 'conscript'];
 
 interface Skill extends ClockActions {
   level: number;
@@ -16,6 +16,7 @@ interface Skill extends ClockActions {
 class Skills {
   initiative: Skill;
   inspire: Skill;
+  sacrifice: Skill;
   conscript: Skill;
 
   constructor() {
@@ -61,6 +62,14 @@ class Skills {
           }
         }
       }
+    };
+
+    this.sacrifice = {
+      ...defaults,
+      name: 'Sacrifice',
+      levelMax: 9999,
+      costTier: 2,
+      unlockAtCompletedQuests: 30,
     };
 
     this.conscript = {

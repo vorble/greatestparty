@@ -32,8 +32,12 @@ class UIParty {
   quests: HTMLElement;
   questsCompleted: HTMLElement;
   gold: HTMLElement;
+  blood: HTMLElement;
+  bloodPanel: HTMLElement;
   food: HTMLElement;
   water: HTMLElement;
+
+  sacrificeButton: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -43,8 +47,15 @@ class UIParty {
     this.quests = getElementById('panel-party-quests-value');
     this.questsCompleted = getElementById('panel-party-quests-completed-value');
     this.gold = getElementById('panel-party-gold-value');
+    this.blood = getElementById('panel-party-blood-value');
+    this.bloodPanel = getElementById('panel-party-blood');
     this.food = getElementById('panel-party-food-value');
     this.water = getElementById('panel-party-water-value');
+
+    this.sacrificeButton = getElementByIdAsType('panel-party-sacrifice-button', HTMLButtonElement);
+    this.sacrificeButton.onclick = (e) => {
+      game.sacrifice();
+    };
   }
 
   show() {
@@ -63,12 +74,17 @@ class UIParty {
     this.quests.innerText = '' + game.party.quests;
     this.questsCompleted.innerText = '' + game.party.questsCompleted;
     this.gold.innerText = '' + game.party.gold;
+    this.blood.innerText = '' + game.party.blood;
+    this.bloodPanel.style.display = game.party.skills.sacrifice.level > 0 ? '' : 'none';
     this.food.innerText = '' + game.party.food;
     this.water.innerText = '' + game.party.water;
     if (FLAGS.SHOW_HUNGER_THIRST) {
       this.food.innerText += ' (' + game.party.hunger + ')';
       this.water.innerText += ' (' + game.party.thirst + ')';
     }
+
+    this.sacrificeButton.disabled = !game.canSacrifice();
+    this.sacrificeButton.style.display = game.party.skills.sacrifice.level > 0 ? '' : 'none';
   }
 }
 
@@ -786,6 +802,10 @@ class UISkills {
   inspireBuy: HTMLElement;
   inspireLevel: HTMLElement;
   inspireBuyButton: HTMLButtonElement;
+  sacrificeEntry: HTMLElement;
+  sacrificeBuy: HTMLElement;
+  sacrificeLevel: HTMLElement;
+  sacrificeBuyButton: HTMLButtonElement;
   conscriptEntry: HTMLElement;
   conscriptBuy: HTMLElement;
   conscriptLevel: HTMLElement;
@@ -807,6 +827,13 @@ class UISkills {
     this.inspireBuyButton = getElementByIdAsType('panel-skills-inspire-buy-button', HTMLButtonElement);
     this.inspireBuyButton.onclick = (e) => {
       game.buySkill('inspire');
+    };
+    this.sacrificeEntry = getElementById('panel-skills-sacrifice');
+    this.sacrificeBuy = getElementById('panel-skills-sacrifice-buy-cost-value');
+    this.sacrificeLevel = getElementById('panel-skills-sacrifice-level-value');
+    this.sacrificeBuyButton = getElementByIdAsType('panel-skills-sacrifice-buy-button', HTMLButtonElement);
+    this.sacrificeBuyButton.onclick = (e) => {
+      game.buySkill('sacrifice');
     };
     this.conscriptEntry = getElementById('panel-skills-conscript');
     this.conscriptBuy = getElementById('panel-skills-conscript-buy-cost-value');
@@ -832,6 +859,13 @@ class UISkills {
       this.inspireLevel.innerText = '' + this.game.party.skills.inspire.level;
       this.inspireBuyButton.disabled = !this.game.canBuySkill('inspire');
       this.inspireEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.inspire.unlockAtCompletedQuests ? 'none' : '';
+    }
+    {
+      const cost = this.game.getSkillCost('sacrifice');
+      this.sacrificeBuy.innerText = '' + cost;
+      this.sacrificeLevel.innerText = '' + this.game.party.skills.sacrifice.level;
+      this.sacrificeBuyButton.disabled = !this.game.canBuySkill('sacrifice');
+      this.sacrificeEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.sacrifice.unlockAtCompletedQuests ? 'none' : '';
     }
     {
       const cost = this.game.getSkillCost('conscript');
