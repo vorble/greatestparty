@@ -7,13 +7,13 @@ game.registerLevel({
     town.name = 'Magma Town';
     town.townsfolk = 200;
     town.foodStock = 150;
-    town.foodSupport = 3;
-    town.foodCostBuy = 3;
-    town.foodCostSell = 2;
+    town.foodSupport = [3, 4, 3, 1];
+    town.foodCostBuy = [3, 3, 4, 6];
+    town.foodCostSell = [1, 1, 1, 4];
     town.waterStock = 150;
-    town.waterSupport = 3;
-    town.waterCostBuy = 3;
-    town.waterCostSell = 2;
+    town.waterSupport = [4, 5, 5, 4];
+    town.waterCostBuy = [3, 3, 3, 3];
+    town.waterCostSell = [2, 2, 2, 2];
     for (const cat of EQ_FINE_CATEGORIES) {
       town.inventoryWeapon[cat] = 100;
       town.inventoryWeaponBuy[cat] = 5;
