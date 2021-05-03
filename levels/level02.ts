@@ -1,5 +1,5 @@
 game.registerLevel({
-  level: 1,
+  level: 2,
   newTown: (game: Game) => {
     const town = new Town();
     const boss = new Boss();
