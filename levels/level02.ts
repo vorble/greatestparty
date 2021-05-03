@@ -107,7 +107,7 @@ game.registerLevel({
 
     // Boss State:
 
-    boss.name = 'Fire Elemental';
+    boss.name = 'Magma Elemental';
     boss.str = 14;
     boss.dex = 15;
     boss.con = 9;
@@ -121,29 +121,18 @@ game.registerLevel({
 
     boss.events = [
       {
-        name: 'Staring Contest',
+        name: 'Charging attack',
         weight: 1,
         predicate: (game: Game) => {
           return !game.boss.state.flag1 && !game.boss.state.flag2;
         },
         action: (game: Game) => {
           game.boss.state.flag1 = true;
-          game.log('Octopod becomes still as it gazes over the party...');
+          game.log('Magma elemental starts to glow with a red hot intensity and holds its hands over its head.');
         },
       },
       {
-        name: 'Lose Staring Contest',
-        weight: 1,
-        predicate: (game: Game) => {
-          return game.boss.state.flag1;
-        },
-        action: (game: Game) => {
-          game.boss.state.flag1 = false;
-          game.log('Octopod blinks!');
-        },
-      },
-      {
-        name: 'Win Staring Contest',
+        name: 'Finished Charging',
         weight: 1,
         predicate: (game: Game) => {
           return game.boss.state.flag1;
@@ -151,18 +140,18 @@ game.registerLevel({
         action: (game: Game) => {
           game.boss.state.flag1 = false;
           game.boss.state.flag2 = true;
-          game.log('Octopod squirms with delight!');
+          game.log('Magma flows from the magma elemental\'s hands into a ball over its head.');
         },
       },
       {
-        name: 'Tentacle Swipe',
+        name: 'Kahmehamagma',
         weight: 1,
         predicate: (game: Game) => {
           return game.boss.state.flag2;
         },
         action: (game: Game) => {
           game.boss.state.flag2 = false;
-          game.log('A member of your party disappears under Octopod\'s tentacle.');
+          game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
           game.killPartyMembers(1);
         },
       },
