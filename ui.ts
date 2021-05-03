@@ -821,6 +821,14 @@ class UISkills {
   animateBuy: HTMLElement;
   animateLevel: HTMLElement;
   animateBuyButton: HTMLButtonElement;
+  sabotageEntry: HTMLElement;
+  sabotageBuy: HTMLElement;
+  sabotageLevel: HTMLElement;
+  sabotageBuyButton: HTMLButtonElement;
+  acclaimEntry: HTMLElement;
+  acclaimBuy: HTMLElement;
+  acclaimLevel: HTMLElement;
+  acclaimBuyButton: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -860,6 +868,20 @@ class UISkills {
     this.animateBuyButton.onclick = (e) => {
       game.buySkill('animate');
     };
+    this.sabotageEntry = getElementById('panel-skills-sabotage');
+    this.sabotageBuy = getElementById('panel-skills-sabotage-buy-cost-value');
+    this.sabotageLevel = getElementById('panel-skills-sabotage-level-value');
+    this.sabotageBuyButton = getElementByIdAsType('panel-skills-sabotage-buy-button', HTMLButtonElement);
+    this.sabotageBuyButton.onclick = (e) => {
+      game.buySkill('sabotage');
+    };
+    this.acclaimEntry = getElementById('panel-skills-acclaim');
+    this.acclaimBuy = getElementById('panel-skills-acclaim-buy-cost-value');
+    this.acclaimLevel = getElementById('panel-skills-acclaim-level-value');
+    this.acclaimBuyButton = getElementByIdAsType('panel-skills-acclaim-buy-button', HTMLButtonElement);
+    this.acclaimBuyButton.onclick = (e) => {
+      game.buySkill('acclaim');
+    };
   }
 
   show() {
@@ -898,6 +920,20 @@ class UISkills {
       this.animateLevel.innerText = '' + this.game.party.skills.animate.level;
       this.animateBuyButton.disabled = !this.game.canBuySkill('animate');
       this.animateEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.animate.unlockAtCompletedQuests ? 'none' : '';
+    }
+    {
+      const cost = this.game.getSkillCost('sabotage');
+      this.sabotageBuy.innerText = '' + cost;
+      this.sabotageLevel.innerText = '' + this.game.party.skills.sabotage.level;
+      this.sabotageBuyButton.disabled = !this.game.canBuySkill('sabotage');
+      this.sabotageEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.sabotage.unlockAtCompletedQuests ? 'none' : '';
+    }
+    {
+      const cost = this.game.getSkillCost('acclaim');
+      this.acclaimBuy.innerText = '' + cost;
+      this.acclaimLevel.innerText = '' + this.game.party.skills.acclaim.level;
+      this.acclaimBuyButton.disabled = !this.game.canBuySkill('acclaim');
+      this.acclaimEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.acclaim.unlockAtCompletedQuests ? 'none' : '';
     }
   }
 }

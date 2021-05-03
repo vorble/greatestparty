@@ -229,6 +229,10 @@ class Game {
     this.town.alignment = Math.max(-100, Math.min(100, this.town.alignment + amount));
   }
 
+  adjustTownNeed(amount: number) {
+    this.town.need = Math.max(0, Math.min(this.town.needMax, this.town.need + amount));
+  }
+
   takeQuest() {
     if (this.town.need > 0 && this.party.quests < game.party.size) {
       this.town.need -= 1;
