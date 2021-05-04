@@ -1,5 +1,5 @@
-type PartyStatusType = 'berzerk' | 'islandCurse';
-const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse'];
+type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods';
+const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods'];
 
 interface PartyStatusItem extends ClockActions {
   active: boolean;
@@ -54,6 +54,7 @@ function setStatusExpiry(game: Game, status: PartyStatusItem, length: {
 class Status {
   berzerk: PartyStatusItem;
   islandCurse: PartyStatusItem;
+  angeredGods: PartyStatusItem;
 
   constructor() {
     const defaults = { active: false, year: 0, season: 0, term: 0, tock: 0, tick: 0 };
@@ -72,6 +73,10 @@ class Status {
     this.islandCurse = {
       ...defaults,
       name: 'Island Curse',
+    }; 
+    this.angeredGods = {
+      ...defaults,
+      name: 'Angered Gods',
     };
   }
 }
