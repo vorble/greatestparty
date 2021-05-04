@@ -39,7 +39,7 @@ game.registerLevel({
           setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
           game.log('A party member commits a faux pas at a ceremony with some townsfolk.');
         } else if (r <= 4) {
-          if (game.party.cha >= 14) {
+          if (game.party.wis >= 14) {
             game.log('A party member is invited to a ceremony by some townsfolk, but declines.');
           } else {
             game.log('A party member goes to a ceremony with some townsfolk and has a good time.');
