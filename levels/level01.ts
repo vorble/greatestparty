@@ -34,6 +34,8 @@ game.registerLevel({
     const townState = new (class TownStateWrapper {
       get bodiesOutToSea(): number { return game.town.state.number1; }
       set bodiesOutToSea(value: number) { game.town.state.number1 = value; }
+      get bodiesInTheAir(): number { return game.town.state.number2; }
+      set bodiesInTheAir(value: number) { game.town.state.number2 = value; }
     });
 
     function maybeInflictIslandCurse(game: Game) {
@@ -54,11 +56,18 @@ game.registerLevel({
       }
     }
 
-    function returnFromTheSea(game: Game) {
+    function returnBodies(game: Game) {
       if (townState.bodiesOutToSea > 0) {
         if (rollDie(8) == 1) {
           --townState.bodiesOutToSea;
           game.log('A body washes ashore.');
+        }
+      }
+      if (townState.bodiesInTheAir > 0) {
+        // These return to land much faster than from the sea.
+        if (rollDie(3) == 1) {
+          --townState.bodiesInTheAir;
+          game.log('A body falls from the sky.');
         }
       }
     }
@@ -93,7 +102,7 @@ game.registerLevel({
             game.log('A member of your party is drawn toward the sea.');
           }
           loot(game);
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
         },
       },
       {
@@ -114,7 +123,7 @@ game.registerLevel({
             game.party.gold += 10;
           }
           loot(game);
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
           maybeInflictIslandCurse(game);
         },
       },
@@ -139,7 +148,7 @@ game.registerLevel({
             game.party.gold += 10;
           }
           loot(game);
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
           maybeInflictIslandCurse(game);
         },
       },
@@ -169,7 +178,7 @@ game.registerLevel({
             loot(game);
           }
           loot(game);
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
           maybeInflictIslandCurse(game);
         },
       },
@@ -191,7 +200,7 @@ game.registerLevel({
             loot(game);
             game.adjustAlignment(-1);
           }
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
           maybeInflictIslandCurse(game);
         },
       },
@@ -211,7 +220,7 @@ game.registerLevel({
             game.log('The townsfolk chase a member of your party through the streets.');
             game.adjustAlignment(1);
           }
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
           maybeInflictIslandCurse(game);
         },
       },
@@ -232,7 +241,7 @@ game.registerLevel({
               game.joinTownFromParty(1);
             }
           }
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
           maybeInflictIslandCurse(game);
         },
       },
@@ -245,10 +254,11 @@ game.registerLevel({
           if (r <= 10) {
             game.log('Dark clouds roll in from the sea whipping up raging winds tha carry one party member into the sky.');
             game.killPartyMembers(1);
+            ++townState.bodiesInTheAir;
           } else {
             game.log('Dark clouds roll in from the sea whipping up raging winds nearly carrying someone away.');
           }
-          returnFromTheSea(game); // Do this in every event.
+          returnBodies(game); // Do this in every event.
           maybeInflictIslandCurse(game);
         },
       },
