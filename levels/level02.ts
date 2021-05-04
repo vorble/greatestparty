@@ -25,27 +25,28 @@ game.registerLevel({
       town.inventoryArmorBuy[cat] = 5;
       town.inventoryArmorSell[cat] = 3;
     }
-    town.need = 45;
-    town.needMax = 45;
+    town.need = 10;
+    town.needMax = 20;
     town.needRatio = 0.010;
-    town.boss = 3000;
-    town.bossReward = 300;
+    town.boss = 4000;
+    town.bossReward = 350;
 
-    // Town State:
 
     function maybeAngerGods(game: Game) {
       if (!game.party.status.angeredGods.active) {
         // Being charasmatic helps you avoid making a faux pas at a local ceremony. 
         const r = rollDie(20) + calcmod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
-        if (r <= 2) {
+        if (r <= 4) {
           game.party.status.angeredGods.active = true;
           setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
           game.log('A party member commits a faux pas at a ceremony with some townsfolk.');
-        } else if (r <= 4) {
-          if (game.party.wis >= 14) {
+        } else {
+          if (game.party.wis >= 14) { //Being wise tells you not to make a fool of yourself at the ceremony.
             game.log('A party member is invited to a ceremony by some townsfolk, but declines.');
+            game.adjustAlignment(-1);
           } else {
             game.log('A party member goes to a ceremony with some townsfolk and has a good time.');
+            game.adjustAlignment(1);
           }
         }
       }
@@ -64,12 +65,12 @@ game.registerLevel({
     town.events = [
       {
         name: 'Angered Gods',
-        weight: 10,
+        weight: 100,
         predicate: (game: Game) => {
           return game.party.status.angeredGods.active;
         },
         action: (game: Game) => {
-          const r = rollDie(20);
+          const r = rollDie(20); // random chance that the angry volcano gods will kill a party member
           if (r <= 2) {
             game.log('The volcano rumbles in the distance, and spews out magma. One party member is hit by a lava bomb and dies');
             game.killPartyMembers(1);
@@ -81,7 +82,7 @@ game.registerLevel({
       },
       {
         name: 'Digging lava irrigation',
-        weight: 1,
+        weight: 10,
         action: (game: Game) => {
           const wis = rollDie(20) + calcmod(game.party.wis, [[0, -1], [6, 0],[12, +1]]); // Wisdom tells you not to stand in the way of pyroclastic flow
           const dex = rollDie(20) + calcmod(game.party.dex, [[0, -1], [6, 0],[12, +1],[16, +2]]); // Dexterity helps you get out of the way when you do stand in the way of pyroclastic flow
@@ -105,14 +106,53 @@ game.registerLevel({
           loot(game);
           maybeAngerGods(game);
         },
-      }
+      },
+      {
+        name: 'Exploring the Cauldera',
+        weight: 10,
+        action: (game: Game) => {
+          if (!game.party.status.angeredGods.active) { //exploring is safe if the gods arent mad
+            game.log('Some members of your party go exploring the cauldera.');
+          } else {
+            game.log('Some members of your party go exploring the cauldera when the gound begins to shake beneath them.');
+            const r = rollDie(12); //chance to have to fight boss AND a small chance some of the party dies.
+            if ( r <= 1 ) {
+              const dead = rollDie(3) + 1;
+              game.log('The cauldera collapses killing ' + dead + ' party members!');
+              game.killPartyMembers(dead);
+            }
+            if ( r <= 3 && !game.fightingBoss) {
+              game.log('A magma elemental appears!');
+              game.fightBoss();
+            }
+          }
+          loot(game);
+          maybeAngerGods(game);
+        },
+      },
+      {
+        name: 'Farm Aid',
+        weight: 10,
+        action: (game: Game) => {
+            if ( game.town.alignment <= 30 ) {
+              game.log('Your party dedicates some time to help local farmers.');
+              game.adjustAlignment(1);
+            } else {
+              const r = (rollDie(4) + calcmod(game.town.alignment, [[30, 0], [40, 1], [50, 2]]));
+              game.log('Your party dedicates some time to help local farmers. They donate ' + r + ' food to your party as thanks!');
+              game.party.food += r;
+            } 
+          loot(game);
+          maybeAngerGods(game);
+        },
+      },
     ];
 
     const bossState = new (class BossStateWrapper {
-      get chargingAttack(): boolean { return game.boss.state.flag1; }
-      set chargingAttack(value: boolean) { game.boss.state.flag1 = value; }
-      get attackCharged(): boolean { return game.boss.state.flag2; }
-      set attackCharged(value: boolean) { game.boss.state.flag2 = value; }
+      get chargingAttack(): boolean { return game.boss.state.flags[1]; }
+      set chargingAttack(value: boolean) { game.boss.state.flags[1] = value; }
+      get attackCharged(): boolean { return game.boss.state.flags[2]; }
+      set attackCharged(value: boolean) { game.boss.state.flags[2] = value; }
     });
 
     boss.name = 'Magma Elemental';
