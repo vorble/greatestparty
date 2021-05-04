@@ -49,7 +49,7 @@ class Game {
     this.fightingBoss = false;
     this.running = true;
     this.textLog = [];
-    this.level = 2;
+    this.level = 1;
 
     this.party = new Party();
     this.party.size = 4;
