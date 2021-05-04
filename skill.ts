@@ -51,7 +51,7 @@ class Skills {
       name: 'Inspire',
       levelMax: 9999,
       costTier: 2,
-      unlockAtCompletedQuests: 30,
+      unlockAtCompletedQuests: 20,
       doTickActions: (game: Game) => {
         let bonus = calcmod(game.party.cha, [[0, 0.000], [16, 0.001]]);
         bonus += calcmod(game.town.alignment, [[-100, -0.002], [-30, 0], [30, 0.001]]);
