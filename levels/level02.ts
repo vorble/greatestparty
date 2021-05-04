@@ -6,6 +6,9 @@ game.registerLevel({
 
     town.name = 'Magma Town';
     town.townsfolk = 200;
+    town.hireCost = 200;
+    town.conscriptRatio = 0.4;
+    town.conscriptViolenceRatio = 0.5;
     town.foodStock = 150;
     town.foodSupport = [3, 4, 3, 1];
     town.foodCostBuy = [3, 3, 4, 6];
@@ -105,7 +108,12 @@ game.registerLevel({
       }
     ];
 
-    // Boss State:
+    const bossState = new (class BossStateWrapper {
+      get chargingAttack(): boolean { return game.boss.state.flag1; }
+      set chargingAttack(value: boolean) { game.boss.state.flag1 = value; }
+      get attackCharged(): boolean { return game.boss.state.flag2; }
+      set attackCharged(value: boolean) { game.boss.state.flag2 = value; }
+    });
 
     boss.name = 'Magma Elemental';
     boss.str = 14;
@@ -124,10 +132,10 @@ game.registerLevel({
         name: 'Charging attack',
         weight: 1,
         predicate: (game: Game) => {
-          return !game.boss.state.flag1 && !game.boss.state.flag2;
+          return !bossState.chargingAttack && !bossState.attackCharged;
         },
         action: (game: Game) => {
-          game.boss.state.flag1 = true;
+          bossState.chargingAttack = true;
           game.log('Magma elemental starts to glow with a red hot intensity and holds its hands over its head.');
         },
       },
@@ -135,11 +143,11 @@ game.registerLevel({
         name: 'Finished Charging',
         weight: 1,
         predicate: (game: Game) => {
-          return game.boss.state.flag1;
+          return bossState.chargingAttack;
         },
         action: (game: Game) => {
-          game.boss.state.flag1 = false;
-          game.boss.state.flag2 = true;
+          bossState.chargingAttack = false;
+          bossState.attackCharged = true;
           game.log('Magma flows from the magma elemental\'s hands into a ball over its head.');
         },
       },
@@ -147,10 +155,10 @@ game.registerLevel({
         name: 'Kahmehamagma',
         weight: 1,
         predicate: (game: Game) => {
-          return game.boss.state.flag2;
+          return bossState.attackCharged;
         },
         action: (game: Game) => {
-          game.boss.state.flag2 = false;
+          bossState.attackCharged = false;
           game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
           game.killPartyMembers(1);
         },
