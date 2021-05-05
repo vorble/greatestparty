@@ -111,17 +111,17 @@ game.registerLevel({
         },
       },
       {
-        name: 'Exploring the Cauldera',
+        name: 'Exploring the Caldera',
         weight: 10,
         action: (game: Game) => {
           if (!game.party.status.angeredGods.active) { //exploring is safe if the gods arent mad
-            game.log('Some members of your party go exploring the cauldera.');
+            game.log('Some members of your party go exploring the caldera.');
           } else {
-            game.log('Some members of your party go exploring the cauldera when the gound begins to shake beneath them.');
+            game.log('Some members of your party go exploring the caldera when the gound begins to shake beneath them.');
             const r = rollDie(12); //chance to have to fight boss AND a small chance some of the party dies.
             if ( r <= 1 ) {
               const dead = rollDie(3) + 1;
-              game.log('The cauldera collapses killing ' + dead + ' party members!');
+              game.log('The caldera collapses killing ' + dead + ' party members!');
               game.killPartyMembers(dead);
             }
             if ( r <= 3 && !game.fightingBoss) {
