@@ -16,6 +16,21 @@ interface Clock {
   tick: number;
 }
 
+function clockCompare(a: Clock, b: Clock): -1 | 0 | 1 {
+  if (a.year < b.year) return -1;
+  else if (a.year > b.year) return 1;
+  else if (a.season < b.season) return -1;
+  else if (a.season > b.season) return 1;
+  else if (a.term < b.term) return -1;
+  else if (a.term > b.term) return 1;
+  else if (a.tock < b.tock) return -1;
+  else if (a.tock > b.tock) return 1;
+  else if (a.tick < b.tick) return -1
+  else if (a.tick > b.tick) return 1;
+  return 0;
+
+}
+
 function clockIsSpring(clock: Clock): boolean { return clock.season == 0; }
 function clockIsSummer(clock: Clock): boolean { return clock.season == 1; }
 function clockIsFall(clock: Clock): boolean { return clock.season == 2; }
