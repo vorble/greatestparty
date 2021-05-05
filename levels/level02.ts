@@ -32,26 +32,6 @@ game.registerLevel({
     town.bossReward = 350;
 
 
-    function maybeAngerGods(game: Game) {
-      if (!game.party.status.angeredGods.active) {
-        // Being charasmatic helps you avoid making a faux pas at a local ceremony. 
-        const r = rollDie(20) + calcmod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
-        if (r <= 4) {
-          game.party.status.angeredGods.active = true;
-          setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
-          game.log('A party member commits a faux pas at a ceremony with some townsfolk.');
-        } else {
-          if (game.party.wis >= 14) { //Being wise tells you not to make a fool of yourself at the ceremony.
-            game.log('A party member is invited to a ceremony by some townsfolk, but declines.');
-            game.adjustAlignment(-1);
-          } else {
-            game.log('A party member goes to a ceremony with some townsfolk and has a good time.');
-            game.adjustAlignment(1);
-          }
-        }
-      }
-    }
-
     function loot(game: Game) {
       if (rollRatio() <= 0.4) {
         const typ = rollChoice(['weapon', 'armor']);
@@ -63,6 +43,30 @@ game.registerLevel({
     }
 
     town.events = [
+      {
+        name: "A Faux Pas",
+        weight: 3,
+        predicate: (game: Game) => {
+          return !game.party.status.angeredGods.active
+        },
+        action: (game: Game) => {
+          // Being charasmatic helps you avoid making a faux pas at a local ceremony. 
+          const r = rollDie(20) + calcmod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
+          if (r <= 4) {
+            game.party.status.angeredGods.active = true;
+            setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
+            game.log('A party member commits a faux pas at a ceremony with some townsfolk.');
+          } else {
+            if (game.party.wis >= 14) { //Being wise tells you not to make a fool of yourself at the ceremony.
+              game.log('A party member is invited to a ceremony by some townsfolk, but declines.');
+              game.adjustAlignment(-1);
+            } else {
+              game.log('A party member goes to a ceremony with some townsfolk and has a good time.');
+              game.adjustAlignment(1);
+            }
+          }
+        },
+      },
       {
         name: 'Angered Gods',
         weight: 100,
@@ -104,21 +108,20 @@ game.registerLevel({
             }
           }    
           loot(game);
-          maybeAngerGods(game);
         },
       },
       {
-        name: 'Exploring the Cauldera',
+        name: 'Exploring the Caldera',
         weight: 10,
         action: (game: Game) => {
           if (!game.party.status.angeredGods.active) { //exploring is safe if the gods arent mad
-            game.log('Some members of your party go exploring the cauldera.');
+            game.log('Some members of your party go exploring the caldera.');
           } else {
-            game.log('Some members of your party go exploring the cauldera when the gound begins to shake beneath them.');
+            game.log('Some members of your party go exploring the caldera when the gound begins to shake beneath them.');
             const r = rollDie(12); //chance to have to fight boss AND a small chance some of the party dies.
             if ( r <= 1 ) {
               const dead = rollDie(3) + 1;
-              game.log('The cauldera collapses killing ' + dead + ' party members!');
+              game.log('The caldera collapses killing ' + dead + ' party members!');
               game.killPartyMembers(dead);
             }
             if ( r <= 3 && !game.fightingBoss) {
@@ -127,7 +130,6 @@ game.registerLevel({
             }
           }
           loot(game);
-          maybeAngerGods(game);
         },
       },
       {
@@ -143,7 +145,13 @@ game.registerLevel({
               game.party.food += r;
             } 
           loot(game);
-          maybeAngerGods(game);
+        },
+      },
+      {
+        name: 'From the Ashes',
+        weight: 5,
+        action: (game: Game) => {
+          game.log('Members of your party help rebuild after pyroclastic flow detroys some of the town');
         },
       },
     ];
@@ -199,8 +207,21 @@ game.registerLevel({
         },
         action: (game: Game) => {
           bossState.attackCharged = false;
-          game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
-          game.killPartyMembers(1);
+          const r = rollDie(20) + calcmod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
+          if ( r <=18 ) {
+            game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
+            game.killPartyMembers(1);
+          } else {
+            game.log('The magma elemental throws its hands down and the ball of magma shoots forward narrowly missing a party member!');
+          }
+        },
+      },
+      {
+        name: 'Stomp',
+        weight: 1,
+        action: (game: Game) => {
+          game.log('The magma elemental lifts its leg high and stops on the ground creating a shock wave!'); // The party\'s dexterity decreases by 2.');
+          // game.party.dexmod += -2;
         },
       },
     ];
