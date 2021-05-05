@@ -32,26 +32,6 @@ game.registerLevel({
     town.bossReward = 350;
 
 
-    function maybeAngerGods(game: Game) {
-      if (!game.party.status.angeredGods.active) {
-        // Being charasmatic helps you avoid making a faux pas at a local ceremony. 
-        const r = rollDie(20) + calcmod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
-        if (r <= 4) {
-          game.party.status.angeredGods.active = true;
-          setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
-          game.log('A party member commits a faux pas at a ceremony with some townsfolk.');
-        } else {
-          if (game.party.wis >= 14) { //Being wise tells you not to make a fool of yourself at the ceremony.
-            game.log('A party member is invited to a ceremony by some townsfolk, but declines.');
-            game.adjustAlignment(-1);
-          } else {
-            game.log('A party member goes to a ceremony with some townsfolk and has a good time.');
-            game.adjustAlignment(1);
-          }
-        }
-      }
-    }
-
     function loot(game: Game) {
       if (rollRatio() <= 0.4) {
         const typ = rollChoice(['weapon', 'armor']);
@@ -63,6 +43,30 @@ game.registerLevel({
     }
 
     town.events = [
+      {
+        name: "A Faux Pas",
+        weight: 3,
+        predicate: (game: Game) => {
+          return !game.party.status.angeredGods.active
+        },
+        action: (game: Game) => {
+          // Being charasmatic helps you avoid making a faux pas at a local ceremony. 
+          const r = rollDie(20) + calcmod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
+          if (r <= 4) {
+            game.party.status.angeredGods.active = true;
+            setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
+            game.log('A party member commits a faux pas at a ceremony with some townsfolk.');
+          } else {
+            if (game.party.wis >= 14) { //Being wise tells you not to make a fool of yourself at the ceremony.
+              game.log('A party member is invited to a ceremony by some townsfolk, but declines.');
+              game.adjustAlignment(-1);
+            } else {
+              game.log('A party member goes to a ceremony with some townsfolk and has a good time.');
+              game.adjustAlignment(1);
+            }
+          }
+        },
+      },
       {
         name: 'Angered Gods',
         weight: 100,
@@ -104,7 +108,6 @@ game.registerLevel({
             }
           }    
           loot(game);
-          maybeAngerGods(game);
         },
       },
       {
@@ -127,7 +130,6 @@ game.registerLevel({
             }
           }
           loot(game);
-          maybeAngerGods(game);
         },
       },
       {
@@ -143,7 +145,6 @@ game.registerLevel({
               game.party.food += r;
             } 
           loot(game);
-          maybeAngerGods(game);
         },
       },
     ];
