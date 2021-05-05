@@ -207,7 +207,7 @@ game.registerLevel({
         },
         action: (game: Game) => {
           bossState.attackCharged = false;
-          const r = rollDie(20) + calcMod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
+          const r = rollDie(20) + calcmod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
           if ( r <=18 ) {
             game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
             game.killPartyMembers(1);
