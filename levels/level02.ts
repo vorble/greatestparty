@@ -147,6 +147,13 @@ game.registerLevel({
           loot(game);
         },
       },
+      {
+        name: 'From the Ashes',
+        weight: 5,
+        action: (game: Game) => {
+          game.log('Members of your party help rebuild after pyroclastic flow detroys some of the town');
+        },
+      },
     ];
 
     const bossState = new (class BossStateWrapper {
@@ -200,8 +207,21 @@ game.registerLevel({
         },
         action: (game: Game) => {
           bossState.attackCharged = false;
-          game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
-          game.killPartyMembers(1);
+          const r = rollDie(20) + calcMod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
+          if ( r <=18 ) {
+            game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
+            game.killPartyMembers(1);
+          } else {
+            game.log('The magma elemental throws its hands down and the ball of magma shoots forward narrowly missing a party member!');
+          }
+        },
+      },
+      {
+        name: 'Stomp',
+        weight: 1,
+        action: (game: Game) => {
+          game.log('The magma elemental lifts its leg high and stops on the ground creating a shock wave!'); // The party\'s dexterity decreases by 2.');
+          // game.party.dexmod += -2;
         },
       },
     ];
