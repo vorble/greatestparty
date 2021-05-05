@@ -18,6 +18,7 @@ class Game {
   textLog: Array<string>;
   levels: Array<Level>;
   level: number;
+  timeouts: Array<{ callback: () => void, clock: Clock }>;
 
   constructor() {
     this.party = new Party();
@@ -34,6 +35,7 @@ class Game {
     this.textLog = [];
     this.levels = [];
     this.level = 0;
+    this.timeouts = [];
   }
 
   registerLevel(level: Level) {
@@ -69,12 +71,12 @@ class Game {
       else if (d > c) c = d;
       return a + b + c;
     }
-    this.party.str = topThreeOfFourD6();
-    this.party.dex = topThreeOfFourD6();
-    this.party.con = topThreeOfFourD6();
-    this.party.int = topThreeOfFourD6();
-    this.party.wis = topThreeOfFourD6();
-    this.party.cha = topThreeOfFourD6();
+    this.party.strbase = topThreeOfFourD6();
+    this.party.dexbase = topThreeOfFourD6();
+    this.party.conbase = topThreeOfFourD6();
+    this.party.intbase = topThreeOfFourD6();
+    this.party.wisbase = topThreeOfFourD6();
+    this.party.chabase = topThreeOfFourD6();
 
     this.startLevel();
   }
@@ -407,6 +409,15 @@ class Game {
       }
     };
 
+    // TODO: Gross, filter with side effects.
+    this.timeouts = this.timeouts.filter((timeout) => {
+      if (clockCompare(this, timeout.clock) >= 0) {
+        timeout.callback();
+        return false;
+      }
+      return true;
+    });
+
     for (const status of STATUSES) {
       const s = game.party.status[status];
       if (s.active) {
@@ -698,6 +709,13 @@ class Game {
         s.doBuyActions(this);
       }
     }
+  }
+
+  setTimeout(callback: () => void, clock: ClockInput) {
+    this.timeouts.push({
+      callback,
+      clock: clockAdd(this, clockInput(clock)),
+    });
   }
 }
 

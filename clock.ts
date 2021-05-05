@@ -16,6 +16,34 @@ interface Clock {
   tick: number;
 }
 
+interface ClockInput {
+  year?: number;
+  season?: number;
+  term?: number;
+  tock?: number;
+  tick?: number;
+}
+
+function clockInput(clock: ClockInput): Clock {
+  return unwrapClock({
+    year: clock.year == null ? 0 : clock.year,
+    season: clock.season == null ? 0 : clock.season,
+    term: clock.term == null ? 0 : clock.term,
+    tock: clock.tock == null ? 0 : clock.tock,
+    tick: clock.tick == null ? 0 : clock.tick,
+  });
+}
+
+function clockAdd(a: Clock, b: Clock) {
+  return unwrapClock({
+    year: a.year + b.year,
+    season: a.season + b.season,
+    term: a.term + b.term,
+    tock: a.tock + b.tock,
+    tick: a.tick + b.tick,
+  });
+}
+
 function clockCompare(a: Clock, b: Clock): -1 | 0 | 1 {
   if (a.year < b.year) return -1;
   else if (a.year > b.year) return 1;
@@ -53,7 +81,7 @@ interface ClockActions {
   doYearActions?: (game: Game) => void;
 }
 
-function unwrapClock(clock: Clock) {
+function unwrapClock(clock: Clock): Clock {
   while (clock.tick >= TICKS_PER_TOCK) {
     clock.tick -= TICKS_PER_TOCK;
     clock.tock += 1;
@@ -70,4 +98,5 @@ function unwrapClock(clock: Clock) {
       }
     }
   }
+  return clock;
 }
