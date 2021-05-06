@@ -32,10 +32,10 @@ game.registerLevel({
     town.bossReward = 200;
 
     const townState = new (class TownStateWrapper {
-      get bodiesOutToSea(): number { return game.town.state.number1; }
-      set bodiesOutToSea(value: number) { game.town.state.number1 = value; }
-      get bodiesInTheAir(): number { return game.town.state.number2; }
-      set bodiesInTheAir(value: number) { game.town.state.number2 = value; }
+      get bodiesOutToSea(): number { return game.town.state.numbers[0] || 0; }
+      set bodiesOutToSea(value: number) { game.town.state.numbers[0] = value; }
+      get bodiesInTheAir(): number { return game.town.state.numbers[1] || 0; }
+      set bodiesInTheAir(value: number) { game.town.state.numbers[1] = value; }
     });
 
     function maybeInflictIslandCurse(game: Game) {
@@ -277,10 +277,10 @@ game.registerLevel({
     boss.armor.elemental = 4; // ice armor
 
     const bossState = new (class BossStateWrapper {
-      get inStaringContest(): boolean { return game.boss.state.flag1; }
-      set inStaringContest(value: boolean) { game.boss.state.flag1 = value; }
-      get wonStaringContest(): boolean { return game.boss.state.flag2; }
-      set wonStaringContest(value: boolean) { game.boss.state.flag2 = value; }
+      get inStaringContest(): boolean { return game.boss.state.flags[0] || false; }
+      set inStaringContest(value: boolean) { game.boss.state.flags[0] = value; }
+      get wonStaringContest(): boolean { return game.boss.state.flags[1] || false; }
+      set wonStaringContest(value: boolean) { game.boss.state.flags[1] = value; }
     });
 
     boss.events = [

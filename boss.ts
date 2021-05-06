@@ -7,25 +7,13 @@ interface BossEvent {
 }
 
 class BossState {
-  flag1: boolean;
-  flag2: boolean;
   flags: Array<boolean>;
-  number1: number;
-  number2: number;
   numbers: Array<number>;
-  string1: string;
-  string2: string;
   strings: Array<string>;
 
   constructor() {
-    this.flag1 = false;
-    this.flag2 = false;
     this.flags = [];
-    this.number1 = 0;
-    this.number2 = 0;
     this.numbers = [];
-    this.string1 = '';
-    this.string2 = '';
     this.strings = [];
   }
 }
