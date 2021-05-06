@@ -11,12 +11,19 @@ class Party implements Fighter {
   questPoints: number;
   damage: number;
 
-  str: number;
-  dex: number;
-  con: number;
-  int: number;
-  wis: number;
-  cha: number;
+  strbase: number;
+  dexbase: number;
+  conbase: number;
+  intbase: number;
+  wisbase: number;
+  chabase: number;
+
+  strmod: number;
+  dexmod: number;
+  conmod: number;
+  intmod: number;
+  wismod: number;
+  chamod: number;
 
   inventoryWeapon: Inventory;
   inventoryArmor: Inventory;
@@ -43,12 +50,19 @@ class Party implements Fighter {
     this.questPoints = 0;
     this.damage = 0;
 
-    this.str = 0;
-    this.dex = 0;
-    this.con = 0;
-    this.int = 0;
-    this.wis = 0;
-    this.cha = 0;
+    this.strbase = 0;
+    this.dexbase = 0;
+    this.conbase = 0;
+    this.intbase = 0;
+    this.wisbase = 0;
+    this.chabase = 0;
+
+    this.strmod = 0;
+    this.dexmod = 0;
+    this.conmod = 0;
+    this.intmod = 0;
+    this.wismod = 0;
+    this.chamod = 0;
 
     this.inventoryWeapon = new Inventory();
     this.inventoryArmor = new Inventory();
@@ -61,5 +75,29 @@ class Party implements Fighter {
 
     this.status = new Status();
     this.skills = new Skills();
+  }
+
+  get str(): number {
+    return Math.max(0, this.strbase + this.strmod);
+  }
+
+  get dex(): number {
+    return Math.max(0, this.dexbase + this.dexmod);
+  }
+
+  get con(): number {
+    return Math.max(0, this.conbase + this.conmod);
+  }
+
+  get int(): number {
+    return Math.max(0, this.intbase + this.intmod);
+  }
+
+  get wis(): number {
+    return Math.max(0, this.wisbase + this.wismod);
+  }
+
+  get cha(): number {
+    return Math.max(0, this.chabase + this.chamod);
   }
 }

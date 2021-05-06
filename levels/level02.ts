@@ -256,7 +256,10 @@ game.registerLevel({
         weight: 1,
         action: (game: Game) => {
           game.log('The magma elemental lifts its leg high and stops on the ground creating a shock wave!'); // The party\'s dexterity decreases by 2.');
-          // game.party.dexmod += -2;
+          game.party.dexmod += -2;
+          game.setTimeout(() => {
+            game.party.dexmod += 2;
+          }, { term: 1});
         },
       },
     ];
