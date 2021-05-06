@@ -42,6 +42,10 @@ game.registerLevel({
       }
     }
 
+    function bellMod(stat: number) {
+      return calcmod(stat, [[0,-5],[2,-4],[4,-3],[6,-2],[8,-1],[10,0],[12,1],[14,2],[16,3],[18,4],[20,5]]);
+    }
+
     town.events = [
       {
         name: "A Faux Pas",
@@ -50,7 +54,7 @@ game.registerLevel({
           return !game.party.status.angeredGods.active
         },
         action: (game: Game) => {
-          // Being charasmatic helps you avoid making a faux pas at a local ceremony. 
+          // Being charasmatic helps you avoid making a faux pas at a local ceremony.
           const r = rollDie(20) + calcmod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
           if (r <= 4) {
             game.party.status.angeredGods.active = true;
@@ -69,7 +73,7 @@ game.registerLevel({
       },
       {
         name: 'Angered Gods',
-        weight: 100,
+        weight: 50,
         predicate: (game: Game) => {
           return game.party.status.angeredGods.active;
         },
@@ -86,33 +90,33 @@ game.registerLevel({
       },
       {
         name: 'Digging lava irrigation',
-        weight: 10,
+        weight: 5,
         action: (game: Game) => {
           const wis = rollDie(20) + calcmod(game.party.wis, [[0, -1], [6, 0],[12, +1]]); // Wisdom tells you not to stand in the way of pyroclastic flow
           const dex = rollDie(20) + calcmod(game.party.dex, [[0, -1], [6, 0],[12, +1],[16, +2]]); // Dexterity helps you get out of the way when you do stand in the way of pyroclastic flow
           if ( wis <= 7) {
             if ( dex <= 12 ) {
-              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is overcome by pyroclastic flow and dies.'); 
+              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is overcome by pyroclastic flow and dies.');
               game.killPartyMembers(1);
-            } else { 
-              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is nearly overcome by pyroclastic flow, but manages to escape with their life'); 
+            } else {
+              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is nearly overcome by pyroclastic flow, but manages to escape with their life.');
             }
           } else if ( wis > 7 && wis <= 18 ) {
             game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town.');
           } else {
             if ( dex <= 13 ) {
               game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town.');
-            } else { 
+            } else {
               game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town. One party member tries to outrun the pyroclastic flow, but is overcome and dies.');
               game.killPartyMembers(1);
             }
-          }    
+          }
           loot(game);
         },
       },
       {
         name: 'Exploring the Caldera',
-        weight: 10,
+        weight: 5,
         action: (game: Game) => {
           if (!game.party.status.angeredGods.active) { //exploring is safe if the gods arent mad
             game.log('Some members of your party go exploring the caldera.');
@@ -134,7 +138,7 @@ game.registerLevel({
       },
       {
         name: 'Farm Aid',
-        weight: 10,
+        weight: 5,
         action: (game: Game) => {
             if ( game.town.alignment <= 30 ) {
               game.log('Your party dedicates some time to help local farmers.');
@@ -143,7 +147,7 @@ game.registerLevel({
               const r = (rollDie(4) + calcmod(game.town.alignment, [[30, 0], [40, 1], [50, 2]]));
               game.log('Your party dedicates some time to help local farmers. They donate ' + r + ' food to your party as thanks!');
               game.party.food += r;
-            } 
+            }
           loot(game);
         },
       },
@@ -152,6 +156,37 @@ game.registerLevel({
         weight: 5,
         action: (game: Game) => {
           game.log('Members of your party help rebuild after pyroclastic flow detroys some of the town');
+        },
+      },
+      {
+        name: 'Vigilantism',
+        weight: 3,
+        action: (game: Game) => {
+          game.log('Your party takes on some outlaws that have been harrasing the townfolks.');
+          //Being smart helps you trap the outlaws
+          if ( rollDie(20) + bellMod(game.party.int) <= 15 ) {
+            game.log('Your party tries to ambush the outlaws, but the outlaws escape and regroup.');
+            if ( rollDie(20) + bellMod(game.party.str) <= 10 && rollDie(20) + bellMod(game.party.dex) <= 10 ) {
+              game.log('The outlaws return and start a brawl, making off with some gold and equipment.');
+              game.adjustAlignment(-3);
+              //adjust gold and inventory
+              if ( rollDie(20) <= 8 ) {
+                game.log('One party member dies in the brawl.');
+                game.killPartyMembers(1);
+              }
+            } else {
+              game.log('The outlaws return and start a brawl, with the help of some townsfolk your party manages to drive them out of town.');
+              game.adjustAlignment(-2);
+            }
+          } else {
+            if ( rollDie(20) + bellMod(game.party.str) <= 10 ) {
+              game.log('Your party ambushes the outlaws, but they over power the party members and escape. One party member is killed.');
+              game.killPartyMembers(1);
+            } else {
+              game.log('Your party manages to ambush some of the outlaws, take their weapons, and even convice some of them to join the party. The rest are executed.');
+              //loot and new members here
+            }
+          }
         },
       },
     ];
@@ -189,7 +224,7 @@ game.registerLevel({
       },
       {
         name: 'Finished Charging',
-        weight: 1,
+        weight: 10,
         predicate: (game: Game) => {
           return bossState.chargingAttack;
         },
@@ -201,7 +236,7 @@ game.registerLevel({
       },
       {
         name: 'Kahmehamagma',
-        weight: 1,
+        weight: 10,
         predicate: (game: Game) => {
           return bossState.attackCharged;
         },
