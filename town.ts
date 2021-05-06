@@ -1,8 +1,32 @@
+interface TownHooks extends ClockActions {
+  onTownArrive?: (game: Game) => void;
+  onTownDepart?: (game: Game) => void;
+}
+
 interface TownEvent {
-  // Name to help distinguish between events. // TODO: Do I need the name?
   name: string;
   weight: number;
-  // Optional predicate to disable event based on state of game.
+  predicate?: (game: Game) => boolean;
+  action: (game: Game) => void;
+}
+
+interface TownQuest {
+  name: string;
+  weight: number;
+  predicate?: (game: Game) => boolean;
+  action: (game: Game) => void;
+}
+
+interface TownEnvironment {
+  name: string;
+  weight: number;
+  predicate?: (game: Game) => boolean;
+  action: (game: Game) => void;
+}
+
+interface TownWeather {
+  name: string;
+  weight: number;
   predicate?: (game: Game) => boolean;
   action: (game: Game) => void;
 }
@@ -51,7 +75,9 @@ class Town {
   inventoryArmorSell: Inventory;
 
   state: TownState;
+  hooks: TownHooks;
   events: Array<TownEvent>;
+  quests: Array<TownQuest>;
 
   constructor() {
     this.name = 'Town';
@@ -82,6 +108,8 @@ class Town {
     this.inventoryArmorSell = new Inventory();
 
     this.state = new TownState();
+    this.hooks = {};
     this.events = [];
+    this.quests = [];
   }
 }

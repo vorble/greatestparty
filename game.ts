@@ -93,6 +93,9 @@ class Game {
     this.boss = boss;
 
     this.log('Welcome to ' + this.town.name + '!');
+    if (this.town.hooks.onTownArrive) {
+      this.town.hooks.onTownArrive(this);
+    }
   }
 
   winLevel() {
@@ -104,6 +107,9 @@ class Game {
   nextLevel() {
     this.level += 1;
     if (this.level <= this.levels.reduce((result, l) => Math.max(result, l.level), 0)) {
+      if (this.town.hooks.onTownDepart) {
+        this.town.hooks.onTownDepart(this);
+      }
       this.startLevel();
     } else {
       // You win the game.
@@ -125,6 +131,11 @@ class Game {
   addPartyMembers(count: number) {
     this.party.size += count;
     this.calculateEquipment();
+  }
+
+  receiveGold(amount: number) {
+    this.log('Your party receives ' + amount + ' gold.');
+    this.party.gold += amount;
   }
 
   joinPartyFromTown(count: number) {
@@ -370,6 +381,9 @@ class Game {
   }
 
   round() {
+    // TODO: It is possible that the party can die between the various types of events. There should
+    // be more checks for a dead party during a game round.
+
     // ----------------------------------------------------
     // TIME KEEPING
     // ----------------------------------------------------
@@ -435,6 +449,8 @@ class Game {
         doActions(s);
       }
     }
+
+    doActions(this.town.hooks);
 
     // ----------------------------------------------------
     // EATING AND DRINKING
@@ -546,6 +562,12 @@ class Game {
       // number of active quests.
       const questsCompleted = Math.min(this.party.quests, Math.floor(this.party.questPoints / POINTS_PER_QUEST));
       if (questsCompleted > 0) {
+        for (let i = 0; i < questsCompleted; ++i) {
+          const quest = this.pickTownQuest();
+          if (quest != null) {
+            quest.action(this);
+          }
+        }
         this.party.quests -= questsCompleted;
         this.party.questsCompleted += questsCompleted;
         this.party.gold += questsCompleted * GOLD_PER_QUEST;
@@ -587,47 +609,33 @@ class Game {
   }
 
   pickTownEvent(): null | TownEvent {
-    let totalWeight = 0;
-    const events = [];
-    for (const event of this.town.events) {
-      if (event.predicate == null || event.predicate(this)) {
-        totalWeight += event.weight;
-        events.push(event);
-      }
-    }
-    if (totalWeight == 0 || events.length == 0) {
+    const events = this.town.events.filter((event) => {
+      return event.predicate == null || event.predicate(this);
+    });
+    if (events.length == 0) {
       return null;
     }
-    let choice = rollDie(totalWeight) - 1; // TODO: Should I expose the _randomInt function?
-    for (const event of events) {
-      if (choice < event.weight) {
-        return event;
-      }
-      choice -= event.weight;
+    return rollChoiceWeighted(events);
+  }
+
+  pickTownQuest(): null | TownQuest {
+    const quests = this.town.quests.filter((quest) => {
+      return quest.predicate == null || quest.predicate(this);
+    });
+    if (quests.length == 0) {
+      return null;
     }
-    throw new Error('Assertion error. Could not pick town event.');
+    return rollChoiceWeighted(quests);
   }
 
   pickBossEvent(): null | BossEvent {
-    let totalWeight = 0;
-    const events = [];
-    for (const event of this.boss.events) {
-      if (event.predicate == null || event.predicate(this)) {
-        totalWeight += event.weight;
-        events.push(event);
-      }
-    }
-    if (totalWeight == 0 || events.length == 0) {
+    const events = this.boss.events.filter((event) => {
+      return event.predicate == null || event.predicate(this);
+    });
+    if (events.length == 0) {
       return null;
     }
-    let choice = rollDie(totalWeight) - 1; // TODO: Should I expose the _randomInt function?
-    for (const event of events) {
-      if (choice < event.weight) {
-        return event;
-      }
-      choice -= event.weight;
-    }
-    throw new Error('Assertion error. Could not pick boss event.');
+    return rollChoiceWeighted(events);
   }
 
   adjustPartyEquipmentRelative(weapon: Equipment, armor: Equipment) {
