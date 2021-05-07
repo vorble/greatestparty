@@ -1,3 +1,5 @@
+const PARTY_MEMBER_HP = 100;
+
 interface Level {
   level: number;
   newTown: (game: Game) => { town: Town, boss: Boss };
@@ -503,7 +505,6 @@ class Game {
     // FIGHTING BOSS
     // ----------------------------------------------------
     if (this.fightingBoss) {
-      const PARTY_MEMBER_HP = 100;
       const damageToBoss = fightCalculateAttack(this.party, this.boss);
       const damageToParty = fightCalculateAttack(this.boss, this.party);
       this.party.damage += damageToParty;

@@ -100,4 +100,8 @@ class Party implements Fighter {
   get cha(): number {
     return Math.max(0, this.chabase + this.chamod);
   }
+
+  get health(): number {
+    return Math.max(0, this.size * PARTY_MEMBER_HP - this.damage);
+  }
 }

@@ -29,6 +29,7 @@ class UIParty {
 
   date: HTMLElement;
   size: HTMLElement;
+  health: HTMLElement;
   quests: HTMLElement;
   questsCompleted: HTMLElement;
   gold: HTMLElement;
@@ -45,6 +46,7 @@ class UIParty {
 
     this.date = getElementById('panel-party-date-value');
     this.size = getElementById('panel-party-size-value');
+    this.health = getElementById('panel-party-health-value');
     this.quests = getElementById('panel-party-quests-value');
     this.questsCompleted = getElementById('panel-party-quests-completed-value');
     this.gold = getElementById('panel-party-gold-value');
@@ -76,6 +78,7 @@ class UIParty {
     }
 
     this.size.innerText = '' + game.party.size;
+    this.health.innerText = '' + game.party.health;
     this.quests.innerText = '' + game.party.quests;
     this.questsCompleted.innerText = '' + game.party.questsCompleted;
     this.gold.innerText = '' + game.party.gold;
