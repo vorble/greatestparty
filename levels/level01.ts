@@ -4,7 +4,9 @@ game.registerLevel({
     const town = new Town();
     const boss = new Boss();
 
-    town.name = 'Palm Town';
+    // A small, yet functional town by the sea. Named after the Saint Rumaa who settled here in
+    // 112 after being dismissed from the church order after the new rules took over after the war.
+    town.name = 'Saint Rumaa';
     town.townsfolk = 100;
     town.hireCost = 200;
     town.conscriptRatio = 0.4;
@@ -44,6 +46,10 @@ game.registerLevel({
       set ticksMaybeInflictIslandCurse(value: number) { game.town.state.numbers[4] = value; }
       get questHermitRockGood(): number { return game.town.state.numbers[5] || 0; }
       set questHermitRockGood(value: number) { game.town.state.numbers[5] = value; }
+      get questKidShellTalk(): number { return game.town.state.numbers[6] || 0; }
+      set questKidShellTalk(value: number) { game.town.state.numbers[6] = value; }
+      get questCliffsCliffTalk(): number { return game.town.state.numbers[7] || 0; }
+      set questCliffsCliffTalk(value: number) { game.town.state.numbers[7] = value; }
 
       get questHermitRockIntroduced(): boolean { return game.town.state.flags[0] || false; }
       set questHermitRockIntroduced(value: boolean) { game.town.state.flags[0] = value; }
@@ -51,6 +57,14 @@ game.registerLevel({
       set questHermitTreasureAvailable(value: boolean) { game.town.state.flags[1] = value; }
       get questHermitTreasureIntroduced(): boolean { return game.town.state.flags[2] || false; }
       set questHermitTreasureIntroduced(value: boolean) { game.town.state.flags[2] = value; }
+      get questKidShellIntroduced(): boolean { return game.town.state.flags[3] || false; }
+      set questKidShellIntroduced(value: boolean) { game.town.state.flags[3] = value; }
+      get questKidShellFinished(): boolean { return game.town.state.flags[4] || false; }
+      set questKidShellFinished(value: boolean) { game.town.state.flags[4] = value; }
+      get questCliffsCliffIntroduced(): boolean { return game.town.state.flags[5] || false; }
+      set questCliffsCliffIntroduced(value: boolean) { game.town.state.flags[5] = value; }
+      get questCliffsCliffFinished(): boolean { return game.town.state.flags[6] || false; }
+      set questCliffsCliffFinished(value: boolean) { game.town.state.flags[6] = value; }
     });
 
     function maybeInflictIslandCurse(game: Game) {
@@ -137,7 +151,7 @@ game.registerLevel({
     town.events = [
       {
         name: 'Call of the Sea',
-        weight: 10,
+        weight: 1,
         predicate: (game: Game) => {
           return game.party.status.islandCurse.active;
         },
@@ -157,7 +171,7 @@ game.registerLevel({
       },
       {
         name: 'Unwelcome Here',
-        weight: 10,
+        weight: 1,
         predicate: (game: Game) => game.town.alignment <= -20,
         action: (game: Game) => {
           const roll = (rollDie(20)
@@ -219,7 +233,7 @@ game.registerLevel({
         action: (game: Game) => {
           const r = rollDie(20);
           if (r <= 10) {
-            game.log('Dark clouds roll in from the sea whipping up raging winds tha carry one party member into the sky.');
+            game.log('Dark clouds roll in from the sea whipping up raging winds that carry one party member into the sky.');
             game.killPartyMembers(1);
             ++townState.bodiesInTheAir;
           } else {
@@ -266,8 +280,8 @@ game.registerLevel({
             } else {
               game.log('Your party volunteers to help the hermit move the rocks and your party arranges them with some effort.');
             }
-            if (roll >= 15) {
-              let saying = 'ME GUSTA';
+            if (roll >= 12) {
+              let saying = 'ERR';
               switch (++townState.questHermitRockGood) {
                 case 1: saying = 'Yes, yes. This was what I was going for.'; break;
                 case 2: saying = 'I was already tired of your last arrangement, but this is fine.'; break;
@@ -292,56 +306,120 @@ game.registerLevel({
           }
         },
       },
-      /*
       {
-        name: 'Searching for Shells',
+        // Help the local children find shells to learn something about the town and the lives of
+        // the young in it.
+        name: 'Big Kids, Big Shells',
         weight: 1,
+        predicate: (game: Game) => {
+          return !townState.questKidShellFinished;
+        },
         action: (game: Game) => {
+          if (!townState.questKidShellIntroduced) {
+            game.log(
+              'Your party comes across a pair of youths scouring the white beach for big sea shells.'
+              + ' The boy, noticing your party, hurridly turns toward and shouts to the girl, "Mariaaaa! It\'s those people! They came here!"'
+            );
+            townState.questKidShellIntroduced = true;
+          }
           const r = rollDie(20) + calcmod(game.party.wis, [[0, -1], [6, 0]]); // Being unwise could lead you into the crab nest.
           if (r <= 2) {
-            game.log('Some members of your party comb the shore for sea shells and disturbs a giant crab nest, leading to one death.');
+            game.log('Your party searches the beach for shells with the youths, but a careless member disturbs a giant crab nest, leading to their death.');
             game.killPartyMembers(1);
           } else if (r <= 10) {
-            game.log('Some members of your party comb the shore for sea shells, but don\'t find anything special.');
-          } else if (r <= 18) {
-            game.log('Some members of your party comb the shore for sea shells and find a really nice one that someone from town buys for 1 gold.');
-            game.party.gold += 1;
+            game.log('Your party searches the beach for shells with the youths and finds nothing special.');
           } else {
-            game.log('Some members of your party comb the shore for sea shells and find a rare shell that someone from town buys for 10 gold.');
-            game.party.gold += 10;
+            let kind = 'ERR';
+            switch (rollDie(9)) {
+              case 1: case 2: kind = 'really big'; break;
+              case 3: case 4: kind = 'ornate looking'; break;
+              case 5: case 6: kind = 'fist sized'; break;
+              case 7: case 8: kind = 'hefty'; break;
+              case 9: kind = 'monsterous'; break;
+            }
+            game.log('Your party searches the beach for shells with the youths and find a ' + kind + ' shell.');
+            game.receiveGold(2);
+            if (kind == 'monsterous') {
+              game.log('Your party presents the monster shell to the youths. Maria exclaims "Holy smokes! Dad was right about the monster shell!" and James joins in "Woaah! Look at that!"');
+              game.log('Maria approaches your party excitedly, "My mom gave me this, but you can have it."');
+              loot(game);
+              loot(game);
+              loot(game);
+              game.receiveGold(15);
+              townState.questKidShellFinished = true;
+            } else {
+              if (townState.questKidShellTalk < 5) {
+                let sayer = 'ERR';
+                let saying = 'ERR';
+                switch (++townState.questKidShellTalk) {
+                  case 1: sayer = 'Maria'; saying = 'James can run really fast and he always finds the good shells! Yours is pretty good though!'; break;
+                  case 2: sayer = 'James'; saying = 'Maria really appreciates it when I play with her since her dad died.'; break;
+                  case 3: sayer = 'Maria'; saying = 'James is always in trouble with his parents! My mom say\'s I\'m the most well behaved daughter anyone has ever had!'; break;
+                  case 4: sayer = 'James'; saying = 'My parents are really hard on me, but I\'m the only friend Maria has so I sneak away from home sometimes to play.'; break;
+                  case 5: sayer = 'Maria'; saying = 'My dad said there was a ginormous shell somewhere on this beach!'; break;
+                }
+                game.log(sayer + ' says "' + saying + '"');
+              }
+            }
           }
         },
       },
-      */
-      /*
       {
-        name: 'Cliff Ruins',
+        // Scale the cliffs to find out about "Cliff" and redeem him from a life of menial work.
+        name: 'A Cliff Is a Terrible Thing to Waste',
         weight: 1,
+        predicate: (game: Game) => {
+          return !townState.questCliffsCliffFinished;
+        },
         action: (game: Game) => {
+          if (!townState.questCliffsCliffIntroduced) {
+            game.log('Along the well traveled road leading east out of town along the coast, the land rises giving way to shear cliffs with gentle waves crashing along their bottom. A man stands precariously at the edge, desperately looking for something, muttering to himself "Or was it about here?"');
+            game.log('As your party approaches he waves you down, "You wouldn\'t mind helping ol\' Cliff by climbing down there and taking a peek into the inlet, would you?"');
+            townState.questCliffsCliffIntroduced = true;
+          }
           const roll = (rollDie(20)
-            + calcmod(game.party.str, [[0, -2], [5, 0]]) // Might be too weak to climb well
+            + calcmod(game.party.str, [[0, -2], [5, -1], [9, 0]]) // Might be too weak to climb well
             + calcmod(game.party.dex, [[0, -2], [5, -1], [9, 0]]) // Nagivaging the cliffs is dangerous without dex.
             + calcmod(game.party.int, [[0, 0], [10, 1], [14, 2]]) // Being smart might help finding something useful.
             + (game.party.cha >= 13 && game.party.wis <= 7 ? -2 : 0) // On a dare, one might do something stupid.
           );
           if (roll <= 3) {
-            game.log('Your party scales the cliffs to explore some ruins, but one member falls to their death.');
+            game.log('Your party scales the cliffs to look for the inlet, but one member falls to their death.');
             game.killPartyMembers(1);
           } else if (roll <= 10) {
-            game.log('Your party scales the cliffs to explore some ruins.');
+            game.log('Your party scales the cliffs to look for the inlet, but finds only sheer rock face.');
           } else if (roll <= 22) {
-            game.log('Your party scales the cliffs to explore some ruins and find 10 gold.');
-            game.party.gold += 10;
+            if (townState.questCliffsCliffTalk < 5) {
+              let saying = 'ERR';
+              switch (++townState.questCliffsCliffTalk) {
+                case 1: saying = 'Maybe it was just a little farther down.'; break;
+                case 2: saying = 'Or was it over there?'; break;
+                case 3: saying = 'When I was fishing I saw it about three quarters of the way up this cliff, or was it half way?'; break;
+                case 4: saying = 'When we find the inlet, Hansen and his toadies won\'t have anything to pester me about anymore.'; break;
+                case 5: saying = 'It has to be around here! I know I saw it! Why did I ever say anything... now...'; break;
+              }
+              game.log('Your party scales the cliffs to look for the inlet, but only finds a section large enough for one person. Cliff helps the last of your climbers back onto land "' + saying + '" He gives you something for your trouble.');
+              loot(game);
+              game.receiveGold(rollRange(2, 4));
+            } else {
+              game.log('Your party scales the cliffs to look for the inlet, but only finds a section large enough for one person. Cliff helps the last of your climbers back onto land with a somber look.');
+              game.log('"Maybe they\'re right, maybe I didn\'t see the inlet. They think of me as a fool and tell me the only way a drunk like me can be welcome in Rumaa is if I patrol this road along the cliffs. Maybe I should just accept my place..." he trails off, stares for a while, and resumes speaking "Here, take this, I was saving it to buy a hoist to pull up whatever might have been inside, but, well, yeah."');
+              game.receiveGold(rollRange(15, 25));
+              townState.questCliffsCliffFinished = true;
+              loot(game);
+              loot(game);
+            }
           } else {
-            game.log('Your party scales the cliffs to explore some ruins and discover ancient runes that when spoken summons a light drawing one member into the sky.');
+            game.log('Your party scales the cliffs to look for the inlet, but disconvers some ancient runes that when spoken summons a light drawing one party member into the sky.');
             game.killPartyMembers(1);
+            game.log('Cliff shouts from above, "God damn! Did you all just see that! I\'m getting out of here!"');
+            townState.questCliffsCliffFinished = true;
             loot(game);
             loot(game);
             loot(game);
           }
         },
       },
-      */
     ];
 
     boss.name = 'Octopod';
