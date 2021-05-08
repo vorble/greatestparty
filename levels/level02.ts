@@ -42,8 +42,20 @@ game.registerLevel({
       }
     }
 
-    function bellMod(stat: number) {
-      return calcmod(stat, [[0,-5],[2,-4],[4,-3],[6,-2],[8,-1],[10,0],[12,1],[14,2],[16,3],[18,4],[20,5]]);
+    function linearMod(number: number) {
+      return calcmod(number, [[0,-5],[2,-4],[4,-3],[6,-2],[8,-1],[10,0],[12,1],[14,2],[16,3],[18,4],[20,5]]);
+    }
+
+    function rollLoseEquipment (game: Game) {
+      const weaponChoices = EQ_FINE_CATEGORIES
+        .filter((cat) => game.party.inventoryWeapon[cat] > 0)
+        .map((cat) => { return { weight: 1, inv: game.party.inventoryWeapon, typ: 'weapon', cat }; });
+      const armorChoices = EQ_FINE_CATEGORIES
+        .filter((cat) => game.party.inventoryArmor[cat] > 0)
+        .map((cat) => { return { weight: 1, inv: game.party.inventoryArmor, typ: 'armor', cat }; });
+      const c = rollChoiceWeighted(weaponChoices.concat(armorChoices));
+      c.inv[c.cat] -= 1;
+      game.log('You lose 1 ' + c.cat + ' ' + c.typ + '.');
     }
 
     town.events = [
@@ -163,28 +175,41 @@ game.registerLevel({
         weight: 3,
         action: (game: Game) => {
           game.log('Your party takes on some outlaws that have been harrasing the townfolks.');
-          //Being smart helps you trap the outlaws
-          if ( rollDie(20) + bellMod(game.party.int) <= 15 ) {
+          if ( rollDie(20) + linearMod(game.party.int) <= 15 ) {       //Being smart helps you trap the outlaws
             game.log('Your party tries to ambush the outlaws, but the outlaws escape and regroup.');
-            if ( rollDie(20) + bellMod(game.party.str) <= 10 && rollDie(20) + bellMod(game.party.dex) <= 10 ) {
+                                                                       //You must be strong and dexterous
+                                                                       //to defeat the outlaws in a brawl
+            if ( rollDie(20) + linearMod(game.party.str) <= 10 && rollDie(20) + linearMod(game.party.dex) <= 10 ) {
               game.log('The outlaws return and start a brawl, making off with some gold and equipment.');
-              game.adjustAlignment(-3);
-              //adjust gold and inventory
-              if ( rollDie(20) <= 8 ) {
+              game.adjustAlignment(-3);                                //but you lost and now the towns people dislike you
+              let gold = 0;                                            //and the outlaws will take the next 7 lines to rob you
+              for (let i = rollDie(4) + 2; i >= 0; --i) {
+                gold += rollDie(10);
+                rollLoseEquipment(game);
+              }
+              if (gold > game.party.gold) {  game.receiveGold(-game.party.gold); }
+              else { game.receiveGold(-gold); }
+              if ( rollDie(20) <= 8 ) {                                 //also theres a 40% chance outlaws kill a party member
                 game.log('One party member dies in the brawl.');
                 game.killPartyMembers(1);
               }
-            } else {
-              game.log('The outlaws return and start a brawl, with the help of some townsfolk your party manages to drive them out of town.');
-              game.adjustAlignment(-2);
+            } else {                                                    //If you hadn't of been so slow and weak
+              game.log('The outlaws return and start a brawl, with the help of some townsfolk your party manages to drive them out of town.');                                                        //you would have won.
+              game.adjustAlignment(-2);                                 //but town is still upset that you instigated a brawl
+              for (let i = rollDie(3); i >= 0; --i) { loot(game); }     // at least you walk off with some equipment
             }
-          } else {
-            if ( rollDie(20) + bellMod(game.party.str) <= 10 ) {
-              game.log('Your party ambushes the outlaws, but they over power the party members and escape. One party member is killed.');
-              game.killPartyMembers(1);
-            } else {
+          } else {                                                      //If you had  been smart about the ambush
+            if ( rollDie(20) + linearMod(game.party.str) <= 6 ) {       //theres still a chance they could over power you
+              const dead = rollDie(3);
+              game.log('Your party ambushes the outlaws, but they over power the party members and escape. '+dead+' party members are killed.');
+              game.killPartyMembers(dead);
+            } else {                                                    //If you had been smart about the ambush and strong
+                                                                        //in its execution, you'd get members and equipment
               game.log('Your party manages to ambush some of the outlaws, take their weapons, and even convice some of them to join the party. The rest are executed.');
-              //loot and new members here
+              for (let i = rollDie(3) + 3; i >= 0; --i) {
+                loot(game);
+                if (rollRatio() <= 0.3) { game.addPartyMembers(1); }
+              }
             }
           }
         },
