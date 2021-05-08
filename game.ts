@@ -45,7 +45,7 @@ class Game {
   }
 
   newGame() {
-    this.year = 307 + rollDie(SIGNS.length);
+    this.year = 307 + rollDie(SIGNS.length * 3);
     this.season = rollDie(4) - 1;
     this.term = rollDie(TERMS_PER_SEASON) - 1;
     this.tock = 0;
@@ -73,12 +73,39 @@ class Game {
       else if (d > c) c = d;
       return a + b + c;
     }
-    this.party.strbase = topThreeOfFourD6();
-    this.party.dexbase = topThreeOfFourD6();
-    this.party.conbase = topThreeOfFourD6();
-    this.party.intbase = topThreeOfFourD6();
-    this.party.wisbase = topThreeOfFourD6();
-    this.party.chabase = topThreeOfFourD6();
+    function bottomThreeOfFourD6() {
+      let a = rollDie(6);
+      let b = rollDie(6);
+      let c = rollDie(6);
+      let d = rollDie(6);
+      if (d < a) a = d;
+      else if (d < b) b = d;
+      else if (d < c) c = d;
+      return a + b + c;
+    }
+    function threeD6No5() {
+      function roll() {
+        let c = rollDie(6);
+        while (5 == c) {
+          c = rollDie(6);
+        }
+        return c;
+      }
+      return roll() + roll() + roll();
+    }
+    function twoD8() {
+      return rollDie(8) + rollDie(8);
+    }
+    //const roller = topThreeOfFourD6;
+    const roller = bottomThreeOfFourD6;
+    //const roller = threeD6No5;
+    //const roller = twoD8;
+    this.party.strbase = roller();
+    this.party.dexbase = roller();
+    this.party.conbase = roller();
+    this.party.intbase = roller();
+    this.party.wisbase = roller();
+    this.party.chabase = roller();
 
     this.startLevel();
   }
