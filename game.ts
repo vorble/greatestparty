@@ -176,6 +176,18 @@ class Game {
     this.calculateEquipment();
   }
 
+  killTownsfolk(count: number) {
+    if (count > 0) {
+      if (this.town.townsfolk >= count) {
+        this.town.townsfolk -= count;
+      } else {
+        count = this.town.townsfolk;
+        this.town.townsfolk = 0;
+      }
+      this.log(count + ' townsfolk ' + (count == 1 ? 'is dead' : 'are dead') + '.');
+    }
+  }
+
   addPartyMembers(count: number) {
     this.party.size += count;
     this.calculateEquipment();

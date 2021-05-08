@@ -39,18 +39,16 @@ game.registerLevel({
       set bodiesOutToSea(value: number) { game.town.state.numbers[0] = value; }
       get bodiesInTheAir(): number { return game.town.state.numbers[1] || 0; }
       set bodiesInTheAir(value: number) { game.town.state.numbers[1] = value; }
-      get ticksLoot(): number { return game.town.state.numbers[2] || 0; }
-      set ticksLoot(value: number) { game.town.state.numbers[2] = value; }
-      get ticksReturnBodies(): number { return game.town.state.numbers[3] || 0; }
-      set ticksReturnBodies(value: number) { game.town.state.numbers[3] = value; }
-      get ticksMaybeInflictIslandCurse(): number { return game.town.state.numbers[4] || 0; }
-      set ticksMaybeInflictIslandCurse(value: number) { game.town.state.numbers[4] = value; }
-      get questHermitRockGood(): number { return game.town.state.numbers[5] || 0; }
-      set questHermitRockGood(value: number) { game.town.state.numbers[5] = value; }
-      get questKidShellTalk(): number { return game.town.state.numbers[6] || 0; }
-      set questKidShellTalk(value: number) { game.town.state.numbers[6] = value; }
-      get questCliffsCliffTalk(): number { return game.town.state.numbers[7] || 0; }
-      set questCliffsCliffTalk(value: number) { game.town.state.numbers[7] = value; }
+      get ticksReturnBodies(): number { return game.town.state.numbers[2] || 0; }
+      set ticksReturnBodies(value: number) { game.town.state.numbers[2] = value; }
+      get ticksMaybeInflictIslandCurse(): number { return game.town.state.numbers[3] || 0; }
+      set ticksMaybeInflictIslandCurse(value: number) { game.town.state.numbers[3] = value; }
+      get questHermitRockGood(): number { return game.town.state.numbers[4] || 0; }
+      set questHermitRockGood(value: number) { game.town.state.numbers[4] = value; }
+      get questKidShellTalk(): number { return game.town.state.numbers[5] || 0; }
+      set questKidShellTalk(value: number) { game.town.state.numbers[5] = value; }
+      get questCliffsCliffTalk(): number { return game.town.state.numbers[6] || 0; }
+      set questCliffsCliffTalk(value: number) { game.town.state.numbers[6] = value; }
 
       get questHermitRockIntroduced(): boolean { return game.town.state.flags[0] || false; }
       set questHermitRockIntroduced(value: boolean) { game.town.state.flags[0] = value; }
@@ -108,32 +106,25 @@ game.registerLevel({
         const fine = rollChoice(EQ_FINE_CATEGORIES);
         const inv = typ == 'weapon' ? game.party.inventoryWeapon : game.party.inventoryArmor;
         inv[fine] += 1;
-        game.log('You loot 1 ' + fine + ' ' + typ + '.');
+        game.log('Your party receives 1 ' + fine + ' ' + typ + '.');
       }
     }
 
     function lootTrash(game: Game) {
       if (rollRatio() <= 0.3) {
         const typ = rollChoice(['soiled shoe', 'worn leather strap', 'ragged cap', 'mold covered slacks', 'used monocle']);
-        game.log('You loot 1 ' + typ + '.');
+        game.log('Your party receives 1 ' + typ + '.');
       }
     }
 
     town.hooks = {
       onTownArrive: (game: Game) => {
-        townState.ticksLoot = rollDie(TICKS_PER_TOCK * 5);
         townState.ticksReturnBodies = rollDie(TICKS_PER_TOCK * 5);
-        townState.ticksMaybeInflictIslandCurse = townState.ticksLoot; // Want this in step with loot.
+        townState.ticksMaybeInflictIslandCurse = rollDie(TICKS_PER_TOCK * 5);
       },
       onTownDepart: (game: Game) => {
       },
       doTickActions: (game: Game) => {
-        ++townState.ticksLoot;
-        while (townState.ticksLoot >= TICKS_PER_TOCK * 5) {
-          loot(game);
-          townState.ticksLoot -= TICKS_PER_TOCK * 5;
-        }
-
         ++townState.ticksReturnBodies;
         while (townState.ticksReturnBodies >= TICKS_PER_TOCK * 5) {
           returnBodies(game);
@@ -462,7 +453,7 @@ game.registerLevel({
         },
         roll: (game: Game) => {
           return {
-            health: 25,
+            health: 18,
             str: 3,  int: 8,
             dex: 5,  wis: 3,
             con: 11, cha: 4,
@@ -480,6 +471,37 @@ game.registerLevel({
         },
         win: (game: Game) => {
           game.receiveGold(2);
+          loot(game);
+        },
+      },
+      {
+        name: 'Irate Townsfolk',
+        weight: 1,
+        predicate: (game: Game) => {
+          return game.town.townsfolk > 0 && game.town.alignment < -60;
+        },
+        roll: (game: Game) => {
+          return {
+            health: 30,
+            str: 12, int: 8,
+            dex: 9,  wis: 7,
+            con: 13, cha: 10 + rollDie(4),
+            weapon: {
+              physical: (rollBoolean() ? 1 : -1) * 22,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 2,
+              magical: 0,
+              elemental: 1,
+            },
+          };
+        },
+        win: (game: Game) => {
+          game.killTownsfolk(1);
+          game.receiveGold(5);
+          loot(game);
           loot(game);
         },
       },
