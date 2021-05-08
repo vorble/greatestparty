@@ -424,6 +424,7 @@ class UITown {
   hireCost: HTMLElement;
   need: HTMLElement;
   boss: HTMLElement;
+  enemy: HTMLElement;
 
   hire: HTMLButtonElement;
   conscript: HTMLButtonElement;
@@ -437,6 +438,7 @@ class UITown {
     this.hireCost = getElementById('panel-town-hire-cost-value');
     this.need = getElementById('panel-town-need-value');
     this.boss = getElementById('panel-town-boss-value');
+    this.enemy = getElementById('panel-town-enemy-value');
 
     this.hire = getElementByIdAsType('panel-town-hire-button', HTMLButtonElement);
     this.hire.onclick = (e) => {
@@ -462,7 +464,8 @@ class UITown {
     this.townsfolk.innerText = '' + game.town.townsfolk;
     this.hireCost.innerText = '' + game.town.hireCost;
     this.need.innerText = '' + game.town.need;
-    this.boss.innerText = '' + (game.fightingBoss ? game.boss.size : game.town.boss);
+    this.boss.innerText = '' + (game.fightingBoss ? game.boss.health : game.town.boss);
+    this.enemy.innerText = '' + (game.enemy ? game.enemy.health : 0);
 
     this.hire.disabled = !game.canHire();
     this.conscript.disabled = !game.canConscript();

@@ -21,6 +21,8 @@ class Game {
   levels: Array<Level>;
   level: number;
   timeouts: Array<{ callback: () => void, clock: Clock }>;
+  enemyTemplate: null | TownEnemy;
+  enemy: null | Fighter;
 
   constructor() {
     this.party = new Party();
@@ -38,6 +40,8 @@ class Game {
     this.levels = [];
     this.level = 0;
     this.timeouts = [];
+    this.enemyTemplate = null;
+    this.enemy = null;
   }
 
   registerLevel(level: Level) {
@@ -54,6 +58,9 @@ class Game {
     this.running = true;
     this.textLog = [];
     this.level = 1;
+    this.timeouts = [];
+    this.enemyTemplate = null;
+    this.enemy = null;
 
     this.party = new Party();
     this.party.size = 4;
@@ -106,6 +113,18 @@ class Game {
     this.party.intbase = roller();
     this.party.wisbase = roller();
     this.party.chabase = roller();
+    this.party.inventoryWeapon.blunt = 2;
+    this.party.inventoryWeapon.slice = 2;
+    this.party.inventoryWeapon.dark = 2;
+    this.party.inventoryWeapon.light = 2;
+    this.party.inventoryWeapon.fire = 2;
+    this.party.inventoryWeapon.ice = 2;
+    this.party.inventoryArmor.blunt = 2;
+    this.party.inventoryArmor.slice = 2;
+    this.party.inventoryArmor.dark = 2;
+    this.party.inventoryArmor.light = 2;
+    this.party.inventoryArmor.fire = 2;
+    this.party.inventoryArmor.ice = 2;
 
     this.startLevel();
   }
@@ -284,7 +303,7 @@ class Game {
 
   fightBoss() {
     if (!this.fightingBoss) {
-      this.boss.size = this.town.boss;
+      this.boss.health = this.town.boss;
       this.fightingBoss = true;
       this.log('You pick a fight with ' + this.boss.name + '.');
     }
@@ -529,14 +548,17 @@ class Game {
     }
 
     // ----------------------------------------------------
-    // FIGHTING BOSS
+    // FIGHTING
     // ----------------------------------------------------
+    let inBattle = false;
+
     if (this.fightingBoss) {
+      inBattle = true;
       const damageToBoss = fightCalculateAttack(this.party, this.boss);
       const damageToParty = fightCalculateAttack(this.boss, this.party);
       this.party.damage += damageToParty;
-      this.boss.size = Math.max(0, this.boss.size - damageToBoss);
-      if (this.boss.size <= 0) {
+      this.boss.health = Math.max(0, this.boss.health - damageToBoss);
+      if (this.boss.health <= 0) {
         this.fightingBoss = false;
         this.log('Your party is victorious!');
         this.winLevel();
@@ -544,11 +566,45 @@ class Game {
       } else {
         const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
         if (willDie > 0) {
+          this.log(this.boss.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
           this.party.size = Math.max(0, this.party.size - willDie);
           this.party.damage -= willDie * PARTY_MEMBER_HP;
         }
       }
-    } else {
+    }
+
+    if (this.enemy && this.enemyTemplate) {
+      inBattle = true;
+      if (this.tick == 0) {
+        this.log('Your party trades blows with ' + this.enemyTemplate.name + '.');
+        const damageToEnemy = fightCalculateAttack(this.party, this.enemy);
+        const damageToParty = fightCalculateAttack(this.enemy, this.party);
+        this.party.damage += damageToParty;
+        this.enemy.health = Math.max(0, this.enemy.health - damageToEnemy);
+        if (this.enemy.health <= 0) {
+          this.log('Your party kills ' + this.enemyTemplate.name + '!');
+          this.enemyTemplate.win(game);
+          this.enemyTemplate = null;
+          this.enemy = null;
+        } else {
+          const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
+          if (willDie > 0) {
+            this.log(this.enemyTemplate.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
+            this.party.size = Math.max(0, this.party.size - willDie);
+            this.party.damage -= willDie * PARTY_MEMBER_HP;
+          }
+        }
+      }
+    } else if (this.tick == 0 && !this.fightingBoss && rollRatio() < this.town.enemyRatio) {
+      this.enemyTemplate = this.pickTownEnemy();
+      if (this.enemyTemplate != null) {
+        inBattle = true;
+        this.enemy = this.enemyTemplate.roll(this);
+        this.log('Your party encounters ' + this.enemyTemplate.name + ', ready to fight!');
+      }
+    }
+
+    if (!inBattle) {
       // Slowly heal party damage when out of battle.
       if (this.party.damage > 0) {
         this.party.damage -= 1;
@@ -577,7 +633,8 @@ class Game {
       }
     }
 
-    if (this.party.quests > 0) {
+    // Can't quest while fighting an enemy
+    if (this.enemy == null && !this.fightingBoss && this.party.quests > 0) {
       const POINTS_PER_QUEST = 100;
       const GOLD_PER_QUEST = 10;
       // A random percentage of your party is effective this
@@ -654,6 +711,16 @@ class Game {
       return null;
     }
     return rollChoiceWeighted(quests);
+  }
+
+  pickTownEnemy(): null | TownEnemy {
+    const enemies = this.town.enemies.filter((enemy) => {
+      return enemy.predicate == null || enemy.predicate(this);
+    });
+    if (enemies.length == 0) {
+      return null;
+    }
+    return rollChoiceWeighted(enemies);
   }
 
   pickBossEvent(): null | BossEvent {

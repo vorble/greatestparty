@@ -19,7 +19,7 @@ class BossState {
 }
 
 class Boss implements Fighter {
-  size: number;
+  health: number;
   name: string;
   state: BossState;
   events: Array<BossEvent>;
@@ -35,7 +35,7 @@ class Boss implements Fighter {
   armor: Equipment;
 
   constructor() {
-    this.size = 0;
+    this.health = 0;
     this.name = '';
     this.events = [];
     this.state = new BossState();

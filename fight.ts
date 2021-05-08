@@ -1,4 +1,6 @@
 interface Fighter {
+  health: number;
+
   str: number;
   dex: number;
   con: number;

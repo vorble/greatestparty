@@ -32,6 +32,7 @@ game.registerLevel({
     town.needRatio = 0.010;
     town.boss = 5000;
     town.bossReward = 200;
+    town.enemyRatio = 0.05;
 
     const townState = new (class TownStateWrapper {
       get bodiesOutToSea(): number { return game.town.state.numbers[0] || 0; }
@@ -418,6 +419,68 @@ game.registerLevel({
             loot(game);
             loot(game);
           }
+        },
+      },
+    ];
+
+    town.enemies = [
+      {
+        // Scaly, slimy, and ready to fight.
+        name: 'Surly Chachech',
+        weight: 1,
+        predicate: (game: Game) => {
+          return true;
+        },
+        roll: (game: Game) => {
+          return {
+            health: 25,
+            str: 8,  int: 5,
+            dex: 11, wis: 7,
+            con: 7,  cha: 2,
+            weapon: {
+              physical: 15,
+              magical: 0,
+              elemental: 5,
+            },
+            armor: {
+              physical: -1,
+              magical: -1,
+              elemental: 0,
+            },
+          };
+        },
+        win: (game: Game) => {
+          game.receiveGold(2);
+          loot(game);
+        },
+      },
+      {
+        name: 'Sea Spirit',
+        weight: 1,
+        predicate: (game: Game) => {
+          return true;
+        },
+        roll: (game: Game) => {
+          return {
+            health: 25,
+            str: 3,  int: 8,
+            dex: 5,  wis: 3,
+            con: 11, cha: 4,
+            weapon: {
+              physical: 0,
+              magical: -20,
+              elemental: 0,
+            },
+            armor: {
+              physical: 1,
+              magical: -1,
+              elemental: 0,
+            },
+          };
+        },
+        win: (game: Game) => {
+          game.receiveGold(2);
+          loot(game);
         },
       },
     ];
