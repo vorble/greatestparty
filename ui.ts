@@ -120,6 +120,9 @@ class UIParty {
         active.push(s.name);
       }
     }
+    for (const status of this.game.party.status.other) {
+      active.push(status.name);
+    }
     this.status.innerText = active.join(', ');
 
     this.sacrificeButton.disabled = !game.canSacrifice();

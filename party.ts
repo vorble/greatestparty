@@ -34,6 +34,8 @@ class Party implements Fighter {
   armorConfig: Equipment; // How player configured.
   armor: Equipment; // Computed values.
 
+  items: ItemInventory;
+
   status: Status;
   skills: Skills;
 
@@ -72,6 +74,8 @@ class Party implements Fighter {
     this.armorPoints = 0;
     this.armorConfig = new Equipment();
     this.armor = new Equipment();
+
+    this.items = new ItemInventory();
 
     this.status = new Status();
     this.skills = new Skills();

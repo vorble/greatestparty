@@ -493,7 +493,7 @@ class Game {
     });
 
     for (const status of STATUSES) {
-      const s = game.party.status[status];
+      const s = this.party.status[status];
       if (s.active) {
         if (isStatusExpired(game, s)) {
           s.active = false;
@@ -502,6 +502,7 @@ class Game {
         }
       }
     }
+    this.party.status.doTickActions(this);
 
     for (const skill of SKILLS) {
       const s = game.party.skills[skill];
