@@ -44,6 +44,8 @@ class UIParty {
   wis: HTMLElement;
   cha: HTMLElement;
 
+  status: HTMLElement;
+
   sacrificeButton: HTMLButtonElement;
   animateButton: HTMLButtonElement;
 
@@ -66,6 +68,8 @@ class UIParty {
     this.int = getElementById('panel-party-int-value');
     this.wis = getElementById('panel-party-wis-value');
     this.cha = getElementById('panel-party-cha-value');
+
+    this.status = getElementById('panel-party-status-value');
 
     this.sacrificeButton = getElementByIdAsType('panel-party-sacrifice-button', HTMLButtonElement);
     this.sacrificeButton.onclick = (e) => {
@@ -108,6 +112,15 @@ class UIParty {
     this.int.innerText = '' + this.game.party.int;
     this.wis.innerText = '' + this.game.party.wis;
     this.cha.innerText = '' + this.game.party.cha;
+
+    const active: Array<string> = [];
+    for (const status of STATUSES) {
+      const s = this.game.party.status[status];
+      if (s.active) {
+        active.push(s.name);
+      }
+    }
+    this.status.innerText = active.join(', ');
 
     this.sacrificeButton.disabled = !game.canSacrifice();
     this.sacrificeButton.style.display = game.party.skills.sacrifice.level > 0 ? '' : 'none';
@@ -768,29 +781,6 @@ class UIShop {
   }
 }
 
-class UIStatus {
-  game: Game;
-
-  listing: HTMLElement;
-
-  constructor(game: Game) {
-    this.game = game;
-
-    this.listing = getElementById('panel-status-listing-value');
-  }
-
-  show() {
-    const active: Array<string> = [];
-    for (const status of STATUSES) {
-      const s = this.game.party.status[status];
-      if (s.active) {
-        active.push(s.name);
-      }
-    }
-    this.listing.innerText = active.join('\n');
-  }
-}
-
 class UISkills {
   game: Game;
 
@@ -963,7 +953,6 @@ class UI {
   skills: UISkills;
   town: UITown;
   shop: UIShop;
-  status: UIStatus;
   log: UILog;
 
   constructor(game: Game) {
@@ -972,7 +961,6 @@ class UI {
     this.skills = new UISkills(game);
     this.town = new UITown(game);
     this.shop = new UIShop(game);
-    this.status = new UIStatus(game);
     this.log = new UILog(game);
 
     // Whenever any button is clicked, the data being displayed will be updated.
@@ -989,7 +977,6 @@ class UI {
     this.skills.show();
     this.town.show();
     this.shop.show();
-    this.status.show();
     this.log.show();
   }
 }
