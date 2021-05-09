@@ -3,7 +3,7 @@ const EQ_FINE_CATEGORIES: Array<EqFineCategory> = ['blunt', 'slice', 'dark', 'li
 type EqBroadCategory = 'physical' | 'magical' | 'elemental';
 const EQ_BROAD_CATEGORIES: Array<EqBroadCategory> = ['physical', 'magical', 'elemental'];
 
-class Inventory {
+class EquipmentInventory {
   blunt: number;
   slice: number;
   dark: number;

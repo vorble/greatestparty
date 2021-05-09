@@ -25,8 +25,8 @@ class Party implements Fighter {
   wismod: number;
   chamod: number;
 
-  inventoryWeapon: Inventory;
-  inventoryArmor: Inventory;
+  inventoryWeapon: EquipmentInventory;
+  inventoryArmor: EquipmentInventory;
   weaponPoints: number; // How many points to distribute.
   weaponConfig: Equipment; // How player configured.
   weapon: Equipment; // Computed values.
@@ -64,8 +64,8 @@ class Party implements Fighter {
     this.wismod = 0;
     this.chamod = 0;
 
-    this.inventoryWeapon = new Inventory();
-    this.inventoryArmor = new Inventory();
+    this.inventoryWeapon = new EquipmentInventory();
+    this.inventoryArmor = new EquipmentInventory();
     this.weaponPoints = 0;
     this.weaponConfig = new Equipment();
     this.weapon = new Equipment();

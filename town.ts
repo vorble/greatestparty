@@ -76,12 +76,12 @@ class Town {
   waterCostBuy: TownSeasonVector;
   waterCostSell: TownSeasonVector;
 
-  inventoryWeapon: Inventory;
-  inventoryWeaponBuy: Inventory;
-  inventoryWeaponSell: Inventory;
-  inventoryArmor: Inventory;
-  inventoryArmorBuy: Inventory;
-  inventoryArmorSell: Inventory;
+  inventoryWeapon: EquipmentInventory;
+  inventoryWeaponBuy: EquipmentInventory;
+  inventoryWeaponSell: EquipmentInventory;
+  inventoryArmor: EquipmentInventory;
+  inventoryArmorBuy: EquipmentInventory;
+  inventoryArmorSell: EquipmentInventory;
 
   state: TownState;
   hooks: TownHooks;
@@ -111,12 +111,12 @@ class Town {
     this.waterCostBuy = [0, 0, 0, 0];
     this.waterCostSell = [0, 0, 0, 0];
 
-    this.inventoryWeapon = new Inventory();
-    this.inventoryWeaponBuy = new Inventory();
-    this.inventoryWeaponSell = new Inventory();
-    this.inventoryArmor = new Inventory();
-    this.inventoryArmorBuy = new Inventory();
-    this.inventoryArmorSell = new Inventory();
+    this.inventoryWeapon = new EquipmentInventory();
+    this.inventoryWeaponBuy = new EquipmentInventory();
+    this.inventoryWeaponSell = new EquipmentInventory();
+    this.inventoryArmor = new EquipmentInventory();
+    this.inventoryArmorBuy = new EquipmentInventory();
+    this.inventoryArmorSell = new EquipmentInventory();
 
     this.state = new TownState();
     this.hooks = {};
