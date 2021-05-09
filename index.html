@@ -47,6 +47,10 @@
       grid-column: 2 / span 2;
     }
 
+    .numeric {
+      text-align: right;
+    }
+
     button {
       font-size: 75%;
     }
@@ -63,29 +67,57 @@
 <body>
   <div class="container">
     <div id="panel-party" class="panel">
-      <div>Party</div>
-      <br>
       <div>Date: <div id="panel-party-date-value">Spring 0</div></div>
-      <br>
-      <div>Size: <div id="panel-party-size-value">0</div>
-        <button id="panel-party-sacrifice-button" style="display: none">Sacrifice</button></div>
-      <br>
-      <div>Health: <div id="panel-party-health-value">0</div></div>
-      <br>
-      <div>Quests: <div id="panel-party-quests-value">0</div></div>
-      <br>
-      <div>Quests Completed: <div id="panel-party-quests-completed-value">0</div></div>
-      <br>
-      <div>Gold: <div id="panel-party-gold-value">0</div></div>
-      <div id="panel-party-blood">
-        <br>
-        <div>Blood: <div id="panel-party-blood-value">0</div>
-          <button id="panel-party-animate-button" style="display: none">Animate</button></div>
-      </div>
-      <br>
-      <div>Food: <div id="panel-party-food-value">0</div></div>
-      <br>
-      <div>Water: <div id="panel-party-water-value">0</div></div>
+      <table>
+        <tr>
+          <td>STR</td>
+          <td class="numeric"><div id="panel-party-str-value">0</div></td>
+          <td>Size</td>
+          <td class="numeric">
+            <button id="panel-party-sacrifice-button" style="display: none">Sacrifice</button>
+            <div id="panel-party-size-value">0</div>
+          </td>
+        </tr>
+        <tr>
+          <td>DEX</td>
+          <td class="numeric"><div id="panel-party-dex-value">0</div></td>
+          <td>Health</td>
+          <td class="numeric"><div id="panel-party-health-value">0</div></td>
+        </tr>
+        <tr>
+          <td>CON</td>
+          <td class="numeric"><div id="panel-party-con-value">0</div></td>
+          <td>Quests</td>
+          <td class="numeric"><div id="panel-party-quests-value">0</div></td>
+        </tr>
+        <tr>
+          <td>INT</td>
+          <td class="numeric"><div id="panel-party-int-value">0</div></td>
+          <td>Completed</td>
+          <td class="numeric"><div id="panel-party-quests-completed-value">0</div></td>
+        </tr>
+        <tr>
+          <td>WIS</td>
+          <td class="numeric"><div id="panel-party-wis-value">0</div></td>
+          <td>Gold</td>
+          <td class="numeric"><div id="panel-party-gold-value">0</div></td>
+        </tr>
+        <tr>
+          <td>CHA</td>
+          <td class="numeric"><div id="panel-party-cha-value">0</div></td>
+          <td>Blood</td>
+          <td class="numeric">
+            <button id="panel-party-animate-button" style="display: none">Animate</button>
+            <div id="panel-party-blood-value">0</div>
+          </td>
+        </tr>
+        <tr>
+          <td>Food</td>
+          <td class="numeric"><div id="panel-party-food-value">0</div></td>
+          <td>Water</td>
+          <td class="numeric"><div id="panel-party-water-value">0</div></td>
+        </tr>
+      </table>
     </div>
     <div id="panel-equipment" class="panel">
       <table>
@@ -215,34 +247,7 @@
         Acclaim: <div id="panel-skills-acclaim-level-value" data-skill="acclaim">0</div>
       </div>
     </div>
-    <div id="panel-stats" class="panel">
-      Stats
-      <table>
-        <tr>
-          <td>STR</td>
-          <td><div id="panel-stats-str-value">0</div></td>
-        </tr>
-        </tr>
-        <tr>
-          <td>DEX</td>
-          <td><div id="panel-stats-dex-value">0</div></td>
-        </tr>
-        <tr>
-          <td>CON</td>
-          <td><div id="panel-stats-con-value">0</div></td>
-        </tr>
-        <tr>
-          <td>INT</td>
-          <td><div id="panel-stats-int-value">0</div></td>
-        <tr>
-          <td>WIS</td>
-          <td><div id="panel-stats-wis-value">0</div></td>
-        </tr>
-        <tr>
-          <td>CHA</td>
-          <td><div id="panel-stats-cha-value">0</div></td>
-        </tr>
-      </table>
+    <div id="panel-empty1" class="panel">
     </div>
     <div id="panel-town" class="panel">
       <div>Town</div>
@@ -255,10 +260,10 @@
       <div>Need: <div id="panel-town-need-value">0</div>
         <button id="panel-town-take-quest-button">Take</button></div>
       <br>
+      <div>Enemy: <div id="panel-town-enemy-value">0</div></div>
+      <br>
       <div>Boss: <div id="panel-town-boss-value">0</div>
         <button id="panel-town-fight-boss-button">Fight</button></div>
-      <br>
-      <div>Enemy: <div id="panel-town-enemy-value">0</div></div>
     </div>
     <div id="panel-shop" class="panel">
       <div>Shop</div>

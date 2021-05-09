@@ -34,9 +34,15 @@ class UIParty {
   questsCompleted: HTMLElement;
   gold: HTMLElement;
   blood: HTMLElement;
-  bloodPanel: HTMLElement;
   food: HTMLElement;
   water: HTMLElement;
+
+  str: HTMLElement;
+  dex: HTMLElement;
+  con: HTMLElement;
+  int: HTMLElement;
+  wis: HTMLElement;
+  cha: HTMLElement;
 
   sacrificeButton: HTMLButtonElement;
   animateButton: HTMLButtonElement;
@@ -51,9 +57,15 @@ class UIParty {
     this.questsCompleted = getElementById('panel-party-quests-completed-value');
     this.gold = getElementById('panel-party-gold-value');
     this.blood = getElementById('panel-party-blood-value');
-    this.bloodPanel = getElementById('panel-party-blood');
     this.food = getElementById('panel-party-food-value');
     this.water = getElementById('panel-party-water-value');
+
+    this.str = getElementById('panel-party-str-value');
+    this.dex = getElementById('panel-party-dex-value');
+    this.con = getElementById('panel-party-con-value');
+    this.int = getElementById('panel-party-int-value');
+    this.wis = getElementById('panel-party-wis-value');
+    this.cha = getElementById('panel-party-cha-value');
 
     this.sacrificeButton = getElementByIdAsType('panel-party-sacrifice-button', HTMLButtonElement);
     this.sacrificeButton.onclick = (e) => {
@@ -83,13 +95,19 @@ class UIParty {
     this.questsCompleted.innerText = '' + game.party.questsCompleted;
     this.gold.innerText = '' + game.party.gold;
     this.blood.innerText = '' + game.party.blood;
-    this.bloodPanel.style.display = game.party.skills.sacrifice.level > 0 ? '' : 'none';
     this.food.innerText = '' + game.party.food;
     this.water.innerText = '' + game.party.water;
     if (FLAGS.SHOW_HUNGER_THIRST) {
       this.food.innerText += ' (' + game.party.hunger + ')';
       this.water.innerText += ' (' + game.party.thirst + ')';
     }
+
+    this.str.innerText = '' + this.game.party.str;
+    this.dex.innerText = '' + this.game.party.dex;
+    this.con.innerText = '' + this.game.party.con;
+    this.int.innerText = '' + this.game.party.int;
+    this.wis.innerText = '' + this.game.party.wis;
+    this.cha.innerText = '' + this.game.party.cha;
 
     this.sacrificeButton.disabled = !game.canSacrifice();
     this.sacrificeButton.style.display = game.party.skills.sacrifice.level > 0 ? '' : 'none';
@@ -383,37 +401,6 @@ class UIEquipment {
     this.armorConfig.ice[0].disabled = armorElementalMax < 1;
     this.armorConfig.ice[1].disabled = armorElementalMax < 2;
     this.armorConfig.ice[2].disabled = armorElementalMax < 3;
-  }
-}
-
-class UIStats {
-  game: Game;
-
-  str: HTMLElement;
-  dex: HTMLElement;
-  con: HTMLElement;
-  int: HTMLElement;
-  wis: HTMLElement;
-  cha: HTMLElement;
-
-  constructor(game: Game) {
-    this.game = game;
-
-    this.str = getElementById('panel-stats-str-value');
-    this.dex = getElementById('panel-stats-dex-value');
-    this.con = getElementById('panel-stats-con-value');
-    this.int = getElementById('panel-stats-int-value');
-    this.wis = getElementById('panel-stats-wis-value');
-    this.cha = getElementById('panel-stats-cha-value');
-  }
-
-  show() {
-    this.str.innerText = '' + this.game.party.str;
-    this.dex.innerText = '' + this.game.party.dex;
-    this.con.innerText = '' + this.game.party.con;
-    this.int.innerText = '' + this.game.party.int;
-    this.wis.innerText = '' + this.game.party.wis;
-    this.cha.innerText = '' + this.game.party.cha;
   }
 }
 
@@ -974,7 +961,6 @@ class UI {
   party: UIParty;
   equipment: UIEquipment;
   skills: UISkills;
-  stats: UIStats;
   town: UITown;
   shop: UIShop;
   status: UIStatus;
@@ -984,7 +970,6 @@ class UI {
     this.party = new UIParty(game);
     this.equipment = new UIEquipment(game);
     this.skills = new UISkills(game);
-    this.stats = new UIStats(game);
     this.town = new UITown(game);
     this.shop = new UIShop(game);
     this.status = new UIStatus(game);
@@ -1002,7 +987,6 @@ class UI {
     this.party.show();
     this.equipment.show();
     this.skills.show();
-    this.stats.show();
     this.town.show();
     this.shop.show();
     this.status.show();
