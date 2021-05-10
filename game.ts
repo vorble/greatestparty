@@ -298,6 +298,13 @@ class Game {
     }
   }
 
+  useItem(name: ItemNameType) {
+    if (this.party.items[name].quantity > 0) {
+      this.party.items[name].quantity -= 1;
+      this.party.items[name].use(this);
+    }
+  }
+
   adjustAlignment(amount: number) {
     this.town.alignment = Math.max(-100, Math.min(100, this.town.alignment + amount));
   }

@@ -1,3 +1,5 @@
+type ItemNameType = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1';
+const ITEM_NAMES: Array<ItemNameType> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1'];
 interface Item {
   name: string;
   quantity: number;
@@ -21,7 +23,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+STR',
-          tock: 1,
+          tock: 10,
           strmod: 1,
         });
       },
@@ -32,7 +34,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+DEX',
-          tock: 1,
+          tock: 10,
           dexmod: 1,
         });
       },
@@ -43,7 +45,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+CON',
-          tock: 1,
+          tock: 10,
           conmod: 1,
         });
       },
@@ -54,7 +56,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+INT',
-          tock: 1,
+          tock: 10,
           intmod: 1,
         });
       },
@@ -65,7 +67,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+WIS',
-          tock: 1,
+          tock: 10,
           wismod: 1,
         });
       },
@@ -76,7 +78,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+CHA',
-          tock: 1,
+          tock: 10,
           chamod: 1,
         });
       },

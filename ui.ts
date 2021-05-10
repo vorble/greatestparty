@@ -924,6 +924,56 @@ class UISkills {
   }
 }
 
+class UIItemsEntry {
+  entry: HTMLElement;
+  quantity: HTMLElement;
+  use: HTMLButtonElement;
+
+  constructor(name: ItemNameType) {
+    this.entry = getElementById('panel-items-' + name);
+    this.quantity = getElementById('panel-items-' + name + '-quantity-value');
+    this.use = getElementByIdAsType('panel-items-' + name + '-use-button', HTMLButtonElement);
+  }
+}
+
+class UIItems {
+  game: Game;
+
+  potionStrUp1: UIItemsEntry;
+  potionDexUp1: UIItemsEntry;
+  potionConUp1: UIItemsEntry;
+  potionIntUp1: UIItemsEntry;
+  potionWisUp1: UIItemsEntry;
+  potionChaUp1: UIItemsEntry;
+
+  constructor(game: Game) {
+    this.game = game;
+
+    this.potionStrUp1 = new UIItemsEntry('potionStrUp1');
+    this.potionDexUp1 = new UIItemsEntry('potionDexUp1');
+    this.potionConUp1 = new UIItemsEntry('potionConUp1');
+    this.potionIntUp1 = new UIItemsEntry('potionIntUp1');
+    this.potionWisUp1 = new UIItemsEntry('potionWisUp1');
+    this.potionChaUp1 = new UIItemsEntry('potionChaUp1');
+
+    for (const name of ITEM_NAMES) {
+      this[name].use.onclick = (e) => {
+        game.useItem(name);
+      };
+    }
+  }
+
+  show() {
+    for (const name of ITEM_NAMES) {
+      const item = this.game.party.items[name];
+      const entry = this[name];
+      entry.quantity.innerText = '' + item.quantity;
+      // TODO: Change default style on these in the html file to display: none
+      entry.entry.style.display = item.quantity > 0 ? '' : 'none';
+    }
+  }
+}
+
 class UILog {
   game: Game;
 
@@ -954,6 +1004,7 @@ class UI {
   party: UIParty;
   equipment: UIEquipment;
   skills: UISkills;
+  items: UIItems;
   town: UITown;
   shop: UIShop;
   log: UILog;
@@ -962,6 +1013,7 @@ class UI {
     this.party = new UIParty(game);
     this.equipment = new UIEquipment(game);
     this.skills = new UISkills(game);
+    this.items = new UIItems(game);
     this.town = new UITown(game);
     this.shop = new UIShop(game);
     this.log = new UILog(game);
@@ -978,6 +1030,7 @@ class UI {
     this.party.show();
     this.equipment.show();
     this.skills.show();
+    this.items.show();
     this.town.show();
     this.shop.show();
     this.log.show();
