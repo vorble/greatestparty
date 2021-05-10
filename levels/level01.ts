@@ -108,6 +108,11 @@ game.registerLevel({
         inv[fine] += 1;
         game.log('Your party receives 1 ' + fine + ' ' + typ + '.');
       }
+      if (rollRatio() <= 0.1) {
+        const name = rollChoice(ITEM_NAMES_POTION);
+        game.party.items[name].quantity += 1;
+        game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+      }
     }
 
     function lootTrash(game: Game) {

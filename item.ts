@@ -1,5 +1,9 @@
-type ItemNameType = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1';
-const ITEM_NAMES: Array<ItemNameType> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1'];
+type ItemNameType_Potion = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1';
+const ITEM_NAMES_POTION: Array<ItemNameType_Potion> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1'];
+
+type ItemNameType = ItemNameType_Potion;
+const ITEM_NAMES: Array<ItemNameType> = [...ITEM_NAMES_POTION];
+
 interface Item {
   name: string;
   quantity: number;
