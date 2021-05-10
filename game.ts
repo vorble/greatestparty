@@ -574,21 +574,25 @@ class Game {
 
     if (this.fightingBoss) {
       inBattle = true;
-      const damageToBoss = fightCalculateAttack(this.party, this.boss);
-      const damageToParty = fightCalculateAttack(this.boss, this.party);
-      this.party.damage += damageToParty;
-      this.boss.health = Math.max(0, this.boss.health - damageToBoss);
-      if (this.boss.health <= 0) {
-        this.fightingBoss = false;
-        this.log('Your party is victorious!');
-        this.winLevel();
-        this.nextLevel();
-      } else {
-        const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
-        if (willDie > 0) {
-          this.log(this.boss.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
-          this.party.size = Math.max(0, this.party.size - willDie);
-          this.party.damage -= willDie * PARTY_MEMBER_HP;
+      if (this.tick == 0) {
+        this.log('Your party trades blows with ' + this.boss.name + '.');
+        const damageToBoss = fightCalculateAttack(this.party, this.boss);
+        const damageToParty = fightCalculateAttack(this.boss, this.party);
+        this.party.damage += damageToParty;
+        this.boss.health = Math.max(0, this.boss.health - damageToBoss);
+        if (this.boss.health <= 0) {
+          this.fightingBoss = false;
+          this.log('Your party kills ' + this.boss.name + '!');
+          // TODO: Should there be a boss.win() method?
+          this.winLevel();
+          this.nextLevel();
+        } else {
+          const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
+          if (willDie > 0) {
+            this.log(this.boss.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
+            this.party.size = Math.max(0, this.party.size - willDie);
+            this.party.damage -= willDie * PARTY_MEMBER_HP;
+          }
         }
       }
     }
