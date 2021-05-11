@@ -1,8 +1,11 @@
 type ItemNameType_Potion = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1';
 const ITEM_NAMES_POTION: Array<ItemNameType_Potion> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1'];
 
-type ItemNameType = ItemNameType_Potion;
-const ITEM_NAMES: Array<ItemNameType> = [...ITEM_NAMES_POTION];
+type ItemNameType_Boost = 'boostWeapon' | 'boostArmor';
+const ITEM_NAMES_BOOST: Array<ItemNameType_Boost> = ['boostWeapon', 'boostArmor'];
+
+type ItemNameType = ItemNameType_Potion | ItemNameType_Boost;
+const ITEM_NAMES: Array<ItemNameType> = [...ITEM_NAMES_POTION, ...ITEM_NAMES_BOOST];
 
 interface Item {
   name: string;
@@ -18,6 +21,9 @@ class ItemInventory {
   potionIntUp1: Item;
   potionWisUp1: Item;
   potionChaUp1: Item;
+
+  boostWeapon: Item;
+  boostArmor: Item;
 
   constructor() {
     const defaults = { quantity: 0 };
@@ -85,6 +91,22 @@ class ItemInventory {
           tock: 10,
           chamod: 1,
         });
+      },
+    };
+    this.boostWeapon = {
+      ...defaults,
+      name: 'Boost Weapon',
+      use: (game: Game) => {
+        game.party.weaponPoints += 1;
+        game.log('Your party may now allocate ' + game.party.weaponPoints + ' weapon points.');
+      },
+    };
+    this.boostArmor = {
+      ...defaults,
+      name: 'Boost Armor',
+      use: (game: Game) => {
+        game.party.armorPoints += 1;
+        game.log('Your party may now allocate ' + game.party.armorPoints + ' armor points.');
       },
     };
   }
