@@ -101,10 +101,10 @@ class Game {
 
     this.party = new Party();
     this.party.size = 4;
-    this.party.gold = 100;
+    this.party.gold = 300;
     this.party.quests = 0;
-    this.party.food = 15;
-    this.party.water = 20;
+    this.party.food = 30;
+    this.party.water = 30;
     this.party.weaponPoints = 3;
     this.party.armorPoints = 3;
     function topThreeOfFourD6() {
@@ -150,18 +150,18 @@ class Game {
     this.party.intbase = roller();
     this.party.wisbase = roller();
     this.party.chabase = roller();
-    this.party.inventoryWeapon.blunt = 2;
-    this.party.inventoryWeapon.slice = 2;
-    this.party.inventoryWeapon.dark = 2;
-    this.party.inventoryWeapon.light = 2;
-    this.party.inventoryWeapon.fire = 2;
-    this.party.inventoryWeapon.ice = 2;
-    this.party.inventoryArmor.blunt = 2;
-    this.party.inventoryArmor.slice = 2;
-    this.party.inventoryArmor.dark = 2;
-    this.party.inventoryArmor.light = 2;
-    this.party.inventoryArmor.fire = 2;
-    this.party.inventoryArmor.ice = 2;
+    this.party.inventoryWeapon.blunt = 3;
+    this.party.inventoryWeapon.slice = 3;
+    this.party.inventoryWeapon.dark = 3;
+    this.party.inventoryWeapon.light = 3;
+    this.party.inventoryWeapon.fire = 3;
+    this.party.inventoryWeapon.ice = 3;
+    this.party.inventoryArmor.blunt = 3;
+    this.party.inventoryArmor.slice = 3;
+    this.party.inventoryArmor.dark = 3;
+    this.party.inventoryArmor.light = 3;
+    this.party.inventoryArmor.fire = 3;
+    this.party.inventoryArmor.ice = 3;
 
     this.startLevel();
   }
