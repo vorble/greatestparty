@@ -345,6 +345,15 @@ class Game {
   }
 
   adjustAlignment(amount: number) {
+    if (amount < 0 && this.party.dealignmentProtection > 0) {
+      if (-amount <= this.party.dealignmentProtection) {
+        this.party.dealignmentProtection += amount;
+        amount = 0;
+      } else {
+        amount -= this.party.dealignmentProtection;
+        this.party.dealignmentProtection = 0;
+      }
+    }
     this.town.alignment = Math.max(-100, Math.min(100, this.town.alignment + amount));
   }
 

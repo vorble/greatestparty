@@ -11,6 +11,8 @@ class Party implements Fighter {
   questPoints: number;
   damage: number;
 
+  dealignmentProtection: number;
+
   strbase: number;
   dexbase: number;
   conbase: number;
@@ -51,6 +53,7 @@ class Party implements Fighter {
     this.questsCompleted = 0;
     this.questPoints = 0;
     this.damage = 0;
+    this.dealignmentProtection = 0;
 
     this.strbase = 0;
     this.dexbase = 0;

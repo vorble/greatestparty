@@ -946,8 +946,11 @@ class UIItems {
   potionWisUp1: UIItemsEntry;
   potionChaUp1: UIItemsEntry;
 
+  clericRobes: UIItemsEntry;
+
   boostWeapon: UIItemsEntry;
   boostArmor: UIItemsEntry;
+  tomeOfKnowledge: UIItemsEntry;
 
   constructor(game: Game) {
     this.game = game;
@@ -959,8 +962,11 @@ class UIItems {
     this.potionWisUp1 = new UIItemsEntry('potionWisUp1');
     this.potionChaUp1 = new UIItemsEntry('potionChaUp1');
 
+    this.clericRobes = new UIItemsEntry('clericRobes');
+
     this.boostWeapon = new UIItemsEntry('boostWeapon');
     this.boostArmor = new UIItemsEntry('boostArmor');
+    this.tomeOfKnowledge = new UIItemsEntry('tomeOfKnowledge');
 
     for (const name of ITEM_NAMES) {
       this[name].use.onclick = (e) => {
