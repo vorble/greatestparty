@@ -205,25 +205,6 @@ game.registerLevel({
         },
       },
       {
-        name: 'Goh\'s Whisper',
-        weight: 1,
-        predicate: (game: Game) => clockIsSign(game, 'Goh'),
-        action: (game: Game) => {
-          const r = rollDie(20);
-          if (r <= 10) {
-            if (game.town.townsfolk > 0) {
-              game.log('A spirited town\'s person joins your party.');
-              game.joinPartyFromTown(1);
-            }
-          } else {
-            if (game.party.size > 0) {
-              game.log('A spirited member of your party joins the town.');
-              game.joinTownFromParty(1);
-            }
-          }
-        },
-      },
-      {
         name: 'Fall Squall',
         weight: 1,
         predicate: (game: Game) => clockIsFall(game),

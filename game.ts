@@ -5,6 +5,16 @@ interface Level {
   newTown: (game: Game) => { town: Town, boss: Boss };
 }
 
+interface GameEvent {
+  name: string;
+  weight: number;
+  predicate?: (game: Game) => boolean;
+  action: (game: Game) => void;
+}
+
+interface GameHooks extends ClockActions {
+}
+
 class Game {
   party: Party;
   town: Town;
@@ -23,6 +33,8 @@ class Game {
   timeouts: Array<{ callback: () => void, clock: Clock }>;
   enemyTemplate: null | TownEnemy;
   enemy: null | Fighter;
+  events: Array<GameEvent>;
+  hooks: GameHooks;
 
   constructor() {
     this.party = new Party();
@@ -42,6 +54,8 @@ class Game {
     this.timeouts = [];
     this.enemyTemplate = null;
     this.enemy = null;
+    this.events = [];
+    this.hooks = {};
   }
 
   registerLevel(level: Level) {
@@ -61,6 +75,29 @@ class Game {
     this.timeouts = [];
     this.enemyTemplate = null;
     this.enemy = null;
+    this.events = [
+      {
+        name: 'Goh\'s Whisper',
+        weight: 1,
+        predicate: (game: Game) => clockIsSign(game, 'Goh'),
+        action: (game: Game) => {
+          const r = rollDie(20);
+          if (r <= 10) {
+            if (game.town.townsfolk > 0) {
+              game.log('A spirited town\'s person joins your party.');
+              game.joinPartyFromTown(1);
+            }
+          } else {
+            if (game.party.size > 0) {
+              game.log('A spirited member of your party joins the town.');
+              game.joinTownFromParty(1);
+            }
+          }
+        },
+      },
+    ];
+    this.hooks = {
+    };
 
     this.party = new Party();
     this.party.size = 4;
@@ -521,6 +558,7 @@ class Game {
     }
 
     doActions(this.town.hooks);
+    doActions(this.hooks);
 
     // ----------------------------------------------------
     // EATING AND DRINKING
@@ -703,6 +741,16 @@ class Game {
     }
 
     // ----------------------------------------------------
+    // GAME EVENTS
+    // ----------------------------------------------------
+    if (this.tick == 0 && this.tock == 0) {
+      const event = this.pickGameEvent();
+      if (event != null) {
+        event.action(this);
+      }
+    }
+
+    // ----------------------------------------------------
     // TOWN EVENTS
     // ----------------------------------------------------
     if (this.tick == 0 && this.tock % 5 == 0) { // TODO: tock % 5, what if tock max isn't multiple of 5?
@@ -721,6 +769,16 @@ class Game {
 
   pickTownEvent(): null | TownEvent {
     const events = this.town.events.filter((event) => {
+      return event.predicate == null || event.predicate(this);
+    });
+    if (events.length == 0) {
+      return null;
+    }
+    return rollChoiceWeighted(events);
+  }
+
+  pickGameEvent(): null | GameEvent {
+    const events = this.events.filter((event) => {
       return event.predicate == null || event.predicate(this);
     });
     if (events.length == 0) {
