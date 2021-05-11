@@ -104,8 +104,8 @@ class Game {
       return rollDie(8) + rollDie(8);
     }
     //const roller = topThreeOfFourD6;
-    const roller = bottomThreeOfFourD6;
-    //const roller = threeD6No5;
+    //const roller = bottomThreeOfFourD6;
+    const roller = threeD6No5;
     //const roller = twoD8;
     this.party.strbase = roller();
     this.party.dexbase = roller();
@@ -194,7 +194,9 @@ class Game {
   }
 
   receiveGold(amount: number) {
-    this.log('Your party receives ' + amount + ' gold.');
+    let action = amount < 0 ? 'loses' : 'receives';
+    let showAmount = amount < 0 ? -amount : amount;
+    this.log('Your party ' + action + ' ' + showAmount + ' gold.');
     this.party.gold += amount;
   }
 
