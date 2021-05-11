@@ -30,8 +30,8 @@ game.registerLevel({
     town.need = 10;
     town.needMax = 10;
     town.needRatio = 0.010;
-    town.boss = 5000;
-    town.bossReward = 200;
+    town.boss = 500;
+    town.bossReward = 300;
     town.enemyRatio = 0.05;
 
     const townState = new (class TownStateWrapper {
@@ -415,9 +415,9 @@ game.registerLevel({
             dex: 11, wis: 7,
             con: 7,  cha: 2,
             weapon: {
-              physical: 15,
+              physical: 8,
               magical: 0,
-              elemental: 5,
+              elemental: 4,
             },
             armor: {
               physical: -1,
@@ -445,7 +445,7 @@ game.registerLevel({
             con: 11, cha: 4,
             weapon: {
               physical: 0,
-              magical: -20,
+              magical: -13,
               elemental: 0,
             },
             armor: {
@@ -473,7 +473,7 @@ game.registerLevel({
             dex: 9,  wis: 7,
             con: 13, cha: 10 + rollDie(4),
             weapon: {
-              physical: (rollBoolean() ? 1 : -1) * 22,
+              physical: (rollBoolean() ? 1 : -1) * 17,
               magical: 0,
               elemental: 0,
             },
@@ -500,10 +500,10 @@ game.registerLevel({
     boss.int = 7;
     boss.wis = 8;
     boss.cha = 6;
-    boss.weapon.physical = -4; // blunt damage
-    boss.weapon.elemental = 4; // ice damage
-    boss.armor.physical = -4; // blunt armor
-    boss.armor.elemental = 4; // ice armor
+    boss.weapon.physical = -12; // blunt damage
+    boss.weapon.elemental = 8; // ice damage
+    boss.armor.physical = -12; // blunt armor
+    boss.armor.elemental = 8; // ice armor
 
     const bossState = new (class BossStateWrapper {
       get inStaringContest(): boolean { return game.boss.state.flags[0] || false; }
