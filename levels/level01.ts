@@ -230,6 +230,27 @@ game.registerLevel({
     // party's progress (you must do one thing before you may do the next thing, a gate).
     // However, there should be some quests that can be repeated and have no gate.
     town.quests = [
+      // Not very creative trash quest.
+      {
+        name: 'The Flavor of Saint Rumaa',
+        weight: 1,
+        action: (game: Game) => {
+          const action = rollChoice([
+            'herds', 'chases', 'hunts', 'rides', 'jousts', 'pets',
+          ]);
+          const what = rollChoice([
+            'sea shells', 'sea horses', 'sea gulls', 'waves', 'polished rocks',
+          ]);
+          const who = rollChoice([
+            'aspiring adventurers', 'Ferdinand and his wife',
+            'Grand-rumaa Sweing Consortium', 'local trappers',
+            'Cliff', 'the hermit',
+          ]);
+          game.log(`Your party ${ action } ${ what } with ${ who }.`);
+          loot(game);
+          game.receiveGold(rollRange(1, 10));
+        }
+      },
       {
         // Do 5 satisfactory arrangements of rocks to learn about the hermit and get access to a
         // new quest to find the Hermit's tresure on one of the islands.
@@ -432,7 +453,7 @@ game.registerLevel({
           };
         },
         win: (game: Game) => {
-          game.receiveGold(2);
+          game.receiveGold(rollRange(8, 12));
           loot(game);
         },
       },
@@ -461,7 +482,7 @@ game.registerLevel({
           };
         },
         win: (game: Game) => {
-          game.receiveGold(2);
+          game.receiveGold(rollRange(10, 15));
           loot(game);
         },
       },
@@ -491,7 +512,7 @@ game.registerLevel({
         },
         win: (game: Game) => {
           game.killTownsfolk(1);
-          game.receiveGold(5);
+          game.receiveGold(30);
           loot(game);
           loot(game);
         },
