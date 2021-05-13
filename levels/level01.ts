@@ -487,6 +487,64 @@ game.registerLevel({
         },
       },
       {
+        name: 'Reticent Crab',
+        weight: 1,
+        predicate: (game: Game) => {
+          return true;
+        },
+        roll: (game: Game) => {
+          return {
+            health: 22,
+            str: 11, int: 7,
+            dex: 8,  wis: 4,
+            con: 15, cha: 11,
+            weapon: {
+              physical: 20,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 2,
+              magical: 0,
+              elemental: 1,
+            },
+          };
+        },
+        win: (game: Game) => {
+          game.receiveGold(rollRange(12, 14));
+          loot(game);
+        },
+      },
+      {
+        name: 'Fleeting Spark',
+        weight: 1,
+        predicate: (game: Game) => {
+          return true;
+        },
+        roll: (game: Game) => {
+          return {
+            health: 28,
+            str: 3,  int: 10,
+            dex: 14, wis: 2,
+            con: 3,  cha: 18,
+            weapon: {
+              physical: 2,
+              magical: 0,
+              elemental: -15,
+            },
+            armor: {
+              physical: 0,
+              magical: 0,
+              elemental: 0,
+            },
+          };
+        },
+        win: (game: Game) => {
+          game.receiveGold(rollRange(12, 14));
+          loot(game);
+        },
+      },
+      {
         name: 'Irate Townsfolk',
         weight: 1,
         predicate: (game: Game) => {
