@@ -5,8 +5,14 @@ enum Season {
   Winter = 'winter',
 }
 
-type SignName = 'Err' | 'Goh' | 'Yurn' | 'Joyn' | 'Ryna' | 'Sil';
-const SIGNS: Array<SignName> = ['Err', 'Goh', 'Yurn', 'Joyn', 'Ryna', 'Sil'];
+enum Sign {
+  Err = 'Err',
+  Goh = 'Goh',
+  Yurn = 'Yurn',
+  Joyn = 'Joyn',
+  Ryna = 'Ryna',
+  Sil = 'Sil',
+}
 
 const TICKS_PER_TOCK = 20;
 const TOCKS_PER_TERM = 20;
@@ -68,11 +74,11 @@ function clockIsSpring(clock: Clock): boolean { return clock.season == 0; }
 function clockIsSummer(clock: Clock): boolean { return clock.season == 1; }
 function clockIsFall(clock: Clock): boolean { return clock.season == 2; }
 function clockIsWinter(clock: Clock): boolean { return clock.season == 3; }
-function clockToSign(clock: Clock) {
-  return clock.year % SIGNS.length;
+function clockToSignNumber(clock: Clock): number {
+  return clock.year % Object.keys(Sign).length;
 }
-function clockIsSign(clock: Clock, sign: SignName) {
-  return sign == SIGNS[clockToSign(clock)];
+function clockIsSign(clock: Clock, sign: Sign): boolean {
+  return sign == Object.keys(Sign)[clockToSignNumber(clock)];
 }
 
 interface ClockActions {

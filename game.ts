@@ -63,7 +63,7 @@ class Game {
   }
 
   newGame() {
-    this.year = 307 + rollDie(SIGNS.length * 3);
+    this.year = 307 + rollDie(Object.keys(Sign).length * 3);
     this.season = rollDie(4) - 1;
     this.term = rollDie(TERMS_PER_SEASON) - 1;
     this.tock = 0;
@@ -79,7 +79,7 @@ class Game {
       {
         name: 'Goh\'s Whisper',
         weight: 1,
-        predicate: (game: Game) => clockIsSign(game, 'Goh'),
+        predicate: (game: Game) => clockIsSign(game, Sign.Goh),
         action: (game: Game) => {
           const r = rollDie(20);
           if (r <= 10) {
