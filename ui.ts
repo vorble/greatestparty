@@ -20,10 +20,6 @@ function getElementByIdAsType<T extends HTMLElement>(id: string, clazz: { new():
   return element;
 }
 
-function _cap(text: string): string {
-  return text.length == 0 ? text : text[0].toUpperCase() + text.slice(1);
-}
-
 class UIParty {
   game: Game;
 
@@ -85,7 +81,7 @@ class UIParty {
     const game = this.game;
 
     {
-      let text = _cap(SEASONS[game.season]);
+      let text = Object.keys(Season)[game.season];
       text += ' ' + game.year;
       if (FLAGS.SHOW_TICKS) {
         text += ` (${ SIGNS[clockToSign(game)] } ${ fmt02d(game.term) }:${ fmt02d(game.tock) }:${ fmt02d(game.tick) })`;

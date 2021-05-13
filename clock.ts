@@ -1,12 +1,17 @@
-type Season = 'spring' | 'summer' | 'fall' | 'winter';
-const SEASONS: Array<Season> = ['spring', 'summer', 'fall', 'winter'];
+enum Season {
+  Spring = 'spring',
+  Summer = 'summer',
+  Fall = 'fall',
+  Winter = 'winter',
+}
+
 type SignName = 'Err' | 'Goh' | 'Yurn' | 'Joyn' | 'Ryna' | 'Sil';
 const SIGNS: Array<SignName> = ['Err', 'Goh', 'Yurn', 'Joyn', 'Ryna', 'Sil'];
 
 const TICKS_PER_TOCK = 20;
 const TOCKS_PER_TERM = 20;
 const TERMS_PER_SEASON = 25;
-const SEASONS_PER_YEAR = SEASONS.length;
+const SEASONS_PER_YEAR = Object.keys(Season).length;
 
 interface Clock {
   year: number;
@@ -63,9 +68,6 @@ function clockIsSpring(clock: Clock): boolean { return clock.season == 0; }
 function clockIsSummer(clock: Clock): boolean { return clock.season == 1; }
 function clockIsFall(clock: Clock): boolean { return clock.season == 2; }
 function clockIsWinter(clock: Clock): boolean { return clock.season == 3; }
-function clockIsSeason(clock: Clock, season: Season): boolean {
-  return season == SEASONS[clock.season % SEASONS.length];
-}
 function clockToSign(clock: Clock) {
   return clock.year % SIGNS.length;
 }
