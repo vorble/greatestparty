@@ -6,13 +6,16 @@ enum Season {
 }
 
 enum Sign {
-  Err = 'Err',
-  Goh = 'Goh',
-  Yurn = 'Yurn',
-  Joyn = 'Joyn',
-  Ryna = 'Ryna',
-  Sil = 'Sil',
+  Err,
+  Goh,
+  Yurn,
+  Joyn,
+  Ryna,
+  Sil,
 }
+// Keep non-numeric keys as a lookup table of Sign names.
+const SIGNS: Array<string> = Object.keys(Sign).filter(x => !/^\d+$/.test(x));
+const SIGNS_COUNT = SIGNS.length;
 
 const TICKS_PER_TOCK = 20;
 const TOCKS_PER_TERM = 20;
@@ -74,12 +77,13 @@ function clockIsSpring(clock: Clock): boolean { return clock.season == 0; }
 function clockIsSummer(clock: Clock): boolean { return clock.season == 1; }
 function clockIsFall(clock: Clock): boolean { return clock.season == 2; }
 function clockIsWinter(clock: Clock): boolean { return clock.season == 3; }
-function clockToSignNumber(clock: Clock): number {
-  return clock.year % Object.keys(Sign).length;
+function clockToSign(clock: Clock): Sign {
+  return clock.year % SIGNS_COUNT;
 }
 function clockIsSign(clock: Clock, sign: Sign): boolean {
-  return sign == Object.keys(Sign)[clockToSignNumber(clock)];
+  return sign == clockToSign(clock);
 }
+
 
 interface ClockActions {
   doTickActions?: (game: Game) => void;
