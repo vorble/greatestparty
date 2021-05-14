@@ -43,7 +43,7 @@ game.registerLevel({
     }
 
     function linearMod(number: number) {
-      return calcmod(number, [[0,-5],[2,-4],[4,-3],[6,-2],[8,-1],[10,0],[12,1],[14,2],[16,3],[18,4],[20,5]]);
+      return mod(number, [[0,-5],[2,-4],[4,-3],[6,-2],[8,-1],[10,0],[12,1],[14,2],[16,3],[18,4],[20,5]]);
     }
 
     function rollLoseEquipment (game: Game) {
@@ -67,7 +67,7 @@ game.registerLevel({
         },
         action: (game: Game) => {
           // Being charasmatic helps you avoid making a faux pas at a local ceremony.
-          const r = rollDie(20) + calcmod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
+          const r = rollDie(20) + mod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
           if (r <= 4) {
             game.party.status.angeredGods.active = true;
             setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
@@ -104,8 +104,8 @@ game.registerLevel({
         name: 'Digging lava irrigation',
         weight: 5,
         action: (game: Game) => {
-          const wis = rollDie(20) + calcmod(game.party.wis, [[0, -1], [6, 0],[12, +1]]); // Wisdom tells you not to stand in the way of pyroclastic flow
-          const dex = rollDie(20) + calcmod(game.party.dex, [[0, -1], [6, 0],[12, +1],[16, +2]]); // Dexterity helps you get out of the way when you do stand in the way of pyroclastic flow
+          const wis = rollDie(20) + mod(game.party.wis, [[0, -1], [6, 0],[12, +1]]); // Wisdom tells you not to stand in the way of pyroclastic flow
+          const dex = rollDie(20) + mod(game.party.dex, [[0, -1], [6, 0],[12, +1],[16, +2]]); // Dexterity helps you get out of the way when you do stand in the way of pyroclastic flow
           if ( wis <= 7) {
             if ( dex <= 12 ) {
               game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is overcome by pyroclastic flow and dies.');
@@ -156,7 +156,7 @@ game.registerLevel({
               game.log('Your party dedicates some time to help local farmers.');
               game.adjustAlignment(1);
             } else {
-              const r = (rollDie(4) + calcmod(game.town.alignment, [[30, 0], [40, 1], [50, 2]]));
+              const r = (rollDie(4) + mod(game.town.alignment, [[30, 0], [40, 1], [50, 2]]));
               game.log('Your party dedicates some time to help local farmers. They donate ' + r + ' food to your party as thanks!');
               game.party.food += r;
             }
@@ -267,7 +267,7 @@ game.registerLevel({
         },
         action: (game: Game) => {
           bossState.attackCharged = false;
-          const r = rollDie(20) + calcmod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
+          const r = rollDie(20) + mod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
           if ( r <=18 ) {
             game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
             game.killPartyMembers(1);

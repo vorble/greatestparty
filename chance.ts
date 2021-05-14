@@ -58,21 +58,3 @@ function rollChoiceWeighted<T extends RollChoiceWeighted>(items: Array<T>): T {
   }
   throw new Error('Assertion error.');
 }
-
-type ModifierTableEntry = [number, number];
-type ModifierTable = Array<ModifierTableEntry>;
-function calcmod(stat: number, table: ModifierTable): number {
-  if (table.length == 0) {
-    return 0;
-  }
-  let mod = table[0][1];
-  for (let i = 1; i < table.length; ++i) {
-    const [threshold, modifier] = table[i];
-    if (stat >= threshold) {
-      mod = modifier;
-    } else {
-      break;
-    }
-  }
-  return mod;
-}

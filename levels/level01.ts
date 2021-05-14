@@ -69,7 +69,7 @@ game.registerLevel({
     function maybeInflictIslandCurse(game: Game) {
       if (!game.party.status.islandCurse.active) {
         // Being wise lets you avoid picking up the cursed item, avoiding the curse.
-        const r = rollDie(20) + calcmod(game.party.wis, [[0, -1], [5, 0], [14, 1]]);
+        const r = rollDie(20) + mod(game.party.wis, [[0, -1], [5, 0], [14, 1]]);
         if (r <= 2) {
           game.party.status.islandCurse.active = true;
           setStatusExpiry(game, game.party.status.islandCurse, { year: 1 });
@@ -159,8 +159,8 @@ game.registerLevel({
         },
         action: (game: Game) => {
           const r = (rollDie(20)
-            + calcmod(game.party.con, [[0, 0], [12, 1]])
-            + calcmod(game.party.cha, [[0, 0], [16, 1]])
+            + mod(game.party.con, [[0, 0], [12, 1]])
+            + mod(game.party.cha, [[0, 0], [16, 1]])
           );
           if (r <= 5) {
             game.log('A member of your party is drawn toward the sea, swims toward the horizon, and dies.');
@@ -177,7 +177,7 @@ game.registerLevel({
         predicate: (game: Game) => game.town.alignment <= -20,
         action: (game: Game) => {
           const roll = (rollDie(20)
-            + calcmod(game.town.alignment, [[-100, -19], [-50, -5], [-20, 0]])
+            + mod(game.town.alignment, [[-100, -19], [-50, -5], [-20, 0]])
           );
           if (roll <= 3) {
             game.log('The townsfolk chase a member of your party through the streets and kill them.');
@@ -195,7 +195,7 @@ game.registerLevel({
         predicate: (game: Game) => game.town.alignment >= 40,
         action: (game: Game) => {
           const roll = (rollDie(20)
-            + calcmod(game.town.alignment, [[40, 0], [70, 5], [100, 10]])
+            + mod(game.town.alignment, [[40, 0], [70, 5], [100, 10]])
           );
           if (roll <= 17) {
             game.log('The townsfolk cheer you on as you make your way through town.');
@@ -269,8 +269,8 @@ game.registerLevel({
             townState.questHermitRockIntroduced = true;
           }
           const roll = (rollDie(20)
-            + calcmod(game.party.cha, [[0, 1], [8, 0]]) // Hermit likes you more if you have social problems.
-            + calcmod(game.party.wis, [[0, 0], [12, 1]]) // Common sense leads to a better design.
+            + mod(game.party.cha, [[0, 1], [8, 0]]) // Hermit likes you more if you have social problems.
+            + mod(game.party.wis, [[0, 0], [12, 1]]) // Common sense leads to a better design.
             + (game.party.str < 11 ? ( // Being weak makes this task quite difficult...
                 game.party.int < 12 ? -2 : 0 // Unless you are smart enough.
               ) : 0)
@@ -326,7 +326,7 @@ game.registerLevel({
             );
             townState.questKidShellIntroduced = true;
           }
-          const r = rollDie(20) + calcmod(game.party.wis, [[0, -1], [6, 0]]); // Being unwise could lead you into the crab nest.
+          const r = rollDie(20) + mod(game.party.wis, [[0, -1], [6, 0]]); // Being unwise could lead you into the crab nest.
           if (r <= 2) {
             game.log('Your party searches the beach for shells with the youths, but a careless member disturbs a giant crab nest, leading to their death.');
             game.killPartyMembers(1);
@@ -382,9 +382,9 @@ game.registerLevel({
             townState.questCliffsCliffIntroduced = true;
           }
           const roll = (rollDie(20)
-            + calcmod(game.party.str, [[0, -2], [5, -1], [9, 0]]) // Might be too weak to climb well
-            + calcmod(game.party.dex, [[0, -2], [5, -1], [9, 0]]) // Nagivaging the cliffs is dangerous without dex.
-            + calcmod(game.party.int, [[0, 0], [10, 1], [14, 2]]) // Being smart might help finding something useful.
+            + mod(game.party.str, [[0, -2], [5, -1], [9, 0]]) // Might be too weak to climb well
+            + mod(game.party.dex, [[0, -2], [5, -1], [9, 0]]) // Nagivaging the cliffs is dangerous without dex.
+            + mod(game.party.int, [[0, 0], [10, 1], [14, 2]]) // Being smart might help finding something useful.
             + (game.party.cha >= 13 && game.party.wis <= 7 ? -2 : 0) // On a dare, one might do something stupid.
           );
           if (roll <= 3) {

@@ -53,8 +53,8 @@ class Skills {
       costTier: 2,
       unlockAtCompletedQuests: 20,
       doTickActions: (game: Game) => {
-        let bonus = calcmod(game.party.cha, [[0, 0.000], [16, 0.001]]);
-        bonus += calcmod(game.town.alignment, [[-100, -0.002], [-30, 0], [30, 0.001]]);
+        let bonus = mod(game.party.cha, [[0, 0.000], [16, 0.001]]);
+        bonus += mod(game.town.alignment, [[-100, -0.002], [-30, 0], [30, 0.001]]);
         if (rollRatio() < (0.0025 + bonus) * this.inspire.level) {
           if (game.town.townsfolk > 0) {
             if (FLAGS.DEBUG.SKILL.INSPIRE) {
@@ -100,8 +100,8 @@ class Skills {
       doTickActions: (game: Game) => {
         if (rollRatio() < 0.005 * game.party.skills.sabotage.level) {
           const r = (rollDie(20)
-            + calcmod(game.party.dex, [[0, -3], [4, -2], [6, -1], [9, 0], [13, 1]])
-            + calcmod(game.party.int, [[0, -2], [4, -1], [7, 0], [14, 1]])
+            + mod(game.party.dex, [[0, -3], [4, -2], [6, -1], [9, 0], [13, 1]])
+            + mod(game.party.int, [[0, -2], [4, -1], [7, 0], [14, 1]])
           );
           if (r <= 2) {
             game.log('Your party is noticed while sabotaging the town.');
@@ -123,7 +123,7 @@ class Skills {
       doTickActions: (game: Game) => {
         if (rollRatio() < 0.005 * game.party.skills.acclaim.level) {
           const r = (rollDie(20)
-            + calcmod(game.party.cha, [[0, -2], [6, -1], [9, 0], [12, 1], [15, 2]])
+            + mod(game.party.cha, [[0, -2], [6, -1], [9, 0], [12, 1], [15, 2]])
           );
           if (r >= 20) {
             game.log('Your acclaim produces brings out the neediest in town.');
