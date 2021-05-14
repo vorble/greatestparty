@@ -1,12 +1,11 @@
-interface BossEvent {
+interface EnemyEvent {
   name: string;
   weight: number;
-  // Optional predicate to disable event based on state of game.
   predicate?: (game: Game) => boolean;
   action: (game: Game) => void;
 }
 
-class BossState {
+class EnemyState {
   flags: Array<boolean>;
   numbers: Array<number>;
   strings: Array<string>;
@@ -18,11 +17,11 @@ class BossState {
   }
 }
 
-class Boss implements Fighter {
+class Enemy implements Fighter {
   health: number;
   name: string;
-  state: BossState;
-  events: Array<BossEvent>;
+  state: EnemyState;
+  events: Array<EnemyEvent>;
 
   str: number;
   dex: number;
@@ -38,7 +37,7 @@ class Boss implements Fighter {
     this.health = 0;
     this.name = '';
     this.events = [];
-    this.state = new BossState();
+    this.state = new EnemyState();
 
     this.str = 0;
     this.dex = 0;
@@ -51,3 +50,4 @@ class Boss implements Fighter {
     this.armor = new Equipment();
   }
 }
+

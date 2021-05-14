@@ -2,7 +2,7 @@ game.registerLevel({
   level: 2,
   newTown: (game: Game) => {
     const town = new Town();
-    const boss = new Boss();
+    const boss = new Enemy();
 
     town.name = 'Magma Town';
     town.townsfolk = 200;

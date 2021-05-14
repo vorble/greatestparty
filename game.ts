@@ -2,7 +2,7 @@ const PARTY_MEMBER_HP = 100;
 
 interface Level {
   level: number;
-  newTown: (game: Game) => { town: Town, boss: Boss };
+  newTown: (game: Game) => { town: Town, boss: Enemy };
 }
 
 interface GameEvent {
@@ -18,7 +18,7 @@ interface GameHooks extends ClockActions {
 class Game {
   party: Party;
   town: Town;
-  boss: Boss;
+  boss: Enemy;
   year: number;
   season: number; // 0 spring, 1 summer, 2 fall, 3 winter
   term: number;
@@ -39,7 +39,7 @@ class Game {
   constructor() {
     this.party = new Party();
     this.town = new Town();
-    this.boss = new Boss();
+    this.boss = new Enemy();
     this.year = 0;
     this.season = 0;
     this.term = 0;
@@ -816,7 +816,7 @@ class Game {
     return rollChoiceWeighted(enemies);
   }
 
-  pickBossEvent(): null | BossEvent {
+  pickBossEvent(): null | EnemyEvent {
     const events = this.boss.events.filter((event) => {
       return event.predicate == null || event.predicate(this);
     });

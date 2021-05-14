@@ -2,7 +2,7 @@ game.registerLevel({
   level: 1,
   newTown: (game: Game) => {
     const town = new Town();
-    const boss = new Boss();
+    const boss = new Enemy();
 
     // A small, yet functional town by the sea. Named after the Saint Rumaa who settled here in
     // 112 after being dismissed from the church order after the new rules took over after the war.
