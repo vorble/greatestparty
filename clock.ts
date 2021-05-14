@@ -50,7 +50,7 @@ function clockInput(clock: ClockInput): Clock {
   });
 }
 
-function clockAdd(a: Clock, b: Clock) {
+function clockAdd(a: Clock, b: Clock): Clock {
   return unwrapClock({
     year: a.year + b.year,
     season: a.season + b.season,
