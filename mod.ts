@@ -1,24 +1,25 @@
 // For a given value, find the modifier from the table provided. The modifier
 // table is an array of [threshold, modifier] pairs sorted such that the
-// thresholds increase with position in the table. Example:
-//   mod( 0, [[0, 0], [1, 2], [2, -3]]) == 0
-//   mod( 1, [[0, 0], [1, 2], [2, -3]]) == 2
-//   mod( 2, [[0, 0], [1, 2], [2, -3]]) == -3
-//   mod( 3, [[0, 0], [1, 2], [2, -3]]) == -3
+// thresholds increase with position in the table.
 type ModTableEntry = [number, number];
 type ModTable = Array<ModTableEntry>;
 function mod(value: number, table: ModTable): number {
   if (table.length == 0) {
     throw new Error('Invalid mod table.');
   }
-  let mod = table[0][1];
+  let result = table[0][1];
   for (let i = 1; i < table.length; ++i) {
     const [threshold, modifier] = table[i];
-    if (value >= threshold) {
-      mod = modifier;
-    } else {
+    if (value < threshold) {
       break;
     }
+    result = modifier;
   }
-  return mod;
+  return result;
 }
+
+// Linear modifier for stat ranges 0 to 20 with modifier 0 at stat value 10.
+const MOD_LINEAR_10: ModTable = [
+  [0, -5], [2, -4], [4, -3], [6, -2], [8, -1], [10, 0],
+  [12, 1], [14, 2], [16, 3], [18, 4], [20, 5]
+];
