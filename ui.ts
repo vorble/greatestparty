@@ -81,7 +81,7 @@ class UIParty {
     const game = this.game;
 
     {
-      let text = Object.keys(Season)[game.season];
+      let text = SEASONS[game.season];
       text += ' ' + game.year;
       if (FLAGS.SHOW_TICKS) {
         text += ` (${ SIGNS[clockToSign(game)] } ${ fmt02d(game.term) }:${ fmt02d(game.tock) }:${ fmt02d(game.tick) })`;

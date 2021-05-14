@@ -1,9 +1,11 @@
 enum Season {
-  Spring = 'spring',
-  Summer = 'summer',
-  Fall = 'fall',
-  Winter = 'winter',
+  Spring,
+  Summer,
+  Fall,
+  Winter,
 }
+// Keep non-numeric keys as a lookup table of Season names.
+const SEASONS: Array<string> = Object.keys(Season).filter(x => !/^\d+$/.test(x));
 
 enum Sign {
   Err,
@@ -20,7 +22,7 @@ const SIGNS_COUNT = SIGNS.length;
 const TICKS_PER_TOCK = 20;
 const TOCKS_PER_TERM = 20;
 const TERMS_PER_SEASON = 25;
-const SEASONS_PER_YEAR = Object.keys(Season).length;
+const SEASONS_PER_YEAR = SEASONS.length;
 
 interface Clock {
   year: number;
@@ -73,17 +75,33 @@ function clockCompare(a: Clock, b: Clock): -1 | 0 | 1 {
 
 }
 
-function clockIsSpring(clock: Clock): boolean { return clock.season == 0; }
-function clockIsSummer(clock: Clock): boolean { return clock.season == 1; }
-function clockIsFall(clock: Clock): boolean { return clock.season == 2; }
-function clockIsWinter(clock: Clock): boolean { return clock.season == 3; }
+function clockIsSeason(clock: Clock, season: Season): boolean {
+  return clock.season == season;
+}
+
+function clockIsSpring(clock: Clock): boolean {
+  return clock.season == Season.Spring;
+}
+
+function clockIsSummer(clock: Clock): boolean {
+  return clock.season == Season.Summer;
+}
+
+function clockIsFall(clock: Clock): boolean {
+  return clock.season == Season.Fall;
+}
+
+function clockIsWinter(clock: Clock): boolean {
+  return clock.season == Season.Winter;
+}
+
 function clockToSign(clock: Clock): Sign {
   return clock.year % SIGNS_COUNT;
 }
+
 function clockIsSign(clock: Clock, sign: Sign): boolean {
   return sign == clockToSign(clock);
 }
-
 
 interface ClockActions {
   doTickActions?: (game: Game) => void;
