@@ -938,6 +938,7 @@ class UIItems {
   potionIntUp1: UIItemsEntry;
   potionWisUp1: UIItemsEntry;
   potionChaUp1: UIItemsEntry;
+  potionAntidote: UIItemsEntry;
 
   clericRobes: UIItemsEntry;
 
@@ -954,6 +955,7 @@ class UIItems {
     this.potionIntUp1 = new UIItemsEntry('potionIntUp1');
     this.potionWisUp1 = new UIItemsEntry('potionWisUp1');
     this.potionChaUp1 = new UIItemsEntry('potionChaUp1');
+    this.potionAntidote = new UIItemsEntry('potionAntidote');
 
     this.clericRobes = new UIItemsEntry('clericRobes');
 
