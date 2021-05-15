@@ -90,6 +90,7 @@ class Status {
   berzerk: PartyStatusItem;
   islandCurse: PartyStatusItem;
   angeredGods: PartyStatusItem;
+  poison: PartyStatusItem;
 
   other: Array<PartyStatusItem2>;
 
@@ -114,6 +115,10 @@ class Status {
     this.angeredGods = {
       ...defaults,
       name: 'Angered Gods',
+    };
+    this.poison = {
+      ...defaults,
+      name: 'Poison',
     };
     this.other = [];
   }
