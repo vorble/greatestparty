@@ -669,7 +669,10 @@ class Game {
 
       // Slowly heal party damage when out of battle.
       if (this.party.damage > 0) {
-        this.party.damage -= 1;
+        // Prevent healing when poison is active.
+        if (!this.party.status.poison.active) {
+          this.party.damage -= 1;
+        }
       }
     }
 

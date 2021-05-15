@@ -1,5 +1,5 @@
-type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods';
-const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods'];
+type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison';
+const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison'];
 
 interface PartyStatusItem extends ClockActions {
   active: boolean;
