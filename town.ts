@@ -24,13 +24,6 @@ interface TownEnvironment {
   action: (game: Game) => void;
 }
 
-interface TownWeather {
-  name: string;
-  weight: number;
-  predicate?: (game: Game) => boolean;
-  action: (game: Game) => void;
-}
-
 // Quantities for spring, summer, fall, and then winter.
 type TownSeasonVector = [number, number, number, number];
 
