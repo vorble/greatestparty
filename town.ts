@@ -17,14 +17,6 @@ interface TownQuest {
   action: (game: Game) => void;
 }
 
-interface TownEnemy {
-  name: string;
-  weight: number;
-  predicate?: (game: Game) => boolean;
-  roll: (game: Game) => Fighter;
-  win: (game: Game) => void;
-}
-
 interface TownEnvironment {
   name: string;
   weight: number;
@@ -64,8 +56,6 @@ class Town {
   need: number;
   needMax: number;
   needRatio: number;
-  boss: number;
-  bossReward: number;
   enemyRatio: number;
   foodStock: number;
   foodSupport: TownSeasonVector;
@@ -87,7 +77,8 @@ class Town {
   hooks: TownHooks;
   events: Array<TownEvent>;
   quests: Array<TownQuest>;
-  enemies: Array<TownEnemy>;
+  enemies: Array<EnemyTemplate>;
+  bosses: Array<EnemyTemplate>;
 
   constructor() {
     this.name = 'Town';
@@ -99,8 +90,6 @@ class Town {
     this.need = 0;
     this.needMax = 0;
     this.needRatio = 0;
-    this.boss = 0;
-    this.bossReward = 0;
     this.enemyRatio = 0;
     this.foodStock = 0;
     this.foodSupport = [0, 0, 0, 0];
@@ -123,5 +112,6 @@ class Town {
     this.events = [];
     this.quests = [];
     this.enemies = [];
+    this.bosses = [];
   }
 }

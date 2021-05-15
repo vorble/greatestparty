@@ -2,7 +2,7 @@ const PARTY_MEMBER_HP = 100;
 
 interface Level {
   level: number;
-  newTown: (game: Game) => { town: Town, boss: Enemy };
+  newTown: (game: Game) => Town;
 }
 
 interface GameEvent {
@@ -18,9 +18,8 @@ interface GameHooks extends ClockActions {
 class Game {
   party: Party;
   town: Town;
-  boss: Enemy;
   year: number;
-  season: number; // 0 spring, 1 summer, 2 fall, 3 winter
+  season: number;
   term: number;
   tock: number;
   tick: number;
@@ -31,15 +30,14 @@ class Game {
   levels: Array<Level>;
   level: number;
   timeouts: Array<{ callback: () => void, clock: Clock }>;
-  enemyTemplate: null | TownEnemy;
-  enemy: null | Fighter;
+  boss: null | Enemy;
+  enemy: null | Enemy;
   events: Array<GameEvent>;
   hooks: GameHooks;
 
   constructor() {
     this.party = new Party();
     this.town = new Town();
-    this.boss = new Enemy();
     this.year = 0;
     this.season = 0;
     this.term = 0;
@@ -52,7 +50,7 @@ class Game {
     this.levels = [];
     this.level = 0;
     this.timeouts = [];
-    this.enemyTemplate = null;
+    this.boss = null;
     this.enemy = null;
     this.events = [];
     this.hooks = {};
@@ -73,7 +71,6 @@ class Game {
     this.textLog = [];
     this.level = 1;
     this.timeouts = [];
-    this.enemyTemplate = null;
     this.enemy = null;
     this.events = [
       {
@@ -171,9 +168,11 @@ class Game {
     if (levels.length == 0) {
       throw new Error('Couldn\'t find level ' + this.level + '.');
     }
-    const which = rollDie(levels.length) - 1;
-    const level = levels[which];
-    const { boss, town } = level.newTown(this);
+    const level = rollChoice(levels);
+    const town = level.newTown(this);
+    const template = rollChoiceWeighted(town.bosses);
+    const boss = template.roll(this);
+
     this.town = town;
     this.boss = boss;
 
@@ -184,8 +183,6 @@ class Game {
   }
 
   winLevel() {
-    this.log('You have helped ' + this.town.name + ' overcome ' + this.boss.name + ' and receive ' + this.town.bossReward + ' gold.');
-    this.party.gold += this.town.bossReward;
     this.log(this.town.name + ' wishes you the best on your adventures!');
   }
 
@@ -369,9 +366,9 @@ class Game {
   }
 
   fightBoss() {
-    if (!this.fightingBoss) {
-      this.boss.health = this.town.boss;
+    if (this.enemy == null && this.boss != null) {
       this.fightingBoss = true;
+      this.enemy = this.boss;
       this.log('You pick a fight with ' + this.boss.name + '.');
     }
   }
@@ -493,6 +490,40 @@ class Game {
 
   log(text: string) {
     this.textLog.push(text);
+  }
+
+  fight() {
+    if (this.enemy != null && this.tick == 0) {
+      this.log('Your party trades blows with ' + this.enemy.name + '.');
+      const damageToEnemy = fightCalculateAttack(this.party, this.enemy);
+      const damageToParty = fightCalculateAttack(this.enemy, this.party);
+      this.party.damage += damageToParty;
+      this.enemy.health = Math.max(0, this.enemy.health - damageToEnemy);
+      if (this.enemy.health <= 0) {
+        this.log('Your party kills ' + this.enemy.name + '!');
+        this.enemy.win(this);
+        this.enemy = null;
+      } else {
+        const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
+        if (willDie > 0) {
+          this.log(this.enemy.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
+          this.party.size = Math.max(0, this.party.size - willDie);
+          this.party.damage -= willDie * PARTY_MEMBER_HP;
+        }
+
+        if (this.tock % 5 == 0) {
+          const event = this.pickEnemyEvent(this.enemy);
+          if (event != null) {
+            event.action(this);
+          }
+        }
+      }
+
+      if (this.boss != null && this.boss.health == 0 && this.fightingBoss) {
+        this.fightingBoss = false;
+        this.winLevel();
+      }
+    }
   }
 
   round() {
@@ -621,76 +652,24 @@ class Game {
     // ----------------------------------------------------
     let inBattle = false;
 
-    if (this.fightingBoss) {
+    if (this.enemy != null) {
       inBattle = true;
-      if (this.tick == 0) {
-        this.log('Your party trades blows with ' + this.boss.name + '.');
-        const damageToBoss = fightCalculateAttack(this.party, this.boss);
-        const damageToParty = fightCalculateAttack(this.boss, this.party);
-        this.party.damage += damageToParty;
-        this.boss.health = Math.max(0, this.boss.health - damageToBoss);
-        if (this.boss.health <= 0) {
-          this.fightingBoss = false;
-          this.log('Your party kills ' + this.boss.name + '!');
-          // TODO: Should there be a boss.win() method?
-          this.winLevel();
-          this.nextLevel();
-        } else {
-          const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
-          if (willDie > 0) {
-            this.log(this.boss.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
-            this.party.size = Math.max(0, this.party.size - willDie);
-            this.party.damage -= willDie * PARTY_MEMBER_HP;
-          }
-        }
-      }
-    }
-
-    if (this.enemy && this.enemyTemplate) {
-      inBattle = true;
-      if (this.tick == 0) {
-        this.log('Your party trades blows with ' + this.enemyTemplate.name + '.');
-        const damageToEnemy = fightCalculateAttack(this.party, this.enemy);
-        const damageToParty = fightCalculateAttack(this.enemy, this.party);
-        this.party.damage += damageToParty;
-        this.enemy.health = Math.max(0, this.enemy.health - damageToEnemy);
-        if (this.enemy.health <= 0) {
-          this.log('Your party kills ' + this.enemyTemplate.name + '!');
-          this.enemyTemplate.win(game);
-          this.enemyTemplate = null;
-          this.enemy = null;
-        } else {
-          const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
-          if (willDie > 0) {
-            this.log(this.enemyTemplate.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
-            this.party.size = Math.max(0, this.party.size - willDie);
-            this.party.damage -= willDie * PARTY_MEMBER_HP;
-          }
-        }
-      }
-    } else if (this.tick == 0 && !this.fightingBoss && rollRatio() < this.town.enemyRatio) {
-      this.enemyTemplate = this.pickTownEnemy();
-      if (this.enemyTemplate != null) {
-        inBattle = true;
-        this.enemy = this.enemyTemplate.roll(this);
-        this.log('Your party encounters ' + this.enemyTemplate.name + ', ready to fight!');
-      }
+      this.fight();
     }
 
     if (!inBattle) {
+      if (this.tick == 0 && !this.fightingBoss && rollRatio() < this.town.enemyRatio) {
+        const template = this.pickEnemy();
+        if (template != null) {
+          inBattle = true;
+          this.enemy = template.roll(this);
+          this.log('Your party encounters ' + this.enemy.name + ', ready to fight!');
+        }
+      }
+
       // Slowly heal party damage when out of battle.
       if (this.party.damage > 0) {
         this.party.damage -= 1;
-      }
-    }
-
-    // ----------------------------------------------------
-    // BOSS EVENTS
-    // ----------------------------------------------------
-    if (this.fightingBoss && this.tick == 0) {
-      const event = this.pickBossEvent();
-      if (event != null) {
-        event.action(this);
       }
     }
 
@@ -707,7 +686,7 @@ class Game {
     }
 
     // Can't quest while fighting an enemy
-    if (this.enemy == null && !this.fightingBoss && this.party.quests > 0) {
+    if (this.enemy == null && this.party.quests > 0) {
       const POINTS_PER_QUEST = 100;
       const GOLD_PER_QUEST = 10;
       // A random percentage of your party is effective this
@@ -806,7 +785,7 @@ class Game {
     return rollChoiceWeighted(quests);
   }
 
-  pickTownEnemy(): null | TownEnemy {
+  pickEnemy(): null | EnemyTemplate {
     const enemies = this.town.enemies.filter((enemy) => {
       return enemy.predicate == null || enemy.predicate(this);
     });
@@ -816,8 +795,8 @@ class Game {
     return rollChoiceWeighted(enemies);
   }
 
-  pickBossEvent(): null | EnemyEvent {
-    const events = this.boss.events.filter((event) => {
+  pickEnemyEvent(enemy: Enemy): null | EnemyEvent {
+    const events = enemy.events.filter((event) => {
       return event.predicate == null || event.predicate(this);
     });
     if (events.length == 0) {

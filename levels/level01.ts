@@ -2,7 +2,6 @@ game.registerLevel({
   level: 1,
   newTown: (game: Game) => {
     const town = new Town();
-    const boss = new Enemy();
 
     // A small, yet functional town by the sea. Named after the Saint Rumaa who settled here in
     // 112 after being dismissed from the church order after the new rules took over after the war.
@@ -30,8 +29,6 @@ game.registerLevel({
     town.need = 10;
     town.needMax = 10;
     town.needRatio = 0.010;
-    town.boss = 500;
-    town.bossReward = 300;
     town.enemyRatio = 0.05;
 
     const townState = new (class TownStateWrapper {
@@ -428,14 +425,14 @@ game.registerLevel({
 
     town.enemies = [
       {
-        // Scaly, slimy, and ready to fight.
-        name: 'Surly Chachech',
         weight: 1,
         predicate: (game: Game) => {
           return true;
         },
         roll: (game: Game) => {
+          // Scaly, slimy, and ready to fight.
           return {
+            name: 'Surly Chachech',
             health: 25,
             str: 8,  int: 5,
             dex: 11, wis: 7,
@@ -450,21 +447,24 @@ game.registerLevel({
               magical: -1,
               elemental: 0,
             },
+            state: {},
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(8, 12));
+              loot(game);
+            },
           };
-        },
-        win: (game: Game) => {
-          game.receiveGold(rollRange(8, 12));
-          loot(game);
         },
       },
       {
-        name: 'Sea Spirit',
         weight: 1,
         predicate: (game: Game) => {
           return true;
         },
         roll: (game: Game) => {
           return {
+            name: 'Sea Spirit',
             health: 18,
             str: 3,  int: 8,
             dex: 5,  wis: 3,
@@ -479,21 +479,24 @@ game.registerLevel({
               magical: -1,
               elemental: 0,
             },
+            state: {},
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(10, 15));
+              loot(game);
+            },
           };
-        },
-        win: (game: Game) => {
-          game.receiveGold(rollRange(10, 15));
-          loot(game);
         },
       },
       {
-        name: 'Reticent Crab',
         weight: 1,
         predicate: (game: Game) => {
           return true;
         },
         roll: (game: Game) => {
           return {
+            name: 'Reticent Crab',
             health: 22,
             str: 11, int: 7,
             dex: 8,  wis: 4,
@@ -508,21 +511,24 @@ game.registerLevel({
               magical: 0,
               elemental: 1,
             },
+            state: {},
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(12, 14));
+              loot(game);
+            },
           };
-        },
-        win: (game: Game) => {
-          game.receiveGold(rollRange(12, 14));
-          loot(game);
         },
       },
       {
-        name: 'Fleeting Spark',
         weight: 1,
         predicate: (game: Game) => {
           return true;
         },
         roll: (game: Game) => {
           return {
+            name: 'Fleeting Spark',
             health: 28,
             str: 3,  int: 10,
             dex: 14, wis: 2,
@@ -537,21 +543,24 @@ game.registerLevel({
               magical: 0,
               elemental: 0,
             },
+            state: {},
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(12, 14));
+              loot(game);
+            },
           };
-        },
-        win: (game: Game) => {
-          game.receiveGold(rollRange(12, 14));
-          loot(game);
         },
       },
       {
-        name: 'Irate Townsfolk',
         weight: 1,
         predicate: (game: Game) => {
           return game.town.townsfolk > 0 && game.town.alignment < -60;
         },
         roll: (game: Game) => {
           return {
+            name: 'Irate Townsfolk',
             health: 30,
             str: 12, int: 8,
             dex: 9,  wis: 7,
@@ -566,85 +575,102 @@ game.registerLevel({
               magical: 0,
               elemental: 1,
             },
+            state: {},
+            events: [
+            ],
+            win: (game: Game) => {
+              game.killTownsfolk(1);
+              game.receiveGold(30);
+              loot(game);
+              loot(game);
+            },
           };
         },
-        win: (game: Game) => {
-          game.killTownsfolk(1);
-          game.receiveGold(30);
-          loot(game);
-          loot(game);
+      },
+    ];
+
+    town.bosses = [
+      {
+        weight: 1,
+        roll: (game: Game) => {
+          const state = {
+            inStaringContest: false,
+            wonStaringContest: false,
+          };
+
+          return {
+            name: 'Octopod',
+            health: 500,
+            str: 17, int: 7,
+            dex: 13, wis: 8,
+            con:  9, cha: 6,
+            weapon: {
+              physical: -12,
+              magical: 0,
+              elemental: 8,
+            },
+            armor: {
+              physical: -12,
+              magical: 0,
+              elemental: 8,
+            },
+            state,
+            events: [
+              {
+                name: 'Staring Contest',
+                weight: 1,
+                predicate: (game: Game) => {
+                  return !state.inStaringContest && !state.wonStaringContest;
+                },
+                action: (game: Game) => {
+                  state.inStaringContest = true;
+                  game.log('Octopod becomes still as it gazes over your party...');
+                },
+              },
+              {
+                name: 'Lose Staring Contest',
+                weight: 1,
+                predicate: (game: Game) => {
+                  return state.inStaringContest;
+                },
+                action: (game: Game) => {
+                  state.inStaringContest = false;
+                  game.log('Octopod blinks!');
+                },
+              },
+              {
+                name: 'Win Staring Contest',
+                weight: 1,
+                predicate: (game: Game) => {
+                  return state.inStaringContest;
+                },
+                action: (game: Game) => {
+                  state.inStaringContest = false;
+                  state.wonStaringContest = true;
+                  game.log('Octopod squirms with delight!');
+                },
+              },
+              {
+                name: 'Tentacle Swipe',
+                weight: 1,
+                predicate: (game: Game) => {
+                  return state.wonStaringContest;
+                },
+                action: (game: Game) => {
+                  state.wonStaringContest = false;
+                  game.log('A member of your party disappears under Octopod\'s tentacle.');
+                  game.killPartyMembers(1);
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(300);
+            },
+          };
         },
       },
     ];
 
-    boss.name = 'Octopod';
-    boss.str = 17;
-    boss.dex = 13;
-    boss.con = 9;
-    boss.int = 7;
-    boss.wis = 8;
-    boss.cha = 6;
-    boss.weapon.physical = -12; // blunt damage
-    boss.weapon.elemental = 8; // ice damage
-    boss.armor.physical = -12; // blunt armor
-    boss.armor.elemental = 8; // ice armor
-
-    const bossState = new (class BossStateWrapper {
-      get inStaringContest(): boolean { return game.boss.state.flags[0] || false; }
-      set inStaringContest(value: boolean) { game.boss.state.flags[0] = value; }
-      get wonStaringContest(): boolean { return game.boss.state.flags[1] || false; }
-      set wonStaringContest(value: boolean) { game.boss.state.flags[1] = value; }
-    });
-
-    boss.events = [
-      {
-        name: 'Staring Contest',
-        weight: 1,
-        predicate: (game: Game) => {
-          return !bossState.inStaringContest && !bossState.wonStaringContest;
-        },
-        action: (game: Game) => {
-          bossState.inStaringContest = true;
-          game.log('Octopod becomes still as it gazes over your party...');
-        },
-      },
-      {
-        name: 'Lose Staring Contest',
-        weight: 1,
-        predicate: (game: Game) => {
-          return bossState.inStaringContest;
-        },
-        action: (game: Game) => {
-          bossState.inStaringContest = false;
-          game.log('Octopod blinks!');
-        },
-      },
-      {
-        name: 'Win Staring Contest',
-        weight: 1,
-        predicate: (game: Game) => {
-          return bossState.inStaringContest;
-        },
-        action: (game: Game) => {
-          bossState.inStaringContest = false;
-          bossState.wonStaringContest = true;
-          game.log('Octopod squirms with delight!');
-        },
-      },
-      {
-        name: 'Tentacle Swipe',
-        weight: 1,
-        predicate: (game: Game) => {
-          return bossState.wonStaringContest;
-        },
-        action: (game: Game) => {
-          bossState.wonStaringContest = false;
-          game.log('A member of your party disappears under Octopod\'s tentacle.');
-          game.killPartyMembers(1);
-        },
-      },
-    ];
-
-    return { town, boss };
+    return town;
   },
 });

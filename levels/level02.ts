@@ -2,7 +2,6 @@ game.registerLevel({
   level: 2,
   newTown: (game: Game) => {
     const town = new Town();
-    const boss = new Enemy();
 
     town.name = 'Magma Town';
     town.townsfolk = 200;
@@ -28,9 +27,6 @@ game.registerLevel({
     town.need = 10;
     town.needMax = 20;
     town.needRatio = 0.010;
-    town.boss = 4000;
-    town.bossReward = 350;
-
 
     function loot(game: Game) {
       if (rollRatio() <= 0.4) {
@@ -216,79 +212,93 @@ game.registerLevel({
       },
     ];
 
-    const bossState = new (class BossStateWrapper {
-      get chargingAttack(): boolean { return game.boss.state.flags[1]; }
-      set chargingAttack(value: boolean) { game.boss.state.flags[1] = value; }
-      get attackCharged(): boolean { return game.boss.state.flags[2]; }
-      set attackCharged(value: boolean) { game.boss.state.flags[2] = value; }
-    });
-
-    boss.name = 'Magma Elemental';
-    boss.str = 14;
-    boss.dex = 15;
-    boss.con = 9;
-    boss.int = 8;
-    boss.wis = 8;
-    boss.cha = 7;
-    boss.weapon.physical = -1; // 1 blunt damage
-    boss.weapon.elemental = -1; // 1 fire damage
-    boss.armor.physical = -1; // 1 blunt armor
-    boss.armor.elemental = -1; // 1 fire armor
-
-    boss.events = [
+    town.bosses = [
       {
-        name: 'Charging attack',
         weight: 1,
-        predicate: (game: Game) => {
-          return !bossState.chargingAttack && !bossState.attackCharged;
-        },
-        action: (game: Game) => {
-          bossState.chargingAttack = true;
-          game.log('Magma elemental starts to glow with a red hot intensity and holds its hands over its head.');
-        },
-      },
-      {
-        name: 'Finished Charging',
-        weight: 10,
-        predicate: (game: Game) => {
-          return bossState.chargingAttack;
-        },
-        action: (game: Game) => {
-          bossState.chargingAttack = false;
-          bossState.attackCharged = true;
-          game.log('Magma flows from the magma elemental\'s hands into a ball over its head.');
-        },
-      },
-      {
-        name: 'Kahmehamagma',
-        weight: 10,
-        predicate: (game: Game) => {
-          return bossState.attackCharged;
-        },
-        action: (game: Game) => {
-          bossState.attackCharged = false;
-          const r = rollDie(20) + mod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
-          if ( r <=18 ) {
-            game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
-            game.killPartyMembers(1);
-          } else {
-            game.log('The magma elemental throws its hands down and the ball of magma shoots forward narrowly missing a party member!');
-          }
-        },
-      },
-      {
-        name: 'Stomp',
-        weight: 1,
-        action: (game: Game) => {
-          game.log('The magma elemental lifts its leg high and stops on the ground creating a shock wave! The party\'s dexterity decreases by 2.');
-          game.party.dexmod += -2;
-          game.setTimeout(() => {
-            game.party.dexmod += 2;
-          }, { term: 1});
+        roll: (game: Game) => {
+          const state = {
+            chargingAttack: false,
+            attackCharged: false,
+          };
+
+          return {
+            name: 'Magma Elemental',
+            health: 4000,
+            str: 14, int: 8,
+            dex: 15, wis: 8,
+            con:  9, cha: 7,
+            weapon: {
+              physical: -1, // blunt
+              magical: 0,
+              elemental: -1, // fire
+            },
+            armor: {
+              physical: -1, // blunt
+              magical: 0,
+              elemental: -1, // fire
+            },
+            state,
+            events: [
+              {
+                name: 'Charging attack',
+                weight: 1,
+                predicate: (game: Game) => {
+                  return !state.chargingAttack && !state.attackCharged;
+                },
+                action: (game: Game) => {
+                  state.chargingAttack = true;
+                  game.log('Magma elemental starts to glow with a red hot intensity and holds its hands over its head.');
+                },
+              },
+              {
+                name: 'Finished Charging',
+                weight: 10,
+                predicate: (game: Game) => {
+                  return state.chargingAttack;
+                },
+                action: (game: Game) => {
+                  state.chargingAttack = false;
+                  state.attackCharged = true;
+                  game.log('Magma flows from the magma elemental\'s hands into a ball over its head.');
+                },
+              },
+              {
+                name: 'Kahmehamagma',
+                weight: 10,
+                predicate: (game: Game) => {
+                  return state.attackCharged;
+                },
+                action: (game: Game) => {
+                  state.attackCharged = false;
+                  const r = rollDie(20) + mod(game.party.dex, [[-50, -1], [8, 0], [16, 1], [18,2]]);
+                  if ( r <=18 ) {
+                    game.log('The magma elemental throws its hands down and the ball of magma shoots forward toward a party member!');
+                    game.killPartyMembers(1);
+                  } else {
+                    game.log('The magma elemental throws its hands down and the ball of magma shoots forward narrowly missing a party member!');
+                  }
+                },
+              },
+              {
+                name: 'Stomp',
+                weight: 1,
+                action: (game: Game) => {
+                  game.log('The magma elemental lifts its leg high and stops on the ground creating a shock wave! The party\'s dexterity decreases by 2.');
+                  game.party.dexmod += -2;
+                  game.setTimeout(() => {
+                    game.party.dexmod += 2;
+                  }, { term: 1});
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(350);
+            },
+          };
         },
       },
     ];
 
-    return { town, boss };
+    return town;
   },
 });
