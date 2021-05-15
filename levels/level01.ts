@@ -31,37 +31,24 @@ game.registerLevel({
     town.needRatio = 0.010;
     town.enemyRatio = 0.05;
 
-    const townState = new (class TownStateWrapper {
-      get bodiesOutToSea(): number { return game.town.state.numbers[0] || 0; }
-      set bodiesOutToSea(value: number) { game.town.state.numbers[0] = value; }
-      get bodiesInTheAir(): number { return game.town.state.numbers[1] || 0; }
-      set bodiesInTheAir(value: number) { game.town.state.numbers[1] = value; }
-      get ticksReturnBodies(): number { return game.town.state.numbers[2] || 0; }
-      set ticksReturnBodies(value: number) { game.town.state.numbers[2] = value; }
-      get ticksMaybeInflictIslandCurse(): number { return game.town.state.numbers[3] || 0; }
-      set ticksMaybeInflictIslandCurse(value: number) { game.town.state.numbers[3] = value; }
-      get questHermitRockGood(): number { return game.town.state.numbers[4] || 0; }
-      set questHermitRockGood(value: number) { game.town.state.numbers[4] = value; }
-      get questKidShellTalk(): number { return game.town.state.numbers[5] || 0; }
-      set questKidShellTalk(value: number) { game.town.state.numbers[5] = value; }
-      get questCliffsCliffTalk(): number { return game.town.state.numbers[6] || 0; }
-      set questCliffsCliffTalk(value: number) { game.town.state.numbers[6] = value; }
+    const townState = {
+      bodiesOutToSea: 0,
+      bodiesInTheAir: 0,
+      ticksReturnBodies: 0,
+      ticksMaybeInflictIslandCurse: 0,
+      questHermitRockGood: 0,
+      questKidShellTalk: 0,
+      questCliffsCliffTalk: 0,
 
-      get questHermitRockIntroduced(): boolean { return game.town.state.flags[0] || false; }
-      set questHermitRockIntroduced(value: boolean) { game.town.state.flags[0] = value; }
-      get questHermitTreasureAvailable(): boolean { return game.town.state.flags[1] || false; }
-      set questHermitTreasureAvailable(value: boolean) { game.town.state.flags[1] = value; }
-      get questHermitTreasureIntroduced(): boolean { return game.town.state.flags[2] || false; }
-      set questHermitTreasureIntroduced(value: boolean) { game.town.state.flags[2] = value; }
-      get questKidShellIntroduced(): boolean { return game.town.state.flags[3] || false; }
-      set questKidShellIntroduced(value: boolean) { game.town.state.flags[3] = value; }
-      get questKidShellFinished(): boolean { return game.town.state.flags[4] || false; }
-      set questKidShellFinished(value: boolean) { game.town.state.flags[4] = value; }
-      get questCliffsCliffIntroduced(): boolean { return game.town.state.flags[5] || false; }
-      set questCliffsCliffIntroduced(value: boolean) { game.town.state.flags[5] = value; }
-      get questCliffsCliffFinished(): boolean { return game.town.state.flags[6] || false; }
-      set questCliffsCliffFinished(value: boolean) { game.town.state.flags[6] = value; }
-    });
+      questHermitRockIntroduced: false,
+      questHermitTreasureAvailable: false,
+      questHermitTreasureIntroduced: false,
+      questKidShellIntroduced: false,
+      questKidShellFinished: false,
+      questCliffsCliffIntroduced: false,
+      questCliffsCliffFinished: false,
+    };
+    town.state = townState;
 
     function maybeInflictIslandCurse(game: Game) {
       if (!game.party.status.islandCurse.active) {

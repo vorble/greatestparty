@@ -31,18 +31,6 @@ interface TownWeather {
   action: (game: Game) => void;
 }
 
-class TownState {
-  flags: Array<boolean>;
-  numbers: Array<number>;
-  strings: Array<string>;
-
-  constructor() {
-    this.flags = [];
-    this.numbers = [];
-    this.strings = [];
-  }
-}
-
 // Quantities for spring, summer, fall, and then winter.
 type TownSeasonVector = [number, number, number, number];
 
@@ -73,7 +61,7 @@ class Town {
   inventoryArmorBuy: EquipmentInventory;
   inventoryArmorSell: EquipmentInventory;
 
-  state: TownState;
+  state: unknown;
   hooks: TownHooks;
   events: Array<TownEvent>;
   quests: Array<TownQuest>;
@@ -107,7 +95,7 @@ class Town {
     this.inventoryArmorBuy = new EquipmentInventory();
     this.inventoryArmorSell = new EquipmentInventory();
 
-    this.state = new TownState();
+    this.state = {};
     this.hooks = {};
     this.events = [];
     this.quests = [];

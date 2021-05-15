@@ -27,6 +27,11 @@ game.registerLevel({
     town.need = 10;
     town.needMax = 20;
     town.needRatio = 0.010;
+    town.enemyRatio = 0.05;
+
+    const townState = {
+    };
+    town.state = townState;
 
     function loot(game: Game) {
       if (rollRatio() <= 0.4) {
