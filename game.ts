@@ -495,6 +495,13 @@ class Game {
 
   fight() {
     if (this.enemy != null && this.tick == 0) {
+      if (this.tock % 5 == 0) {
+        const event = this.pickEnemyEvent(this.enemy);
+        if (event != null) {
+          event.action(this);
+        }
+      }
+
       this.log('Your party trades blows with ' + this.enemy.name + '.');
       const damageToEnemy = fightCalculateAttack(this.party, this.enemy);
       const damageToParty = fightCalculateAttack(this.enemy, this.party);
@@ -510,13 +517,6 @@ class Game {
           this.log(this.enemy.name + ' kills ' + willDie + ' party member' + (willDie == 1 ? '' : 's') + '.');
           this.party.size = Math.max(0, this.party.size - willDie);
           this.party.damage -= willDie * PARTY_MEMBER_HP;
-        }
-
-        if (this.tock % 5 == 0) {
-          const event = this.pickEnemyEvent(this.enemy);
-          if (event != null) {
-            event.action(this);
-          }
         }
       }
 
