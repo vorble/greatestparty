@@ -184,6 +184,7 @@ class Game {
 
   winLevel() {
     this.log(this.town.name + ' wishes you the best on your adventures!');
+    this.nextLevel();
   }
 
   nextLevel() {
