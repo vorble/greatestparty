@@ -36,16 +36,20 @@ game.registerLevel({
       bodiesInTheAir: 0,
       ticksReturnBodies: 0,
       ticksMaybeInflictIslandCurse: 0,
-      questHermitRockGood: 0,
-      questKidShellTalk: 0,
-      questCliffsCliffTalk: 0,
 
       questHermitRockIntroduced: false,
+      questHermitRockGood: 0,
+
       questHermitTreasureAvailable: false,
       questHermitTreasureIntroduced: false,
+      questHermitTreasureFinished: false,
+
       questKidShellIntroduced: false,
+      questKidShellTalk: 0,
       questKidShellFinished: false,
+
       questCliffsCliffIntroduced: false,
+      questCliffsCliffTalk: 0,
       questCliffsCliffFinished: false,
     };
     town.state = townState;
@@ -290,6 +294,83 @@ game.registerLevel({
             } else {
               game.log('The hermit is less than satisfied with the new design.');
               lootTrash(game);
+            }
+          }
+        },
+      },
+      {
+        name: 'The Hermit\'s Treasure',
+        weight: 1,
+        predicate: (game: Game) => {
+          return townState.questHermitTreasureAvailable && !townState.questHermitTreasureFinished;
+        },
+        action: (game: Game) => {
+          if (!townState.questHermitTreasureIntroduced) {
+            game.log('Your party charters a ferry to Chachech Island.'
+              + ' The skeletal remains of several humans lay around the overgrown, decaying dock.');
+            townState.questHermitTreasureIntroduced = true;
+          }
+          const scenario = rollChoice([
+            {
+              stat: game.party.str,
+              prefix: 'Your party inspects one of the Chachech Island buildings. A chachech rams the wall, knocking out a major support.',
+              bad: 'One party member is crushed to death.',
+              good: 'Your party powers through the rubble and gets free.',
+              win: 'A delicately wrapped case lays noticeably among the rubble.',
+            },
+            {
+              stat: game.party.dex,
+              prefix: 'Your party searches one of the Chachech Island thickets. A cowardly chachech springs out from some brush.',
+              bad: 'It catches hold of one party member by the face and lacerates them to death.',
+              good: 'Your party narrowly escapes its jaws.',
+              win: 'A delicately wrapped case lays in the brush.',
+            },
+            {
+              stat: game.party.con,
+              prefix: 'Your party searches one of the Chachech Island skeletons. A nesting chachech bursts forth from beneath the fabric and bones.',
+              bad: 'Too startled to move, one party member is stabbed through the throat by its fin.',
+              good: 'Your party dodges its flailing fins.',
+              win: 'A delicately wrapped case lays under the skeleton\'s hands.',
+            },
+            {
+              stat: game.party.int,
+              prefix: 'Your party searches the beaches of Chachech Island. A chachech trap springs into action, tightly holding one party member and thrashing their torso.',
+              bad: 'Your party struggles in vain to free them, but cannot and they succumb to their wounds.',
+              good: 'Your party frees the party member with some effort.',
+              win: 'A delicately wrapped case lays beside the spent trap.',
+            },
+            {
+              stat: game.party.wis,
+              prefix: 'Your party searches a burrow on Chachech Island. One party member leans in close to get a good look.',
+              bad: 'They get even closer, intimidating the chachech inside who bites them to death.',
+              good: 'They wait for the chachech inside to scurry away before getting a closer look.',
+              win: 'A delicately wrapped case lays inside the burrow.',
+            },
+            {
+              stat: game.party.cha,
+              prefix: 'Your party searches Chachech Island for survivors. A person is seen walking some distance down the road. Your party approaches, attempting to talk.',
+              bad: 'A gory chachech bursts forth from the feral human\'s abdomen.',
+              good: 'The human runs away, appearing to be feral.',
+              win: 'A delicately wrapped case lays where the person used to be.',
+            },
+          ]);
+          const r = rollDie(20) + modLinear(scenario.stat, 10);
+          if (r <= 4) {
+            game.log(scenario.prefix + ' ' + scenario.bad);
+            game.killPartyMembers(1);
+          } else {
+            game.log(scenario.prefix + ' ' + scenario.good);
+            game.receiveGold(rollRange(6, 10));
+            loot(game);
+            const found = rollRatio(); // Roll to determine if the treasure is found.
+            if (found < 0.02) {
+              game.log(scenario.win);
+              game.party.items.boostWeapon.quantity += 1;
+              game.party.items.boostArmor.quantity += 1;
+              loot(game);
+              loot(game);
+              loot(game);
+              townState.questHermitTreasureFinished = true;
             }
           }
         },
