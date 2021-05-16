@@ -18,6 +18,13 @@ function mod(value: number, table: ModTable): number {
   return result;
 }
 
+// Calculate a linear modifier. Modifier is calculated to be 0 when value
+// is equal to that provided for zero. Every two points of value gives one
+// point of modifier.
+function modLinear(value: number, zero: number) {
+  return Math.floor((value - zero) / 2);
+}
+
 // Linear modifier for stat ranges 0 to 20 with modifier 0 at stat value 10.
 const MOD_LINEAR_10: ModTable = [
   [0, -5], [2, -4], [4, -3], [6, -2], [8, -1], [10, 0],
