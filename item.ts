@@ -40,7 +40,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+STR',
-          tock: 10,
+          tock: 50,
           strmod: 1,
         });
       },
@@ -51,7 +51,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+DEX',
-          tock: 10,
+          tock: 50,
           dexmod: 1,
         });
       },
@@ -62,7 +62,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+CON',
-          tock: 10,
+          tock: 50,
           conmod: 1,
         });
       },
@@ -73,7 +73,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+INT',
-          tock: 10,
+          tock: 50,
           intmod: 1,
         });
       },
@@ -84,7 +84,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+WIS',
-          tock: 10,
+          tock: 50,
           wismod: 1,
         });
       },
@@ -95,7 +95,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: '+CHA',
-          tock: 10,
+          tock: 50,
           chamod: 1,
         });
       },
@@ -135,7 +135,7 @@ class ItemInventory {
       ...defaults,
       name: 'Tome of Knowledge',
       use: (game: Game) => {
-        game.party.intmod += 1; // TODO: Modify the modifier or base?
+        game.party.intbase += 1;
         game.log('Your party\'s intelligence has increased.');
       },
     };
