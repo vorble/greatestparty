@@ -306,7 +306,7 @@ class Game {
       if (r < 0.01 * this.party.skills.sacrifice.level) {
         game.log('You efficiently collect the blood from the sacrifice of one party member.');
         this.party.blood += 2;
-      } else if (r < 0.94 + 0.01 * this.party.skills.sacrifice.level) {
+      } else if (r < 0.70 + 0.05 * this.party.skills.sacrifice.level) {
         game.log('You collect the blood from the sacrifice of one party member.');
         this.party.blood += 1;
       } else {
@@ -326,7 +326,7 @@ class Game {
       if (r < 0.01 * this.party.skills.animate.level) {
         this.addPartyMembers(1);
         game.log('Two party member emerge from the pool of blood.');
-      } else if (r < 0.75 + 0.05 * this.party.skills.animate.level) {
+      } else if (r < 0.65 + 0.7 * this.party.skills.animate.level) {
         this.addPartyMembers(1);
         game.log('A party member emerges from the pool of blood.');
       } else {
