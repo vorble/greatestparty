@@ -189,7 +189,7 @@ game.registerLevel({
             game.log('The townsfolk cheer you on as you make your way through town.');
           } else {
             game.log('The townsfolk shower you with gold and items as you make your way through town.');
-            game.receiveGold(10);
+            game.receiveGold(rollRange(5, 10));
             loot(game);
             loot(game);
             loot(game);
@@ -223,21 +223,15 @@ game.registerLevel({
         name: 'The Flavor of Saint Rumaa',
         weight: 1,
         action: (game: Game) => {
-          const action = rollChoice([
-            'herds', 'chases', 'hunts', 'rides', 'jousts', 'pets',
+          const phrase = rollChoice([
+            'Your party chases sea gulls with kids down by the beach.',
+            'Your party gets into a rough and tumble at the local tavern.',
+            'Your party collects polished rocks to impress a traveling merchant.',
           ]);
-          const what = rollChoice([
-            'sea shells', 'sea horses', 'sea gulls', 'waves', 'polished rocks',
-          ]);
-          const who = rollChoice([
-            'aspiring adventurers', 'Ferdinand and his wife',
-            'Grand-rumaa Sweing Consortium', 'local trappers',
-            'Cliff', 'the hermit',
-          ]);
-          game.log(`Your party ${ action } ${ what } with ${ who }.`);
+          game.log(phrase);
           loot(game);
           game.receiveGold(rollRange(1, 10));
-        }
+        },
       },
       {
         // Do 5 satisfactory arrangements of rocks to learn about the hermit and get access to a
