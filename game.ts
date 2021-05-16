@@ -199,6 +199,7 @@ class Game {
       this.log('Congratulations, you have beaten the final level!');
       this.log('Thanks for playing!');
       this.running = false;
+      ui.show(); // TODO: Out of the ordinary to call this, but needed for next level cheat to show the messages.
     }
   }
 
