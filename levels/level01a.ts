@@ -51,6 +51,10 @@ game.registerLevel({
       questCliffsCliffIntroduced: false,
       questCliffsCliffTalk: 0,
       questCliffsCliffFinished: false,
+
+      questDockingIntroduced: false,
+      questDockingCount: 0,
+      questDockingFinished: false,
     };
     town.state = townState;
 
@@ -202,13 +206,28 @@ game.registerLevel({
         weight: 1,
         predicate: (game: Game) => clockIsFall(game),
         action: (game: Game) => {
-          const r = rollDie(20);
+          const r = rollDie(20) + modLinear(game.party.con, 8);
           if (r <= 10) {
             game.log('Dark clouds roll in from the sea whipping up raging winds that carry one party member into the sky.');
             game.killPartyMembers(1);
             ++townState.bodiesInTheAir;
           } else {
             game.log('Dark clouds roll in from the sea whipping up raging winds nearly carrying someone away.');
+          }
+        },
+      },
+      {
+        name: 'Spring Downpour',
+        weight: 1,
+        predicate: (game: Game) => clockIsSpring(game),
+        action: (game: Game) => {
+          const r = rollDie(20) + modLinear(game.party.con, 8);
+          if (r <= 10) {
+            game.log('Unyielding torrents of rain flood the tributary washing one party member out to sea.');
+            game.killPartyMembers(1);
+            ++townState.bodiesOutToSea;
+          } else {
+            game.log('Unyielding torrents of rain flood the tributary nearly washing one party member out to sea.');
           }
         },
       },
@@ -483,6 +502,51 @@ game.registerLevel({
           }
         },
       },
+      {
+        name: 'Profit of the Dock',
+        weight: 1,
+        predicate: (game: Game) => !townState.questDockingFinished,
+        action: (game: Game) => {
+          if (!townState.questDockingIntroduced) {
+            game.log(
+              'Nestled down a narrow alley barely big enough for carts, a small dock stretches out into the bay.'
+              + ' The dock manager argues vehemently with a boatswain about some cargo left on the dock.'
+            );
+            townState.questDockingIntroduced = true;
+          }
+          const r = (rollDie(20)
+            + modLinear(game.party.str, 10)
+            + modLinear(game.party.int, 10)
+          );
+          if (r <= 10) {
+            game.log('Your party helps the dock manager load some cargo onto the ship, but a loose crate falls onto one party member, crushing them.');
+            game.killPartyMembers(1);
+            game.receiveGold(rollRange(1, 2));
+          } else {
+            let saying = 'ERR';
+            switch (++townState.questDockingCount) {
+              case 1: saying = 'You are doing me a huge favor here!'; break;
+              case 2: saying = 'They won\'t even pick up the stuff they wrongly dropped off!'; break;
+              case 3: saying = 'This must be some sort of plot to sabatoge my dock!'; break;
+              case 4: saying = 'These crates won\'t move themselves... oh uh, thanks!'; break;
+              case 5: saying = 'Hah! I saw one of their spies just over there earlier!'; break;
+              case 6: saying = 'Here, wait over here. I set a trap for him this time...'; break;
+            }
+            game.log('Your party helps the dock manager load some cargo onto the ship, "' + saying + '"');
+            game.receiveGold(rollRange(3, 8));
+            loot(game);
+            if (townState.questDockingCount >= 6) {
+              game.log(
+                'The trap springs, but doesn\'t slow down the inteloper who gets away and vanishes into the alley.'
+                + ' "He got away! If I see him around here again I\'ll just... Sigh, it\'s a goon from Quais Dock. They don\'t like that I\'m taking their business with competitive rates."');
+              loot(game);
+              loot(game);
+              loot(game);
+              townState.questDockingFinished = true;
+            }
+          }
+        },
+      },
     ];
 
     town.enemies = [
@@ -722,6 +786,80 @@ game.registerLevel({
                   state.wonStaringContest = false;
                   game.log('A member of your party disappears under Octopod\'s tentacle.');
                   game.killPartyMembers(1);
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(300);
+            },
+          };
+        },
+      },
+      {
+        weight: 1,
+        roll: (game: Game) => {
+          const state = {
+            loaded: false,
+          };
+
+          return {
+            name: 'Captain Stook',
+            health: 600,
+            str: 11, int: 7,
+            dex: 16, wis: 9,
+            con:  9, cha: 18,
+            weapon: {
+              physical: 24,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 26,
+              magical: 0,
+              elemental: -10,
+            },
+            state,
+            events: [
+              {
+                name: 'Loading',
+                weight: 1,
+                predicate: (game: Game) => !state.loaded,
+                action: (game: Game) => {
+                  state.loaded = true;
+                  game.log('Captain Stook loads a round into his pistol\'s chamber.');
+                },
+              },
+              {
+                name: 'Quick Draw',
+                weight: 1,
+                predicate: (game: Game) => state.loaded,
+                action: (game: Game) => {
+                  const r = rollDie(20) + modLinear(game.party.dex, 8);
+                  if (r <= 10) {
+                    game.log('Captain Stook draws his pistol and quickly fires a shot, killing one party member.');
+                    game.killPartyMembers(1);
+                  } else {
+                    game.log('Captain Stook draws his pistol and quickly fires a shot, but nobody is struck.');
+                  }
+                  state.loaded = false;
+                },
+              },
+              {
+                name: 'Bash',
+                weight: 1,
+                action: (game: Game) => {
+                  const r = rollDie(20) + modLinear(game.party.con, 10);
+                  if (r <= 10) {
+                    game.party.status.addStatus(game, {
+                      name: 'Stun',
+                      tock: 15,
+                      dexmod: -1,
+                      conmod: -1,
+                    });
+                    game.log('Captain Stook bashes a member of your party in the abdomen with his buckler, stunning them.');
+                  } else {
+                    game.log('Captain Stook bashes a member of your party in the abdomen with his buckler, but they retain their footing quickly.');
+                  }
                 },
               },
             ],
