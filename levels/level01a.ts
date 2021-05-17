@@ -862,6 +862,20 @@ game.registerLevel({
                   }
                 },
               },
+              {
+                name: 'Cut',
+                weight: 1,
+                action: (game: Game) => {
+                  const r = rollDie(20) + modLinear(game.party.dex, 10) + modLinear(game.party.wis, 10);
+                  if (r <= 10) {
+                    game.party.status.bleeding.active = true;
+                    setStatusExpiry(game, game.party.status.bleeding, { tick: 5 });
+                    game.log('Captain Stook takes a wild swing at a member of your party, slashing them deeply.');
+                  } else {
+                    game.log('Captain Stook takes a wild swing at a member of your party, but hits only the air.');
+                  }
+                },
+              },
             ],
             win: (game: Game) => {
               game.receiveGold(300);

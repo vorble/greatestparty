@@ -659,6 +659,16 @@ class Game {
       this.fight();
     }
 
+    if (this.party.status.bleeding.active) {
+      this.party.damage += 1;
+      const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
+      if (willDie > 0) {
+        this.log(willDie + ' party member' + (willDie == 1 ? '' : 's') + ' die' + (willDie == 1 ? 's' : '') + ' from bleeding.');
+        this.party.size = Math.max(0, this.party.size - willDie);
+        this.party.damage -= willDie * PARTY_MEMBER_HP;
+      }
+    }
+
     if (!inBattle) {
       if (this.tick == 0 && !this.fightingBoss && rollRatio() < this.town.enemyRatio) {
         const template = this.pickEnemy();
@@ -672,7 +682,7 @@ class Game {
       // Slowly heal party damage when out of battle.
       if (this.party.damage > 0) {
         // Prevent healing when poison is active.
-        if (!this.party.status.poison.active) {
+        if (!this.party.status.poison.active && !this.party.status.bleeding.active) {
           this.party.damage -= 1;
         }
       }

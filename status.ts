@@ -1,5 +1,5 @@
-type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison';
-const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison'];
+type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison' | 'bleeding';
+const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison', 'bleeding'];
 
 interface PartyStatusItem extends ClockActions {
   active: boolean;
@@ -91,6 +91,7 @@ class Status {
   islandCurse: PartyStatusItem;
   angeredGods: PartyStatusItem;
   poison: PartyStatusItem;
+  bleeding: PartyStatusItem;
 
   other: Array<PartyStatusItem2>;
 
@@ -119,6 +120,10 @@ class Status {
     this.poison = {
       ...defaults,
       name: 'Poison',
+    };
+    this.bleeding = {
+      ...defaults,
+      name: 'Bleeding',
     };
     this.other = [];
   }
