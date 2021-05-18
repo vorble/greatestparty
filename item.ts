@@ -1,5 +1,5 @@
-type ItemNameType_Potion = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1' | 'potionAntidote';
-const ITEM_NAMES_POTION: Array<ItemNameType_Potion> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1', 'potionAntidote'];
+type ItemNameType_Potion = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1' | 'potionAntidote' | 'potionHealth';
+const ITEM_NAMES_POTION: Array<ItemNameType_Potion> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1', 'potionAntidote', 'potionHealth'];
 
 type ItemNameType_Consumable = 'clericRobes';
 const ITEM_NAMES_CONSUMABLE: Array<ItemNameType_Consumable> = ['clericRobes'];
@@ -25,6 +25,7 @@ class ItemInventory {
   potionWisUp1: Item;
   potionChaUp1: Item;
   potionAntidote: Item;
+  potionHealth: Item;
 
   clericRobes: Item;
 
@@ -105,6 +106,13 @@ class ItemInventory {
       name: 'Antidote',
       use: (game: Game) => {
         game.party.status.poison.active = false;
+      },
+    };
+    this.potionHealth = {
+      ...defaults,
+      name: 'Health Potion',
+      use: (game: Game) => {
+        game.party.damage -= 100;
       },
     };
     this.clericRobes = {
