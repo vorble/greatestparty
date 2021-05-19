@@ -3,17 +3,25 @@ game.registerLevel({
   newTown: (game: Game) => {
     const town = new Town();
 
+    const DESERT_KNOWLEDGE_MASTER = TICKS_PER_TOCK * TOCKS_PER_TERM * TERMS_PER_SEASON; // 1 season.
+
+    const FOOD_SUPPORT_NORMAL: TownSeasonVector = [25, 30, 40, 15];
+    const FOOD_SUPPORT_DESERT: TownSeasonVector = [1, 0, 0, 1];
+
+    const WATER_SUPPORT_NORMAL: TownSeasonVector = [30, 15, 20, 20];
+    const WATER_SUPPORT_DESERT: TownSeasonVector = [1, 0, 0, 1];
+
     town.name = 'Spindling Plains';
     town.townsfolk = 450;
     town.hireCost = 100;
     town.conscriptRatio = 0.5;
     town.conscriptViolenceRatio = 0.4;
     town.foodStock = 200;
-    town.foodSupport = [25, 30, 40, 15];
+    town.foodSupport = FOOD_SUPPORT_NORMAL;
     town.foodCostBuy = [4, 4, 2, 5];
     town.foodCostSell = [2, 2, 1, 4];
     town.waterStock = 75;
-    town.waterSupport = [30, 15, 20, 20];
+    town.waterSupport = WATER_SUPPORT_NORMAL;
     town.waterCostBuy = [4, 5, 4, 4];
     town.waterCostSell = [2, 2, 2, 2];
     for (const cat of EQ_FINE_CATEGORIES) {
@@ -28,12 +36,6 @@ game.registerLevel({
     town.needMax = 20;
     town.needRatio = 0.008;
     town.enemyRatio = 0.06;
-
-    const townState = {
-      partyInDesert: false,
-      partyDesertKnowledge: 0,
-    };
-    town.state = townState;
 
     function loot(game: Game) {
       const r = rollRatio();
@@ -54,6 +56,42 @@ game.registerLevel({
       }
     }
 
+    function goToDesert(game: Game) {
+      if (!townState.partyInDesert) {
+        game.log('Your party finds itself on wind-swept red sands of the Verees Desert.');
+        townState.partyInDesert = true;
+        townState.backupFoodStock = town.foodStock;
+        town.foodStock = 0;
+        townState.backupWaterStock = town.waterStock;
+        town.waterStock = 0;
+        town.foodSupport = FOOD_SUPPORT_DESERT;
+        town.waterSupport = WATER_SUPPORT_DESERT;
+      }
+    }
+
+    function leaveDesert(game: Game) {
+      if (townState.partyInDesert) {
+        game.log('Your party makes it out of the Verees Desert.');
+        townState.partyInDesert = false;
+        town.foodStock = townState.backupFoodStock;
+        town.waterStock = townState.backupWaterStock;
+        town.foodSupport = FOOD_SUPPORT_NORMAL;
+        town.waterSupport = WATER_SUPPORT_NORMAL;
+      }
+    }
+
+    const townState = {
+      partyInDesert: false,
+      partyDesertKnowledge: 0,
+
+      backupFoodStock: 0,
+      backupWaterStock: 0,
+
+      goToDesert, // TODO: Don't expose the inner functions in this way
+      leaveDesert,
+    };
+    town.state = townState;
+
     town.hooks = {
       onTownArrive: (game: Game) => {
       },
@@ -61,7 +99,8 @@ game.registerLevel({
       },
       doTickActions: (game: Game) => {
         if (townState.partyInDesert) {
-          if (townState.partyDesertKnowledge < 10000) {
+          // TODO: What's a practical limit?
+          if (townState.partyDesertKnowledge < DESERT_KNOWLEDGE_MASTER) {
             ++townState.partyDesertKnowledge;
           }
         }
@@ -70,10 +109,17 @@ game.registerLevel({
 
     town.events = [
       {
-        name: '', // TODO
+        name: 'Wander the Verees Desert',
         weight: 1,
-        predicate: (game: Game) => true,
+        predicate: (game: Game) => townState.partyInDesert,
         action: (game: Game) => {
+          const knowledgeRatio = Math.max(0.01, townState.partyDesertKnowledge / DESERT_KNOWLEDGE_MASTER);
+          if (rollRatio() < knowledgeRatio) {
+            game.log('Your party finds its way out from the Verees Desert.');
+            leaveDesert(game);
+          } else {
+            game.log('Your party wanders the Verees Desert.');
+          }
         },
       },
     ];
