@@ -1,5 +1,5 @@
-type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison' | 'bleeding';
-const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison', 'bleeding'];
+type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison' | 'bleeding' | 'outOfTown';
+const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison', 'bleeding', 'outOfTown'];
 
 interface PartyStatusItem extends ClockActions {
   active: boolean;
@@ -92,6 +92,7 @@ class Status {
   angeredGods: PartyStatusItem;
   poison: PartyStatusItem;
   bleeding: PartyStatusItem;
+  outOfTown: PartyStatusItem;
 
   other: Array<PartyStatusItem2>;
 
@@ -124,6 +125,11 @@ class Status {
     this.bleeding = {
       ...defaults,
       name: 'Bleeding',
+    };
+    // TODO: Should out of town prevent all buy/sell activity instead of just hire?
+    this.outOfTown = {
+      ...defaults,
+      name: 'Out of Town',
     };
     this.other = [];
   }

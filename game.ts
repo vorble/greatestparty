@@ -259,7 +259,7 @@ class Game {
   }
 
   canHire(): boolean {
-    return this.party.gold >= this.town.hireCost && this.town.townsfolk > 0;
+    return this.party.gold >= this.town.hireCost && this.town.townsfolk > 0 && !this.party.status.outOfTown.active;
   }
 
   hire() {
@@ -270,7 +270,7 @@ class Game {
   }
 
   canConscript() {
-    return this.town.townsfolk > 0 && this.party.skills.conscript.level > 0;
+    return this.town.townsfolk > 0 && this.party.skills.conscript.level > 0 && !this.party.status.outOfTown.active;
   }
 
   conscript() {

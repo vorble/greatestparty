@@ -53,18 +53,20 @@ class Skills {
       costTier: 2,
       unlockAtCompletedQuests: 20,
       doTickActions: (game: Game) => {
-        let bonus = mod(game.party.cha, [[0, 0.000], [16, 0.001]]);
-        bonus += mod(game.town.alignment, [[-100, -0.002], [-30, 0], [30, 0.001]]);
-        if (rollRatio() < (0.0025 + bonus) * this.inspire.level) {
-          if (game.town.townsfolk > 0) {
-            if (FLAGS.DEBUG.SKILL.INSPIRE) {
-              game.log('Your party inspires some from the town to join.');
+        if (!game.party.status.outOfTown.active) {
+          let bonus = mod(game.party.cha, [[0, 0.000], [16, 0.001]]);
+          bonus += mod(game.town.alignment, [[-100, -0.002], [-30, 0], [30, 0.001]]);
+          if (rollRatio() < (0.0025 + bonus) * this.inspire.level) {
+            if (game.town.townsfolk > 0) {
+              if (FLAGS.DEBUG.SKILL.INSPIRE) {
+                game.log('Your party inspires some from the town to join.');
+              }
+              const count = Math.max(1, Math.floor(game.town.townsfolk * 0.01));
+              game.joinPartyFromTown(count);
             }
-            const count = Math.max(1, Math.floor(game.town.townsfolk * 0.01));
-            game.joinPartyFromTown(count);
           }
         }
-      }
+      },
     };
 
     this.sacrifice = {
@@ -98,18 +100,20 @@ class Skills {
       costTier: 1,
       unlockAtCompletedQuests: 75,
       doTickActions: (game: Game) => {
-        if (rollRatio() < 0.005 * game.party.skills.sabotage.level) {
-          const r = (rollDie(20)
-            + mod(game.party.dex, [[0, -3], [4, -2], [6, -1], [9, 0], [13, 1]])
-            + mod(game.party.int, [[0, -2], [4, -1], [7, 0], [14, 1]])
-          );
-          if (r <= 2) {
-            game.log('Your party is noticed while sabotaging the town.');
-            game.adjustAlignment(-20);
-          } else {
-            game.log('Your party sabotages the town.');
+        if (!game.party.status.outOfTown.active) {
+          if (rollRatio() < 0.005 * game.party.skills.sabotage.level) {
+            const r = (rollDie(20)
+              + mod(game.party.dex, [[0, -3], [4, -2], [6, -1], [9, 0], [13, 1]])
+              + mod(game.party.int, [[0, -2], [4, -1], [7, 0], [14, 1]])
+            );
+            if (r <= 2) {
+              game.log('Your party is noticed while sabotaging the town.');
+              game.adjustAlignment(-20);
+            } else {
+              game.log('Your party sabotages the town.');
+            }
+            game.adjustTownNeed(1);
           }
-          game.adjustTownNeed(1);
         }
       },
     };
@@ -121,16 +125,18 @@ class Skills {
       costTier: 3,
       unlockAtCompletedQuests: 75,
       doTickActions: (game: Game) => {
-        if (rollRatio() < 0.005 * game.party.skills.acclaim.level) {
-          const r = (rollDie(20)
-            + mod(game.party.cha, [[0, -2], [6, -1], [9, 0], [12, 1], [15, 2]])
-          );
-          if (r >= 20) {
-            game.log('Your acclaim produces brings out the neediest in town.');
-            game.adjustTownNeed(2);
-          } else {
-            game.log('Your acclaim produces additional opportunities in town.');
-            game.adjustTownNeed(1);
+        if (!game.party.status.outOfTown.active) {
+          if (rollRatio() < 0.005 * game.party.skills.acclaim.level) {
+            const r = (rollDie(20)
+              + mod(game.party.cha, [[0, -2], [6, -1], [9, 0], [12, 1], [15, 2]])
+            );
+            if (r >= 20) {
+              game.log('Your acclaim produces brings out the neediest in town.');
+              game.adjustTownNeed(2);
+            } else {
+              game.log('Your acclaim produces additional opportunities in town.');
+              game.adjustTownNeed(1);
+            }
           }
         }
       },

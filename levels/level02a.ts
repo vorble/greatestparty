@@ -66,6 +66,7 @@ game.registerLevel({
         town.waterStock = 0;
         town.foodSupport = FOOD_SUPPORT_DESERT;
         town.waterSupport = WATER_SUPPORT_DESERT;
+        game.party.status.outOfTown.active = true;
       }
     }
 
@@ -77,12 +78,13 @@ game.registerLevel({
         town.waterStock = townState.backupWaterStock;
         town.foodSupport = FOOD_SUPPORT_NORMAL;
         town.waterSupport = WATER_SUPPORT_NORMAL;
+        game.party.status.outOfTown.active = false;
       }
     }
 
     const townState = {
       partyInDesert: false,
-      partyDesertKnowledge: 0,
+      partyDesertKnowledge: Math.floor(DESERT_KNOWLEDGE_MASTER * 0.05),
 
       backupFoodStock: 0,
       backupWaterStock: 0,
@@ -99,7 +101,6 @@ game.registerLevel({
       },
       doTickActions: (game: Game) => {
         if (townState.partyInDesert) {
-          // TODO: What's a practical limit?
           if (townState.partyDesertKnowledge < DESERT_KNOWLEDGE_MASTER) {
             ++townState.partyDesertKnowledge;
           }
@@ -113,7 +114,7 @@ game.registerLevel({
         weight: 1,
         predicate: (game: Game) => townState.partyInDesert,
         action: (game: Game) => {
-          const knowledgeRatio = Math.max(0.01, townState.partyDesertKnowledge / DESERT_KNOWLEDGE_MASTER);
+          const knowledgeRatio = townState.partyDesertKnowledge / DESERT_KNOWLEDGE_MASTER;
           if (rollRatio() < knowledgeRatio) {
             game.log('Your party finds its way out from the Verees Desert.');
             leaveDesert(game);
