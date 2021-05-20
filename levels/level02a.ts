@@ -240,7 +240,7 @@ game.registerLevel({
       },
       {
         weight: 1,
-        predicate: (game: Game) => true, // In and out of desert.
+        predicate: (game: Game) => true,
         roll: (game: Game) => {
           const state = {
           };
@@ -308,10 +308,44 @@ game.registerLevel({
       // TODO: Territorial Gazelle
       // TODO: Crowe's Sentinel
       // TODO: River Imp
-      // TODO: Exsanguinated Corpse
       {
         weight: 1,
-        predicate: (game: Game) => townState.partyInDesert, // In desert only.
+        predicate: (game: Game) => true,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const self: Enemy = {
+            name: 'Exsanguinated Corpse',
+            health: 75,
+            str: 11, int: 1,
+            dex:  2, wis: 1,
+            con: 30, cha: 2,
+            weapon: {
+              physical: -45,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 10,
+              magical: 0,
+              elemental: 5,
+            },
+            state,
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(15, 22));
+              loot(game);
+            },
+          };
+
+          return self;
+        },
+      },
+      {
+        weight: 1,
+        predicate: (game: Game) => townState.partyInDesert,
         roll: (game: Game) => {
           const state = {
           };
@@ -367,8 +401,108 @@ game.registerLevel({
           return self;
         },
       },
-      // TODO: Mirage
-      // TODO: Thirst
+      {
+        weight: 1,
+        predicate: (game: Game) => townState.partyInDesert,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const WEP = 34;
+          const ARM = 25;
+
+          const self: Enemy = {
+            name: 'Mirage',
+            health: 45,
+            str:  4, int: 3,
+            dex: 18, wis: 2,
+            con:  2, cha: 5,
+            weapon: {
+              physical: 0,
+              magical: -WEP,
+              elemental: 0,
+            },
+            armor: {
+              physical: 100,
+              magical: -ARM,
+              elemental: 0,
+            },
+            state,
+            events: [
+              {
+                name: 'Shimmer',
+                weight: 1,
+                action: (game: Game) => {
+                  game.log('Mirage shimmers before you eyes.');
+                  changeArms(game);
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(18, 23));
+              loot(game);
+            },
+          };
+
+          function changeArms(game: Game) {
+            self.weapon.magical = (rollBoolean() ? -1 : 1) * WEP;
+            self.armor.magical = (rollBoolean() ? -1 : 1) * ARM;
+          }
+          changeArms(game);
+
+          return self;
+        },
+      },
+      {
+        weight: 1,
+        predicate: (game: Game) => townState.partyInDesert,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const self: Enemy = {
+            name: 'Thirst',
+            health: 50,
+            str:  1, int: 1,
+            dex:  1, wis: 1,
+            con:  1, cha: 1,
+            weapon: {
+              physical: -10,
+              magical: 0,
+              elemental: -50,
+            },
+            armor: {
+              physical: 100,
+              magical: 0,
+              elemental: -50,
+            },
+            state,
+            events: [
+              {
+                name: 'Just a Sip',
+                weight: 1,
+                action: (game: Game) => {
+                  const r = (rollDie(20)
+                    + modLinear(game.party.dex, 10)
+                  );
+                  if (r <= 10) {
+                    game.log('Thirst takes a sip from your party\'s canteens.');
+                    game.party.water = Math.max(0, game.party.water - 1);
+                  } else {
+                    game.log('Thirst licks its lips.');
+                  }
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(18, 23));
+              loot(game);
+            },
+          };
+
+          return self;
+        },
+      },
     ];
 
     town.bosses = [
