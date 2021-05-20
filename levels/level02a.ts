@@ -56,6 +56,16 @@ game.registerLevel({
       }
     }
 
+    function maybeGoToDesert(game: Game) {
+      const r = (rollDie(20)
+        + modLinear(game.party.int, 12) // Need to be pretty smart to know the land.
+        + modLinear(game.party.wis, 10) // Need moderate wisdom to know to be crareful.
+      );
+      if (r <= 8) {
+        goToDesert(game);
+      }
+    }
+
     function goToDesert(game: Game) {
       if (!townState.partyInDesert) {
         game.log('Your party finds itself on wind-swept red sands of the Verees Desert.');
@@ -100,6 +110,7 @@ game.registerLevel({
       onTownDepart: (game: Game) => {
       },
       doTickActions: (game: Game) => {
+        // The party gains knowledge of the desert the more time they spend there.
         if (townState.partyInDesert) {
           if (townState.partyDesertKnowledge < DESERT_KNOWLEDGE_MASTER) {
             ++townState.partyDesertKnowledge;
@@ -126,6 +137,7 @@ game.registerLevel({
     ];
 
     town.quests = [
+      // TODO: Crispin 1
       {
         name: '', // TODO
         weight: 1,
@@ -133,14 +145,23 @@ game.registerLevel({
         action: (game: Game) => {
         },
       },
+      // TODO: Crispon 2
+      // TODO: Dixie
+      // TODO: Dox
+      // TODO: Manual Labor (Repeat)
+      // TODO: Desert Searching (Repeat)
+      // TODO: Duke 1
+      // TODO: Wix Waypoint
+      // TODO: Verees Desert
+      // TODO: Duke 2
     ];
 
     town.enemies = [
       // Prarie Hound will start above ground, but can go below to increase
       // defense. This will also reduce its attack.
-      // TODO: Maybe it's more exciting to start burrowed and them pop up.
       {
         weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert,
         roll: (game: Game) => {
           const WEAPON_ABOVE = {
             physical: 30,
@@ -164,7 +185,7 @@ game.registerLevel({
           };
 
           const state = {
-            burrow: false,
+            burrow: true,
           };
 
           const self: Enemy = {
@@ -173,8 +194,8 @@ game.registerLevel({
             str: 12, int: 8,
             dex: 6,  wis: 10,
             con: 11, cha: 12,
-            weapon: WEAPON_ABOVE,
-            armor: ARMOR_ABOVE,
+            weapon: WEAPON_BELOW,
+            armor: ARMOR_BELOW,
             state,
             events: [
               {
@@ -219,6 +240,7 @@ game.registerLevel({
       },
       {
         weight: 1,
+        predicate: (game: Game) => true, // In and out of desert.
         roll: (game: Game) => {
           const state = {
           };
@@ -282,6 +304,71 @@ game.registerLevel({
           return self;
         },
       },
+      // TODO: Cutlass Cat
+      // TODO: Territorial Gazelle
+      // TODO: Crowe's Sentinel
+      // TODO: River Imp
+      // TODO: Exsanguinated Corpse
+      {
+        weight: 1,
+        predicate: (game: Game) => townState.partyInDesert, // In desert only.
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const WEP = 34;
+
+          const self: Enemy = {
+            name: 'Floating Eyes',
+            health: 45,
+            str: rollDie(20), int: rollDie(20),
+            dex: rollDie(20), wis: rollDie(20),
+            con: rollDie(20), cha: rollDie(20),
+            weapon: {
+              physical: (rollBoolean() ? -1 : 1) * WEP,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 20,
+              magical: 0,
+              elemental: -10,
+            },
+            state,
+            events: [
+              {
+                name: 'Blink',
+                weight: 1,
+                action: (game: Game) => {
+                  changeWeapon(game);
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(17, 22));
+              loot(game);
+            },
+          };
+
+          function changeWeapon(game: Game) {
+            self.weapon.physical = 0;
+            self.weapon.magical = 0;
+            self.weapon.elemental = 0;
+            const sideRoll = rollDie(2) - 1;
+            const directionRoll = rollDie(3) - 1;
+            const side = ['left', 'right'][sideRoll];
+            const direction = ['up', 'straight ahead', 'down'][directionRoll];
+            const amount = sideRoll == 0 ? -WEP : WEP;
+            const stat = EQ_BROAD_CATEGORIES[directionRoll];
+            self.weapon[stat] = amount;
+            game.log('The ' + side + ' eye looks ' + direction + '.');
+          }
+
+          return self;
+        },
+      },
+      // TODO: Mirage
+      // TODO: Thirst
     ];
 
     town.bosses = [
@@ -324,6 +411,7 @@ game.registerLevel({
           };
         },
       },
+      // TODO: Crowe and the Necromagicked Mega Worm
     ];
 
     return town;
