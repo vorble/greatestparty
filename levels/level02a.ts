@@ -112,12 +112,14 @@ game.registerLevel({
       doTickActions: (game: Game) => {
         // The party gains knowledge of the desert the more time they spend there.
         if (townState.partyInDesert) {
-          if (townState.partyDesertKnowledge < DESERT_KNOWLEDGE_MASTER) {
-            ++townState.partyDesertKnowledge;
-          }
+          gainDesertKnowledge(1);
         }
       },
     };
+
+    function gainDesertKnowledge(amount: number) {
+      townState.partyDesertKnowledge = Math.min(DESERT_KNOWLEDGE_MASTER, townState.partyDesertKnowledge + amount);
+    }
 
     town.events = [
       {
@@ -125,6 +127,7 @@ game.registerLevel({
         weight: 1,
         predicate: (game: Game) => townState.partyInDesert,
         action: (game: Game) => {
+          // Same roll as town event Study the Verees Desert
           const knowledgeRatio = townState.partyDesertKnowledge / DESERT_KNOWLEDGE_MASTER;
           if (rollRatio() < knowledgeRatio) {
             game.log('Your party finds its way out from the Verees Desert.');
@@ -137,6 +140,22 @@ game.registerLevel({
     ];
 
     town.quests = [
+      {
+        name: 'Study the Verees Desert',
+        weight: 1,
+        predicate: (game: Game) => townState.partyInDesert,
+        action: (game: Game) => {
+          gainDesertKnowledge(10);
+          // Same roll as town event Wander the Verees Desert
+          const knowledgeRatio = townState.partyDesertKnowledge / DESERT_KNOWLEDGE_MASTER;
+          if (rollRatio() < knowledgeRatio) {
+            game.log('Your party finds its way out from the Verees Desert.');
+            leaveDesert(game);
+          } else {
+            game.log('Your party wanders the Verees Desert taking detailed notes.');
+          }
+        },
+      },
       // TODO: Crispin 1
       {
         name: '', // TODO
