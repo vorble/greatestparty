@@ -148,7 +148,7 @@ game.registerLevel({
         weight: 1,
         predicate: (game: Game) => game.town.townsfolk > 0,
         action: (game: Game) => {
-          if (rollRatio() < 0.5) {
+          if (rollRatio() < 0.35) {
             game.log('Someone from town has gone missing.');
             game.town.townsfolk -= 1;
           }
