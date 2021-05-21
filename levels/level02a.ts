@@ -108,6 +108,8 @@ game.registerLevel({
       onTownArrive: (game: Game) => {
       },
       onTownDepart: (game: Game) => {
+        // If you beat the level while in the desert, then make sure the status is removed.
+        game.party.status.outOfTown.active = false;
       },
       doTickActions: (game: Game) => {
         // The party gains knowledge of the desert the more time they spend there.
@@ -323,13 +325,59 @@ game.registerLevel({
           return self;
         },
       },
-      // TODO: Cutlass Cat
+      {
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const self: Enemy = {
+            name: 'Cutlass Cat',
+            health: 75,
+            str:  8, int: 12,
+            dex: 15, wis:  9,
+            con: 11, cha:  7,
+            weapon: {
+              physical: 50,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 10,
+              magical: 0,
+              elemental: 30,
+            },
+            state,
+            events: [
+              {
+                name: 'Hiss',
+                weight: 1,
+                action: (game: Game) => {
+                  game.log(rollChoice([
+                    'Cutlass Cat lets out a wild hiss.',
+                    'Cutlass Cat puffs up its tail.',
+                    'Cutlass Cat\'s hair stands on end.',
+                  ]);
+                  self.weapon.physical += 4;
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(20, 25));
+              loot(game);
+            },
+          };
+
+          return self;
+        },
+      },
       // TODO: Territorial Gazelle
       // TODO: Crowe's Sentinel
       // TODO: River Imp
       {
         weight: 1,
-        predicate: (game: Game) => true,
+        predicate: (game: Game) => !townState.partyInDesert,
         roll: (game: Game) => {
           const state = {
           };
