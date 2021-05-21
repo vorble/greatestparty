@@ -101,6 +101,10 @@ game.registerLevel({
 
       goToDesert, // TODO: Don't expose the inner functions in this way
       leaveDesert,
+
+      crispin1Introduced: false,
+      crispin1Gossip: 0,
+      crispin1Done: false,
     };
     town.state = townState;
 
@@ -160,10 +164,42 @@ game.registerLevel({
       },
       // TODO: Crispin 1
       {
-        name: '', // TODO
+        name: 'Crispin, Wooden Merchant',
         weight: 1,
-        predicate: (game: Game) => !townState.partyInDesert,
+        predicate: (game: Game) => !townState.partyInDesert && !townState.crispin1Done,
         action: (game: Game) => {
+          if (!townState.crispin1Introduced) {
+            game.log('As your party makes its way through the wide and well trodden streets of Spindling,'
+              + ' they come across a man venting his frustrations while holding several small bits of finely laquered wood.'
+              + ' the man takes notice of your precession and waves you down.'
+              + ' "Could you lend me your backs for a while? Maybe pick up a few of the bigger pieces?"');
+            townState.crispin1Introduced = true;
+          }
+          const r = (rollDie(20)
+            + modLinear(game.party.str, 12) // Should be pretty strong to move this furniture.
+            + modLinear(game.party.cha, 10) // Maybe easier to strike up a conversation.
+          );
+          if (r <= 4) {
+            game.log('Your party helps the man collect his wooden wares strewn about the street, but a heavy chest of drawers falls on one party member, flattening them.');
+            game.killPartyMembers(1);
+          } else if (r <= 18) {
+            game.log('Your party helps the man collect his wooden wares strewn about the street.');
+          } else {
+            let saying = 'ERR';
+            switch (++townState.crispin1Gossip) {
+              case 1: saying = 'Brigands inside the town? I can hardly believe it.'; break;
+              case 2: saying = 'There\'s been a rash of disappearances lately, did you know that? Why, Markle, just down the way ain\'t been seen in two weeks.'; break;
+              case 3: saying = 'I saw Markle a couple weeks back at the Dixie and Dox for supper, normal as he ever was.'; break;
+              case 4: saying = 'Maybe brigands took him, maybe he fell down a hole, I dunno. Nobody around here took Markle for the split the town type.'; break;
+              case 5: saying = 'I\'d certainly pitch in some coin if you adventuring types found any word about what\'s been going on around here.'; break;
+            }
+            game.log('Your party helps the man collect his wooden wares strewn about the street, "' + saying + '"');
+            if (townState.crispin1Gossip >= 6) {
+              game.log('He continues, "Name\'s Crispin, I sell the finest wood you\'ll ever sit on or fill up. Each coin goes toward my dream of working with ever more exotic woods and refining my craft. My wares will be in the halls of kings, you wait and see."');
+              game.receiveGold(rollRange(65, 75));
+              townState.crispin1Done = true;
+            }
+          }
         },
       },
       // TODO: Crispon 2
@@ -358,7 +394,7 @@ game.registerLevel({
                     'Cutlass Cat lets out a wild hiss.',
                     'Cutlass Cat puffs up its tail.',
                     'Cutlass Cat\'s hair stands on end.',
-                  ]);
+                  ]));
                   self.weapon.physical += 4;
                 },
               },
