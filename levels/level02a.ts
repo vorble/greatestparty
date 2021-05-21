@@ -143,6 +143,17 @@ game.registerLevel({
           }
         },
       },
+      {
+        name: 'Strange Disappearance',
+        weight: 1,
+        predicate: (game: Game) => game.town.townsfolk > 0,
+        action: (game: Game) => {
+          if (rollRatio() < 0.5) {
+            game.log('Someone from town has gone missing.');
+            game.town.townsfolk -= 1;
+          }
+        },
+      },
     ];
 
     town.quests = [
@@ -175,14 +186,15 @@ game.registerLevel({
               + ' "Could you lend me your backs for a while? Maybe pick up a few of the bigger pieces?"');
             townState.crispin1Introduced = true;
           }
-          const r = (rollDie(20)
+          const r0 = rollDie(20);
+          const r = (r0
             + modLinear(game.party.str, 12) // Should be pretty strong to move this furniture.
             + modLinear(game.party.cha, 10) // Maybe easier to strike up a conversation.
           );
           if (r <= 4) {
             game.log('Your party helps the man collect his wooden wares strewn about the street, but a heavy chest of drawers falls on one party member, flattening them.');
             game.killPartyMembers(1);
-          } else if (r <= 18) {
+          } else if (r0 <= 18) { // There should always be a chance to progress the story, so base progress on the raw roll
             game.log('Your party helps the man collect his wooden wares strewn about the street.');
           } else {
             let saying = 'ERR';
