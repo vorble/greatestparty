@@ -1,3 +1,9 @@
+function cheatItems() {
+  for (const name of ITEM_NAMES) {
+    game.party.items[name].quantity += 10;
+  }
+}
+
 function cheatArms() {
   game.party.inventoryWeapon.blunt += 100;
   game.party.inventoryWeapon.slice += 100;
@@ -13,8 +19,37 @@ function cheatArms() {
   game.party.inventoryArmor.fire += 100;
   game.party.inventoryArmor.ice += 100;
 
-  game.party.items.boostWeapon.quantity += 6;
-  game.party.items.boostArmor.quantity += 6;
+  game.party.items.boostWeapon.quantity = Math.max(game.party.items.boostWeapon.quantity, 6);
+  game.party.items.boostArmor.quantity = Math.max(game.party.items.boostArmor.quantity, 6);
+}
+
+function cheatGold() {
+  game.receiveGold(100000);
+}
+
+function cheatStuff() {
+  cheatItems();
+  cheatArms();
+  cheatGold();
+}
+
+function cheatParty() {
+  game.party.size += 10;
+}
+
+function cheatSTR(value?: number) { game.party.strbase = value == null ? 18 : value; }
+function cheatDEX(value?: number) { game.party.dexbase = value == null ? 18 : value; }
+function cheatCON(value?: number) { game.party.conbase = value == null ? 18 : value; }
+function cheatINT(value?: number) { game.party.intbase = value == null ? 18 : value; }
+function cheatWIS(value?: number) { game.party.wisbase = value == null ? 18 : value; }
+function cheatCHA(value?: number) { game.party.chabase = value == null ? 18 : value; }
+function cheatStats(value?: number) {
+  cheatSTR(value);
+  cheatDEX(value);
+  cheatCON(value);
+  cheatINT(value);
+  cheatWIS(value);
+  cheatCHA(value);
 }
 
 function cheatNextLevel() {
