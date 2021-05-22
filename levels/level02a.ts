@@ -105,6 +105,15 @@ game.registerLevel({
       crispin1Introduced: false,
       crispin1Gossip: 0,
       crispin1Done: false,
+
+      crispin2Introduced: false,
+      crispin2Done: false,
+
+      dixieIntroduced: false,
+      dixieDone: false,
+
+      doxIntroduced: false,
+      doxDone: false,
     };
     town.state = townState;
 
@@ -173,7 +182,6 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Crispin 1
       {
         name: 'Crispin, Wooden Merchant',
         weight: 1,
@@ -214,11 +222,112 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Crispon 2
+      // TODO: Crispin 2
       // TODO: Dixie
       // TODO: Dox
-      // TODO: Manual Labor (Repeat)
-      // TODO: Desert Searching (Repeat)
+      {
+        name: 'Manual Labor',
+        weight: 1,
+        predicate: !townState.partyInDesert && townState.crispin1Done,
+        action: (game: Game) => {
+          const act = rollChoice([
+            () => {
+              let r = (rollDie(20)
+                + modLinear(game.party.wis, 12)
+              );
+              if (r <= 4) {
+                game.log('Your party operates the machines at the local saw mill, but one of your party members gets caught in the gears and is crushed to death.');
+                game.killPartyMembers(1);
+              } else {
+                game.log('Your party operates the machiens at the local saw mill.');
+                game.receiveGold(rollRange(10, 20));
+                loot(game);
+              }
+            },
+            () => {
+              let r = (rollDie(20)
+                + modLinear(game.party.str, 12)
+                + modLinear(game.party.con, 10)
+              );
+              if (r <= 4) {
+                game.log('Your party swings sledges at the local quarry, but a loose stone falls onto one party member, flattening them to death.');
+                game.killPartyMembers(1);
+              } else {
+                game.log('Your party swings sledges at the local quarry.');
+                game.receiveGold(rollRange(10, 20));
+                loot(game);
+              }
+            },
+            () => {
+              let r = (rollDie(20)
+                + modLinear(game.party.cha, 14) // Be a sweet talker to get a less dangerous job
+              );
+              if (r <= 4) {
+                game.log('Your party helps pull weeds in a local field, but a nest of killer hornets is disturbed killing one party member.');
+                game.killPartyMembers(1);
+              } else {
+                game.log('Your party helps pull weeds in a local field.');
+                game.receiveGold(rollRange(10, 20));
+                loot(game);
+              }
+            },
+          ]);
+          act();
+        },
+      },
+      {
+        name: 'Searching the Desert',
+        weight: 1,
+        predicate: !townState.partyInDesert && townState.dixieDone,
+        action: (game: Game) => {
+          const act = rollChoice([
+            () => {
+              let r = (rollDie(20)
+                + modLinear(game.party.con, 12) // It's in the desert.
+                + modLinear(game.party.int, 10) // Knowledge of spider hives helps avoid them.
+              );
+              if (r <= 4) {
+                game.log('Your party searches the outskirts of the Verees Desert for mirror stores, but a hive of spiders drain one members blood completely, killing them.');
+                game.killPartyMembers(1);
+              } else {
+                game.log('Your party searches the outskirts of the Verees Desert for mirror stones.');
+                game.receiveGold(rollRange(10, 20));
+                loot(game);
+              }
+            },
+            () => {
+              let r = (rollDie(20)
+                + modLinear(game.party.str, 10)
+                + modLinear(game.party.dex, 10)
+              );
+              if (r <= 4) {
+                game.log('Your party searches the outskirts of the Verees Desert for giant lizard tails, but one tail was still attached to the lizard which maims one party member to death.');
+                game.killPartyMembers(1);
+              } else {
+                game.log('Your party searches the outskirts of the Verees Desert for giant lizard tails.');
+                game.receiveGold(rollRange(10, 20));
+                loot(game);
+              }
+            },
+            () => {
+              let r = (rollDie(20)
+                + modLinear(game.party.wis, 12) // Being wise lets you more intuitively find the cactuses, handle them.
+                + modLinear(game.party.cha, 12) // Sweet talk some locals into giving tips for where to find the cactus.
+              );
+              if (r <= 4) {
+                game.log('Your party searches the outskirts of the Verees Desert for medicinal cacti, but upon picking one up, the needles puncture one party member\'s skin, paralyzing them and they quickly suffocate.');
+                game.killPartyMembers(1);
+              } else {
+                game.log('Your party searches the outskirts of the Verees Desert for medicinal cacti.');
+                game.receiveGold(rollRange(10, 20));
+                loot(game);
+              }
+            },
+          ]);
+          act();
+          maybeGoToDesert();
+        },
+      },
       // TODO: Duke 1
       // TODO: Wix Waypoint
       // TODO: Verees Desert
@@ -500,6 +609,7 @@ game.registerLevel({
           };
 
           function changeWeapon(game: Game) {
+            // TODO: Should the left/rightness be based on the party's perspective or the eyes'?
             self.weapon.physical = 0;
             self.weapon.magical = 0;
             self.weapon.elemental = 0;
@@ -656,6 +766,46 @@ game.registerLevel({
             ],
             win: (game: Game) => {
               game.receiveGold(800);
+            },
+          };
+        },
+      },
+      {
+        weight: 1,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          return {
+            // Crowe and the Necromagicked Megaworm
+            name: 'Crowe and the Necromagicked Megaworm',
+            health: 6000,
+            // Stats are for Crowe
+            str: 10, int: 18,
+            dex:  9, wis: 16,
+            con: 11, cha: 12,
+            weapon: {
+              physical: 0,
+              magical: -75,
+              elemental: 30,
+            },
+            armor: {
+              physical: 40,
+              magical: 20,
+              elemental: -10,
+            },
+            state,
+            events: [
+              {
+                name: '', // TODO
+                weight: 1,
+                predicate: (game: Game) => true,
+                action: (game: Game) => {
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(900);
             },
           };
         },
