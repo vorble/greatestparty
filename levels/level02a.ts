@@ -199,7 +199,7 @@ game.registerLevel({
             + modLinear(game.party.str, 12) // Should be pretty strong to move this furniture.
             + modLinear(game.party.cha, 10) // Maybe easier to strike up a conversation.
           );
-          if (r <= 4) {
+          if (r <= 3) {
             game.log('Your party helps the man collect his wooden wares strewn about the street, but a heavy chest of drawers falls on one party member, flattening them.');
             game.killPartyMembers(1);
           } else if (r0 <= 18) { // There should always be a chance to progress the story, so base progress on the raw roll
@@ -214,7 +214,7 @@ game.registerLevel({
               case 5: saying = 'I\'d certainly pitch in some coin if you adventuring types found any word about what\'s been going on around here.'; break;
             }
             game.log('Your party helps the man collect his wooden wares strewn about the street, "' + saying + '"');
-            if (townState.crispin1Gossip >= 6) {
+            if (townState.crispin1Gossip >= 5) {
               game.log('He continues, "Name\'s Crispin, I sell the finest wood you\'ll ever sit on or fill up. Each coin goes toward my dream of working with ever more exotic woods and refining my craft. My wares will be in the halls of kings, you wait and see."');
               game.receiveGold(rollRange(65, 75));
               townState.crispin1Done = true;
@@ -228,7 +228,7 @@ game.registerLevel({
       {
         name: 'Manual Labor',
         weight: 1,
-        predicate: !townState.partyInDesert && townState.crispin1Done,
+        predicate: (game: Game) => !townState.partyInDesert && townState.crispin1Done,
         action: (game: Game) => {
           const act = rollChoice([
             () => {
@@ -278,7 +278,7 @@ game.registerLevel({
       {
         name: 'Searching the Desert',
         weight: 1,
-        predicate: !townState.partyInDesert && townState.dixieDone,
+        predicate: (game: Game) => !townState.partyInDesert && townState.dixieDone,
         action: (game: Game) => {
           const act = rollChoice([
             () => {
@@ -325,7 +325,7 @@ game.registerLevel({
             },
           ]);
           act();
-          maybeGoToDesert();
+          maybeGoToDesert(game);
         },
       },
       // TODO: Duke 1
@@ -810,7 +810,6 @@ game.registerLevel({
           };
         },
       },
-      // TODO: Crowe and the Necromagicked Mega Worm
     ];
 
     return town;
