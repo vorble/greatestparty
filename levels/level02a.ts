@@ -223,8 +223,45 @@ game.registerLevel({
         },
       },
       // TODO: Crispin 2
-      // TODO: Dixie
-      // TODO: Dox
+      {
+        name: 'Dixie\'s New Flavor', // TODO: Unfinished
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && !townState.dixieDone,
+        action: (game: Game) => {
+          if (!townState.dixieIntroduced) {
+            game.log(''); // Along a main artery through Spindling, a crowd gathers around a building from which a tantalizing aroma eminates. TODO
+            townState.dixieIntroduced = true;
+          }
+          // Dixie is looking for new flavors and needs a party to go catch something unique and interesting, ...
+          // and dangerous. The party will go about the plains looking for unique meats.
+          // When the quest ends, Dixie mentions about the desert and the interesting things there
+          // unlocking the searching the desert quest.
+
+          // You might find on this quest:
+          // * Lance Cucumber, member stuck in the thicket can get stabbed to death.
+          // * Staring Rice, rice looks like eyes staring at you but a mimicking predator may eat a member.
+          // * Razor Pepper, pepper so hot it cuts the skin, get unlucky to have one member bleed to death.
+          // * ONE MORE
+        },
+      },
+      {
+        name: 'Dox\'s Top Taste',
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && townState.dixieDone,
+        action: (game: Game) => {
+          if (!townState.doxIntroduced) {
+            game.log(''); // TODO
+            townState.doxIntroduced = true;
+          }
+          // Dox is looking for a new flavor to one-up her sister's, Dixie's, new flavor.
+          // She's got something in mind, a little more dangerous.
+
+          // You might find on this quest:
+          // * Hydra Bison Flank, can trample a member
+          // * Cleaver Rabbit Steaks, infected ones split in half and whip poison at a member.
+          // * Longmole Ribs, member can fall down a mole shaft and die.
+        },
+      },
       {
         name: 'Manual Labor',
         weight: 1,
