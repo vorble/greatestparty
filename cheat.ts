@@ -55,3 +55,26 @@ function cheatStats(value?: number) {
 function cheatNextLevel() {
   game.nextLevel();
 }
+
+function cheatLevel2() {
+  game.party.gold = 1500;
+  game.party.size = 15;
+  game.party.questsCompleted = 100;
+
+  game.party.inventoryWeapon.blunt = 10;
+  game.party.inventoryWeapon.slice = 10;
+  game.party.inventoryWeapon.dark = 10;
+  game.party.inventoryWeapon.light = 10;
+  game.party.inventoryWeapon.fire = 10;
+  game.party.inventoryWeapon.ice = 10;
+
+  game.party.inventoryArmor.blunt = 10;
+  game.party.inventoryArmor.slice = 10;
+  game.party.inventoryArmor.dark = 10;
+  game.party.inventoryArmor.light = 10;
+  game.party.inventoryArmor.fire = 10;
+  game.party.inventoryArmor.ice = 10;
+
+  game.level = 1;
+  game.nextLevel();
+}
