@@ -34,7 +34,7 @@ game.registerLevel({
     }
     town.need = 20;
     town.needMax = 20;
-    town.needRatio = 0.008;
+    town.needRatio = 0.024;
     town.enemyRatio = 0.06;
 
     function loot(game: Game) {
@@ -110,6 +110,7 @@ game.registerLevel({
       crispin2Done: false,
 
       dixieIntroduced: false,
+      dixieGossip: 0,
       dixieDone: false,
 
       doxIntroduced: false,
@@ -194,15 +195,14 @@ game.registerLevel({
               + ' "Could you lend me your backs for a while? Maybe pick up a few of the bigger pieces?"');
             townState.crispin1Introduced = true;
           }
-          const r0 = rollDie(20);
-          const r = (r0
+          const r = (rollDie(20)
             + modLinear(game.party.str, 12) // Should be pretty strong to move this furniture.
             + modLinear(game.party.cha, 10) // Maybe easier to strike up a conversation.
           );
           if (r <= 3) {
             game.log('Your party helps the man collect his wooden wares strewn about the street, but a heavy chest of drawers falls on one party member, flattening them.');
             game.killPartyMembers(1);
-          } else if (r0 <= 18) { // There should always be a chance to progress the story, so base progress on the raw roll
+          } else if (r <= 10) { // There should always be a chance to progress the story, so base progress on the raw roll
             game.log('Your party helps the man collect his wooden wares strewn about the street.');
           } else {
             let saying = 'ERR';
@@ -229,19 +229,58 @@ game.registerLevel({
         predicate: (game: Game) => !townState.partyInDesert && !townState.dixieDone,
         action: (game: Game) => {
           if (!townState.dixieIntroduced) {
-            game.log(''); // Along a main artery through Spindling, a crowd gathers around a building from which a tantalizing aroma eminates. TODO
+            game.log('Along a main artery through the town of Spindling, a crown is gathered around a local eatery.'
+              + ' The proprietress deftfully orders the staff to serve the crowd.'
+              + ' As the crown wanes, the proprietress approaches your party and says'
+              + ' "These crowds will look puny compared to what I have cooked up for them next.'
+              + ' I\'m Dixie and I\'m looking for exotic produce."');
             townState.dixieIntroduced = true;
           }
-          // Dixie is looking for new flavors and needs a party to go catch something unique and interesting, ...
-          // and dangerous. The party will go about the plains looking for unique meats.
-          // When the quest ends, Dixie mentions about the desert and the interesting things there
-          // unlocking the searching the desert quest.
-
-          // You might find on this quest:
-          // * Lance Cucumber, member stuck in the thicket can get stabbed to death.
-          // * Staring Rice, rice looks like eyes staring at you but a mimicking predator may eat a member.
-          // * Razor Pepper, pepper so hot it cuts the skin, get unlucky to have one member bleed to death.
-          // * ONE MORE
+          const scenario = rollChoice([
+            {
+              name: 'lance cucumber',
+              prefix: 'Your party comes across a bramble of lance cucumber plants ',
+              good: 'and your party harvests a bountiful load of them.',
+              bad: 'and a member of your party gets impaled to death by the lances.',
+            },
+            {
+              name: 'gazing rice',
+              prefix: 'Your party wades through a patty of gazing rice ',
+              good: 'and your party reaps and threshes several bushels.',
+              bad: 'and a predator emerges from a suspicious patch, tackling and killing one party member.',
+            },
+            {
+              name: 'razor pepper',
+              prefix: 'Your party finds a few razor pepper plants ',
+              good: 'and your party carefully harvests several.',
+              bad: 'and a member of your party mishandles one, releasing some juice which cuts through his flesh fatally.',
+            },
+          ]);
+          const r = (rollDie(20)
+            + modLinear(game.party.wis, 12) // Being wise lets you know these are dangerous plants.
+          );
+          if (r <= 4) {
+            game.log(scenario.prefix + scenario.bad);
+            game.killPartyMembers(1);
+          } else if (r <= 10) {
+            game.log(scenario.prefix + scenario.good);
+          } else {
+            game.log(scenario.prefix + scenario.good);
+            let saying = 'ERR';
+            switch (++townState.dixieGossip) {
+              case 1: saying = 'These are wonderful!'; break;
+              case 2: saying = 'I can\'t believe you actually made it back!'; break;
+              case 3: saying = 'You all have been to the desert, haven\'t you?'; break;
+              case 4: saying = 'I\'ve never seen these so fresh! This is going to start a riot!'; break;
+              case 5: saying = 'If you want more medicinal plants, you can find them on the outskirts of the desert.'; break;
+            }
+            game.log('Dixie waves your party down as you bring the haul, "' + saying + '"');
+            if (townState.dixieGossip >= 5) {
+              game.log('She continues, "I never imagined you would find all of these and so fresh. I have to give you this."');
+              game.receiveGold(rollRange(76, 90));
+              townState.dixieDone = true;
+            }
+          }
         },
       },
       {
