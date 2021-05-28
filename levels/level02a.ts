@@ -35,7 +35,7 @@ game.registerLevel({
     town.need = 20;
     town.needMax = 20;
     town.needRatio = 0.024;
-    town.enemyRatio = 0.06;
+    town.enemyRatio = 0.08; // TODO: In flux.
 
     function loot(game: Game) {
       const r = rollRatio();
@@ -59,7 +59,7 @@ game.registerLevel({
     function maybeGoToDesert(game: Game) {
       const r = (rollDie(20)
         + modLinear(game.party.int, 12) // Need to be pretty smart to know the land.
-        + modLinear(game.party.wis, 10) // Need moderate wisdom to know to be crareful.
+        + modLinear(game.party.wis, 10) // Need moderate wisdom to know to be careful.
       );
       if (r <= 8) {
         goToDesert(game);
@@ -68,7 +68,7 @@ game.registerLevel({
 
     function goToDesert(game: Game) {
       if (!townState.partyInDesert) {
-        game.log('Your party finds itself on wind-swept red sands of the Verees Desert.');
+        game.log('Your party finds itself lost on wind-swept red sands of the Verees Desert.');
         townState.partyInDesert = true;
         townState.backupFoodStock = town.foodStock;
         town.foodStock = 0;
@@ -107,6 +107,8 @@ game.registerLevel({
       crispin1Done: false,
 
       crispin2Introduced: false,
+      crispin2Hauling: 0,
+      crispin2WoodDelivered: 0,
       crispin2Done: false,
 
       dixieIntroduced: false,
@@ -215,16 +217,79 @@ game.registerLevel({
             }
             game.log('Your party helps the man collect his wooden wares strewn about the street, "' + saying + '"');
             if (townState.crispin1Gossip >= 5) {
-              game.log('He continues, "Name\'s Crispin, I sell the finest wood you\'ll ever sit on or fill up. Each coin goes toward my dream of working with ever more exotic woods and refining my craft. My wares will be in the halls of kings, you wait and see."');
+              game.log('He continues, "Name\'s Crispin, I sell the finest wood you\'ll ever sit on or fill up. Each coin goes toward my dream of working with ever more exotic woods and refining my craft. My wares will be in the halls of kings, you wait and see!"');
               game.receiveGold(rollRange(65, 75));
               townState.crispin1Done = true;
             }
           }
         },
       },
-      // TODO: Crispin 2
       {
-        name: 'Dixie\'s New Flavor', // TODO: Unfinished
+        name: 'Crispin, Visionary',
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && townState.crispin1Done && !townState.crispin2Done,
+        action: (game: Game) => {
+          if (!townState.crispin2Introduced) {
+            game.log('Crispin flags your party down, "Now that my wares are in order, I need more materials! You should check along the river, Sam\'s Torrent we call it, lots of trees grow out there."');
+            townState.crispin2Introduced = true;
+          }
+          // Not hauling, go out to the river and chop a tree.
+          // While hauling, head back to town and hope to avoid calamity.
+          if (townState.crispin2Hauling <= 0) {
+            const descriptor = rollChoice([
+              'ancient', 'burly', 'tall', 'straight',
+              'magnificient', 'monsterous',
+            ]);
+            const article = descriptor[0] == 'a' ? 'an' : 'a';
+            const tree = rollChoice([
+              'helmwood tree', 'ridgelrod tree', 'three-eyed willow tree',
+              'duskmire tree', 'sporrel tree',
+            ]);
+            const r = (rollDie(20)
+              + modLinear(game.party.str, 12)
+              + modLinear(game.party.wis, 10)
+            );
+            if (r <= 4) {
+              game.log(`Your party finds ${ article } ${ descriptor } ${ tree } and chops it down, but it falls onto one party member, killing them.`);
+              game.killPartyMembers(1);
+            } else {
+              game.log(`Your party finds ${ article } ${ descriptor } ${ tree } and chops it down.`);
+              townState.crispin2Hauling = rollRange(3, 6);
+            }
+          } else {
+            const r = (rollDie(20)
+              + modLinear(game.party.str, 10)
+              + modLinear(game.party.int, 12)
+            );
+            if (r <= 4) {
+              game.log(`Your party struggles to haul the wood to town and an insecure log falls onto one party member, killing them.`);
+              game.killPartyMembers(1);
+            } else {
+              game.log(`Your party struggles to haul the wood to town.`);
+              --townState.crispin2Hauling;
+              if (townState.crispin2Hauling == 0) {
+                let saying = 'ERR';
+                switch (++townState.crispin2WoodDelivered) {
+                  case 1: saying = 'This is a fine specimine! I know just what to do with it!'; break;
+                  case 2: saying = 'Just imagine how ornate this would look with a nice dark stain, it would really bring the grain to life.'; break;
+                  case 3: saying = 'Wow! I never thought I\'d get my hands on some of this!'; break;
+                }
+                game.log(`Your party delivers the wood to Crispin, "${ saying }"`);
+                game.receiveGold(rollRange(70, 85));
+                loot(game);
+              }
+            }
+          }
+          if (townState.crispin2WoodDelivered == 3) {
+            game.log(`Some unsavory types hurridly surround Crispin and your party. "Just come with us and it won\'t get ugly!" screeches one. Crispin, considering his next move says, "I won\'t go with you savages!"`);
+            game.log(`The brutes press toward Crispin and your party, grabbing him and one of yours, carrying them away despite their protest.`);
+            game.killPartyMembers(1);
+            townState.crispin2Done = true;
+          }
+        },
+      },
+      {
+        name: 'Dixie\'s New Flavor',
         weight: 1,
         predicate: (game: Game) => !townState.partyInDesert && !townState.dixieDone,
         action: (game: Game) => {
@@ -233,7 +298,7 @@ game.registerLevel({
               + ' The proprietress deftfully orders the staff to serve the crowd.'
               + ' As the crown wanes, the proprietress approaches your party and says'
               + ' "These crowds will look puny compared to what I have cooked up for them next.'
-              + ' I\'m Dixie and I\'m looking for exotic produce."');
+              + ' I\'m Dixie and I\'m looking for exotic produce. Could you find some for me?"');
             townState.dixieIntroduced = true;
           }
           const scenario = rollChoice([
@@ -253,7 +318,7 @@ game.registerLevel({
               name: 'razor pepper',
               prefix: 'Your party finds a few razor pepper plants ',
               good: 'and your party carefully harvests several.',
-              bad: 'and a member of your party mishandles one, releasing some juice which cuts through his flesh fatally.',
+              bad: 'and a member of your party mishandles one, releasing some juice which cuts through their flesh fatally.',
             },
           ]);
           const r = (rollDie(20)
@@ -363,7 +428,7 @@ game.registerLevel({
                 + modLinear(game.party.int, 10) // Knowledge of spider hives helps avoid them.
               );
               if (r <= 4) {
-                game.log('Your party searches the outskirts of the Verees Desert for mirror stores, but a hive of spiders drain one members blood completely, killing them.');
+                game.log('Your party searches the outskirts of the Verees Desert for mirror stones, but a hive of spiders drain one members blood completely, killing them.');
                 game.killPartyMembers(1);
               } else {
                 game.log('Your party searches the outskirts of the Verees Desert for mirror stones.');
@@ -404,7 +469,7 @@ game.registerLevel({
           maybeGoToDesert(game);
         },
       },
-      // TODO: Duke 1
+      // TODO: Duke 1 - track the ruffians to the duke's encampment which is adorned with the royal standards
       // TODO: Wix Waypoint
       // TODO: Verees Desert
       // TODO: Duke 2
