@@ -116,6 +116,7 @@ game.registerLevel({
       dixieDone: false,
 
       doxIntroduced: false,
+      doxMeatDelivered: 0,
       doxDone: false,
     };
     town.state = townState;
@@ -351,19 +352,61 @@ game.registerLevel({
       {
         name: 'Dox\'s Top Taste',
         weight: 1,
-        predicate: (game: Game) => !townState.partyInDesert && townState.dixieDone,
+        predicate: (game: Game) => !townState.partyInDesert && townState.dixieDone && !townState.doxDone,
         action: (game: Game) => {
           if (!townState.doxIntroduced) {
-            game.log(''); // TODO
+            game.log('As your party makes its way past the Dixie and Dox a new voice bursts out "Morning, lackeys!'
+              + ' Saw what you got done for my sister Dixie--I\'m Dox by the way--think you can help me get one up on her?'
+              + ' Oh yeah, it\'s dangerous, but I don\'t want to hear any whining. Find me some fresh game, will ya?"');
             townState.doxIntroduced = true;
           }
-          // Dox is looking for a new flavor to one-up her sister's, Dixie's, new flavor.
-          // She's got something in mind, a little more dangerous.
-
-          // You might find on this quest:
-          // * Hydra Bison Flank, can trample a member
-          // * Cleaver Rabbit Steaks, infected ones split in half and whip poison at a member.
-          // * Longmole Ribs, member can fall down a mole shaft and die.
+          const scenario = rollChoice([
+            {
+              name: 'hydra bison',
+              prefix: 'Your party approaches a lone hydra bison who is left behind from the herd',
+              good: ' and manages to corner and kill it, collecting meat from its great flank.',
+              bad: ', but its three heads confuse a party member who gets trampled by the beast.',
+              roll: () => rollDie(20) + modLinear(game.party.dex, 10),
+            },
+            {
+              name: 'cleaver rabbit',
+              prefix: 'Your party notices a cleaver rabbit grazing in the long grass of a meadow',
+              good: ' and successfully sets a trap, catching the rabbit, from which two petit steaks are butchered.',
+              bad: ', but this cleaver rabbit is infected, splits in half down its spine, and springs tentacles toward a party member which make contact causing their blood to seep through their skin.',
+              roll: () => rollDie(20) + modLinear(game.party.int, 10),
+            },
+            {
+              name: 'longmole',
+              prefix: 'Your party explores the burrow of a longmole',
+              good: ' and manage to corner and kill it collecting a long rack of ribs.',
+              bad: ', but one party member falls to his death in a vertical shaft hidden in the darkness.',
+              roll: () => rollDie(20) + modLinear(game.party.wis, 10),
+            },
+          ]);
+          const r = scenario.roll();
+          if (r <= 5) {
+            game.log(`${ scenario.prefix }${ scenario.bad }`);
+            game.killPartyMembers(1);
+          } else {
+            let saying = 'ERR';
+            switch (++townState.doxMeatDelivered) {
+              case 1: saying = 'Is your mouth watering? I know mine is!'; break;
+              case 2: saying = 'Dixie can eat it, then eat some of this!'; break;
+              case 3: saying = 'I\'ve got a special sauce for this slab of meat!'; break;
+              case 4: saying = 'Who wants to eat vegetables anyway?'; break;
+              case 5: saying = 'MORE MEAT!'; break;
+              case 6: saying = 'If I take any more meat, it\'s going to spoil before I can serve it.'; break;
+            }
+            game.log(`${ scenario.prefix }${ scenario.good } "${ saying }"`);
+          }
+          if (townState.doxMeatDelivered >= 6) {
+            game.log('While delivering the last of the meat, some unsavory types come upon Dixie, Dox, and your party.'
+              + ' One with a callous gaze shouts "Just come with us and this won\'t get messy!"'
+              + ' Dixie and Dox look to eachother, then to the party, but the brutes are too numerous to stop.'
+              + ' They make off with both sisters and two members of your party.');
+            game.killPartyMembers(2);
+            townState.doxDone = true;
+          }
         },
       },
       {
