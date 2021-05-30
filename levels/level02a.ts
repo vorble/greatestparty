@@ -99,9 +99,6 @@ game.registerLevel({
       backupFoodStock: 0,
       backupWaterStock: 0,
 
-      goToDesert, // TODO: Don't expose the inner functions in this way
-      leaveDesert,
-
       crispin1Introduced: false,
       crispin1Gossip: 0,
       crispin1Done: false,
@@ -118,6 +115,9 @@ game.registerLevel({
       doxIntroduced: false,
       doxMeatDelivered: 0,
       doxDone: false,
+
+      duke1CluesFound: 0,
+      duke1Done: false,
     };
     town.state = townState;
 
@@ -162,7 +162,11 @@ game.registerLevel({
         predicate: (game: Game) => game.town.townsfolk > 0,
         action: (game: Game) => {
           if (rollRatio() < 0.35) {
-            game.log('Someone from town has gone missing.');
+            if (townState.duke1Done) {
+              game.log('Someone from town has gone missing.');
+            } else {
+              game.log('Someone from town is forced to join Duke Wolvren\'s undead army.');
+            }
             game.town.townsfolk -= 1;
           }
         },
@@ -175,7 +179,7 @@ game.registerLevel({
         weight: 1,
         predicate: (game: Game) => townState.partyInDesert,
         action: (game: Game) => {
-          gainDesertKnowledge(10);
+          gainDesertKnowledge(2);
           // Same roll as town event Wander the Verees Desert
           const knowledgeRatio = townState.partyDesertKnowledge / DESERT_KNOWLEDGE_MASTER;
           if (rollRatio() < knowledgeRatio) {
@@ -512,7 +516,78 @@ game.registerLevel({
           maybeGoToDesert(game);
         },
       },
-      // TODO: Duke 1 - track the ruffians to the duke's encampment which is adorned with the royal standards
+      {
+        name: 'All The Duke\'s Men',
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && townState.doxDone && townState.crispin2Done && !townState.duke1Done,
+        action: (game: Game) => {
+          const scenario = rollChoice([
+            {
+              roll: () => rollDie(20) + modLinear(game.party.str, 12),
+              prefix: 'Your party tracks one of the ruffians who have been abducting the towlsfolk',
+              bad: ', but they are too powerful and manage to kill one party member before escaping.',
+              good: ', wrestle them to the ground, and manage to get some details in confession.',
+            },
+            {
+              roll: () => rollDie(20) + modLinear(game.party.dex, 12),
+              prefix: 'A member of your party challenges one of the ruffians to a duel',
+              bad: ', but isn\'t quick enough with their sword and gets impaled.',
+              good: ' and outperforms them thoroughly, so the ruffian is honor bound to give you some details.',
+            },
+            {
+              roll: () => rollDie(20) + modLinear(game.party.con, 12),
+              prefix: 'Your party challenges one of the ruffians to a drinking contest',
+              bad: ', but a passed out party member aspirates and dies.',
+              good: ' and your party holds its own until the ruffian\'s mouth starts giving details.',
+            },
+            {
+              roll: () => rollDie(20) + modLinear(game.party.int, 12),
+              prefix: 'Your party watches the ruffians\'s movements from afar',
+              bad: ', but a member of your party is spotted while moving between cover, gets captured, and taken away.',
+              good: ' and your party notices their movements eastward out of town.',
+            },
+            {
+              roll: () => rollDie(20) + modLinear(game.party.wis, 12),
+              prefix: 'Your party appeals to the local magistrate to look into the abductions',
+              bad: ', but a member of your party is identified as being a longstanding thief and is taken into custody instead.',
+              good: ' and they order any information on the ruffians be shared.',
+            },
+            {
+              roll: () => rollDie(20) + modLinear(game.party.cha, 12),
+              prefix: 'Your party approaches the ruffians to parley',
+              bad: ', but one party members inability to use words good leads to his tongue being cut out and they die.',
+              good: ' and everyone involved has a good laugh and your party leaves with several clues.',
+            },
+          ]);
+          const r = scenario.roll();
+          if (r <= 10) {
+            game.log(scenario.prefix + scenario.bad);
+            game.killPartyMembers(1);
+          } else {
+            let clue = 'ERR';
+            switch (++townState.duke1CluesFound) {
+              case 1: clue = 'Clue: The ruffians take their captives eastward out of town.'; break;
+              case 2: clue = 'Clue: The ruffians are being paid by someone.'; break;
+              case 4: clue = 'Clue: The ruffians show signs that they camp in some place muddy.'; break;
+              case 3: clue = 'Clue: The ruffians use old, damaged, but formerly fine weaponry and armor.'; break;
+              case 5: clue = 'Clue: The ruffians are camped near Sam\'s Torrent.'; break;
+            }
+            game.log(clue);
+          }
+          if (townState.duke1CluesFound >= 5) {
+            game.log('Your party approaches Sam\'s Torrent and notice the ruffian\'s encampment. However, it is covered in royal standard of Duke Wolvren, giving the party enough pause to avoid rushing into the camp.');
+            game.log('Your party observes a dark, bloody ritual performed on an abducted townsfolk. The corpse picks itself back up slowly and trudges untiring, doing menial tasks around the camp.');
+            game.log('Your party arrives back in Spindling to deliver the news when an elder speaks up, "Dark magic is not unheard of in these parts, but few of us have seen it in our lifetimes.'
+              + ' Wrigley was a holy cleric who fought against such magic with a blessed maul and cloak.'
+              + ' Find the relics hidden long ago and put an end to the duke\'s madness!"');
+            game.receiveGold(rollRange(100, 150));
+            loot(game);
+            loot(game);
+            loot(game);
+            townState.duke1Done = true;
+          }
+        },
+      },
       // TODO: Wix Waypoint
       // TODO: Verees Desert
       // TODO: Duke 2
