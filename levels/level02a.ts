@@ -25,11 +25,11 @@ game.registerLevel({
     town.hireCost = 100;
     town.conscriptRatio = 0.5;
     town.conscriptViolenceRatio = 0.4;
-    town.foodStock = 200;
+    town.foodStock = 250;
     town.foodSupport = FOOD_SUPPORT_NORMAL;
     town.foodCostBuy = [4, 4, 2, 5];
     town.foodCostSell = [2, 2, 1, 4];
-    town.waterStock = 75;
+    town.waterStock = 150;
     town.waterSupport = WATER_SUPPORT_NORMAL;
     town.waterCostBuy = [4, 5, 4, 4];
     town.waterCostSell = [2, 2, 2, 2];
@@ -130,6 +130,10 @@ game.registerLevel({
 
       wixIntroduced: false,
       wixDone: false,
+
+      vereesIntroduced: false,
+      vereesActivity: 0,
+      vereesDone: false,
     };
     town.state = townState;
 
@@ -175,14 +179,15 @@ game.registerLevel({
         action: (game: Game) => {
           if (rollRatio() < 0.35) {
             if (townState.duke1Done) {
-              game.log('Someone from town has gone missing.');
+              game.log('Someone from town is abducted and forced to join Duke Wolvren\'s undead army.');
             } else {
-              game.log('Someone from town is forced to join Duke Wolvren\'s undead army.');
+              game.log('Someone from town has gone missing.');
             }
             game.town.townsfolk -= 1;
           }
         },
       },
+      // TODO: If town alignment is low, screw with party
     ];
 
     town.quests = [
@@ -418,7 +423,7 @@ game.registerLevel({
           if (townState.doxMeatDelivered >= 6) {
             game.log('While delivering the last of the meat, some unsavory types come upon Dixie, Dox, and your party.'
               + ' One with a callous gaze shouts "Just come with us and this won\'t get messy!"'
-              + ' Dixie and Dox look to eachother, then to the party, but the brutes are too numerous to stop.'
+              + ' Dixie and Dox look to eachother, then to your party, but the brutes are too numerous to stop.'
               + ' They make off with both sisters and two members of your party.');
             game.killPartyMembers(2);
             townState.doxDone = true;
@@ -587,7 +592,7 @@ game.registerLevel({
             game.log(clue);
           }
           if (townState.duke1CluesFound >= 5) {
-            game.log('Your party approaches Sam\'s Torrent and notice the ruffian\'s encampment. However, it is covered in royal standard of Duke Wolvren, giving the party enough pause to avoid rushing into the camp.');
+            game.log('Your party approaches Sam\'s Torrent and notice the ruffian\'s encampment. However, it is covered in royal standard of Duke Wolvren, giving your party enough pause to avoid rushing into the camp.');
             game.log('Your party observes a dark, bloody ritual performed on an abducted townsfolk. The corpse picks itself back up slowly and trudges untiring, doing menial tasks around the camp.');
             game.log('Your party arrives back in Spindling to deliver the news when an elder speaks up, "Dark magic is not unheard of in these parts, but few of us have seen it in our lifetimes.'
               + ' Wrigley was a holy cleric who fought against such magic with a blessed maul and cloak.'
@@ -635,7 +640,57 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Verees Desert
+      {
+        name: 'Verees Desert',
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && townState.duke1Done && !townState.vereesDone,
+        action: (game: Game) => {
+          if (!townState.vereesIntroduced) {
+            game.log('Your party arrives at the red sands of the Verees Desert and comes across an old battlement. It is said to hold Wrigley\'s Blessed Cloak.');
+            townState.vereesIntroduced = true;
+          }
+          const ACTIVITIES = [
+            {
+              text: 'searching for the trigger switch',
+              success: 'presses it, unlocking a hole in the wall',
+            },
+            {
+              text: 'trying combinations on the puzzle wall',
+              success: 'finds the solution, disarming the traps in the floor',
+            },
+            {
+              text: 'raising and lowering scaffolding',
+              success: 'creates a path along the moving wall allowing your party to proceed',
+            },
+            {
+              text: 'climbing through the duct system',
+              success: 'finds the other side of the door and unlocks it',
+            },
+            {
+              text: 'prying at the majestic chest',
+              success: 'opens it to reveal Wrigley\'s Blessed Cloak',
+            },
+          ];
+          const activity = ACTIVITIES[townState.vereesActivity];
+          const r = rollDie(20);
+          if (r <= 16) {
+            game.log('A member of your party is frozen in place and slowly turns to red sand while ' + activity.text + '.');
+            game.killPartyMembers(1);
+          } else {
+            game.log('A member of your party is ' + activity.text + ' and ' + activity.success + '.');
+            ++townState.vereesActivity;
+          }
+          if (townState.vereesActivity >= ACTIVITIES.length) {
+            game.receiveGold(rollRange(100, 120));
+            loot(game);
+            loot(game);
+            loot(game);
+            townState.vereesDone = true;
+          } else {
+            maybeGoToDesert(game);
+          }
+        },
+      },
       // TODO: Duke 2
     ];
 
