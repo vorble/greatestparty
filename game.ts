@@ -78,16 +78,18 @@ class Game {
         weight: 1,
         predicate: (game: Game) => clockIsSign(game, Sign.Goh),
         action: (game: Game) => {
-          const r = rollDie(20);
-          if (r <= 10) {
-            if (game.town.townsfolk > 0) {
-              game.log('A spirited town\'s person joins your party.');
-              game.joinPartyFromTown(1);
-            }
-          } else {
-            if (game.party.size > 0) {
-              game.log('A spirited member of your party joins the town.');
-              game.joinTownFromParty(1);
+          if (!game.party.status.outOfTown.active) {
+            const r = rollDie(20);
+            if (r <= 10) {
+              if (game.town.townsfolk > 0) {
+                game.log('A spirited town\'s person joins your party.');
+                game.joinPartyFromTown(1);
+              }
+            } else {
+              if (game.party.size > 0) {
+                game.log('A spirited member of your party joins the town.');
+                game.joinTownFromParty(1);
+              }
             }
           }
         },
@@ -503,9 +505,9 @@ class Game {
         }
       }
 
-      this.log('Your party trades blows with ' + this.enemy.name + '.');
       const damageToEnemy = fightCalculateAttack(this.party, this.enemy);
       const damageToParty = fightCalculateAttack(this.enemy, this.party);
+      this.log('Your party trades blows with ' + this.enemy.name + '. Your party takes ' + damageToParty + ' damage and ' + this.enemy.name + ' takes ' + damageToEnemy + ' damage.');
       this.party.damage += damageToParty;
       this.enemy.health = Math.max(0, this.enemy.health - damageToEnemy);
       if (this.enemy.health <= 0) {
@@ -703,7 +705,7 @@ class Game {
     // Can't quest while fighting an enemy
     if (this.enemy == null && this.party.quests > 0) {
       const POINTS_PER_QUEST = 100;
-      const GOLD_PER_QUEST = 10;
+      const GOLD_PER_QUEST = 10; // TODO: Make into town property
       // A random percentage of your party is effective this
       // turn, gain a quest point for each effective party
       // member.
