@@ -11,6 +11,15 @@ game.registerLevel({
     const WATER_SUPPORT_NORMAL: TownSeasonVector = [30, 15, 20, 20];
     const WATER_SUPPORT_DESERT: TownSeasonVector = [1, 0, 0, 1];
 
+    const BRANCHES = [
+      'twisting switch',
+      'bent limb',
+      'bushy leafage',
+      'deep grooved root',
+      'protruding knot',
+    ];
+    rollShuffle(BRANCHES); // first 3 are the right combo.
+
     town.name = 'Spindling Plains';
     town.townsfolk = 450;
     town.hireCost = 100;
@@ -118,6 +127,9 @@ game.registerLevel({
 
       duke1CluesFound: 0,
       duke1Done: false,
+
+      wixIntroduced: false,
+      wixDone: false,
     };
     town.state = townState;
 
@@ -588,7 +600,41 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Wix Waypoint
+      {
+        name: 'Wix Waypoint',
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && townState.duke1Done && !townState.wixDone,
+        action: (game: Game) => {
+          if (!townState.wixIntroduced) {
+            game.log('Your party comes across an increasingly thick grove of trees dotted in the center with one ancient, towering tree. Wix Waypoint, house of Wrigley\'s Blessed Maul.');
+            townState.wixIntroduced = true;
+          }
+          if (game.party.size < 3) {
+            game.log('Your party stares puzzingly at the tree.');
+            return;
+          }
+          const rolls = [];
+          while (rolls.length < 3) {
+            const r = rollInt(BRANCHES.length);
+            if (rolls.indexOf(r) < 0) {
+              rolls.push(r);
+            }
+          }
+          const prefix = `Three members of your party grab the ${ BRANCHES[rolls[0]] }, the ${ BRANCHES[rolls[1]] }, and the ${ BRANCHES[rolls[2]] }.`;
+          rolls.sort();
+          if (rolls[0] == 0 && rolls[1] == 1 && rolls[2] == 2) {
+            game.log(prefix + ' The trunk of the tree opens up, revealing Wrigley\'s Blessed Maul.');
+            game.receiveGold(rollRange(100, 120));
+            loot(game);
+            loot(game);
+            loot(game);
+            townState.wixDone = true;
+          } else {
+            game.log(prefix + ' The skin of each agonizingly turns to wood and they fall off of the tree.');
+            game.killPartyMembers(3);
+          }
+        },
+      },
       // TODO: Verees Desert
       // TODO: Duke 2
     ];

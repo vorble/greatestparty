@@ -58,3 +58,15 @@ function rollChoiceWeighted<T extends RollChoiceWeighted>(items: Array<T>): T {
   }
   throw new Error('Assertion error.');
 }
+
+// Shuffles the list.
+function rollShuffle<T>(list: Array<T>) {
+  let j = list.length - 1;
+  while (j > 1) {
+    const i = rollInt(j);
+    const t = list[j];
+    list[j] = list[i];
+    list[i] = t;
+    --j;
+  }
+}
