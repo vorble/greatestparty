@@ -38,6 +38,7 @@ class Town {
   needMax: number;
   needRatio: number;
   enemyRatio: number;
+  goldPerQuest: number;
   foodStock: number;
   foodSupport: TownSeasonVector;
   foodCostBuy: TownSeasonVector;
@@ -72,6 +73,7 @@ class Town {
     this.needMax = 0;
     this.needRatio = 0;
     this.enemyRatio = 0;
+    this.goldPerQuest = 0;
     this.foodStock = 0;
     this.foodSupport = [0, 0, 0, 0];
     this.foodCostBuy = [0, 0, 0, 0];

@@ -28,6 +28,7 @@ game.registerLevel({
     town.needMax = 20;
     town.needRatio = 0.010;
     town.enemyRatio = 0.05;
+    town.goldPerQuest = 10;
 
     const townState = {
     };

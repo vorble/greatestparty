@@ -30,6 +30,7 @@ game.registerLevel({
     town.needMax = 10;
     town.needRatio = 0.010;
     town.enemyRatio = 0.05;
+    town.goldPerQuest = 10;
 
     const townState = {
       bodiesOutToSea: 0,

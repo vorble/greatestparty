@@ -45,6 +45,7 @@ game.registerLevel({
     town.needMax = 20;
     town.needRatio = 0.024;
     town.enemyRatio = 0.08; // TODO: In flux.
+    town.goldPerQuest = 20;
 
     function loot(game: Game) {
       const r = rollRatio();

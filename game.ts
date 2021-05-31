@@ -705,7 +705,6 @@ class Game {
     // Can't quest while fighting an enemy
     if (this.enemy == null && this.party.quests > 0) {
       const POINTS_PER_QUEST = 100;
-      const GOLD_PER_QUEST = 10; // TODO: Make into town property
       // A random percentage of your party is effective this
       // turn, gain a quest point for each effective party
       // member.
@@ -724,7 +723,7 @@ class Game {
         }
         this.party.quests -= questsCompleted;
         this.party.questsCompleted += questsCompleted;
-        this.party.gold += questsCompleted * GOLD_PER_QUEST;
+        this.party.gold += questsCompleted * this.town.goldPerQuest;
         this.party.questPoints -= POINTS_PER_QUEST * questsCompleted;
         this.adjustAlignment(questsCompleted);
       }
