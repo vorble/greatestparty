@@ -188,7 +188,24 @@ game.registerLevel({
           }
         },
       },
-      // TODO: If town alignment is low, screw with party
+      {
+        name: 'Unwelcome Here',
+        weight: 1,
+        predicate: (game: Game) => game.town.alignment <= -20,
+        action: (game: Game) => {
+          const roll = (rollDie(20)
+            + mod(game.town.alignment, [[-100, -19], [-50, -5], [-20, 0]])
+          );
+          if (roll <= 3) {
+            game.log('The townsfolk chase a member of your party through the streets and kill them.');
+            game.killPartyMembers(1);
+            game.adjustAlignment(4);
+          } else {
+            game.log('The townsfolk chase a member of your party through the streets.');
+            game.adjustAlignment(1);
+          }
+        },
+      },
     ];
 
     town.quests = [
@@ -593,7 +610,7 @@ game.registerLevel({
             game.log(clue);
           }
           if (townState.duke1CluesFound >= 5) {
-            game.log('Your party approaches Sam\'s Torrent and notice the ruffian\'s encampment. However, it is covered in royal standard of Duke Wolvren, giving your party enough pause to avoid rushing into the camp.');
+            game.log('Your party approaches Sam\'s Torrent and notices the ruffian\'s encampment. However, it is covered in royal standard of Duke Wolvren, giving your party enough pause to avoid rushing into the camp.');
             game.log('Your party observes a dark, bloody ritual performed on an abducted townsfolk. The corpse picks itself back up slowly and trudges untiring, doing menial tasks around the camp.');
             game.log('Your party arrives back in Spindling to deliver the news when an elder speaks up, "Dark magic is not unheard of in these parts, but few of us have seen it in our lifetimes.'
               + ' Wrigley was a holy cleric who fought against such magic with a blessed maul and cloak.'
