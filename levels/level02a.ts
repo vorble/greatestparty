@@ -909,7 +909,41 @@ game.registerLevel({
       },
       // TODO: Territorial Gazelle
       // TODO: Crowe's Sentinel
-      // TODO: River Imp
+      {
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const self: Enemy = {
+            name: 'River Imp',
+            health: 45,
+            str:  6, int: 10,
+            dex:  8, wis: 11,
+            con:  6, cha: 6,
+            weapon: {
+              physical: 100,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 10,
+              magical: 10,
+              elemental: 5,
+            },
+            state,
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(20, 28));
+              loot(game);
+            },
+          };
+
+          return self;
+        },
+      },
       {
         weight: 1,
         predicate: (game: Game) => !townState.partyInDesert,
