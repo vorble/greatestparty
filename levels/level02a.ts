@@ -44,7 +44,7 @@ game.registerLevel({
     town.need = 20;
     town.needMax = 20;
     town.needRatio = 0.024;
-    town.enemyRatio = 0.08; // TODO: In flux.
+    town.enemyRatio = 0.08;
     town.goldPerQuest = 20;
 
     function loot(game: Game) {
@@ -135,6 +135,9 @@ game.registerLevel({
       vereesIntroduced: false,
       vereesActivity: 0,
       vereesDone: false,
+
+      duke2Introduced: false,
+      duke2Done: false,
     };
     town.state = townState;
 
@@ -709,7 +712,14 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Duke 2
+      {
+        name: 'Duke It Out',
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && townState.wixDone && townState.vereesDone && !townState.duke2Done,
+        action: (game: Game) => {
+          // general guide: use the maul to destroy the sacrificial altar and use the cloak to defend against dark magic orbs. After the altar is destroyed, chase down the duke and kill him.
+        },
+      },
     ];
 
     town.enemies = [
@@ -907,8 +917,96 @@ game.registerLevel({
           return self;
         },
       },
-      // TODO: Territorial Gazelle
-      // TODO: Crowe's Sentinel
+      {
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const self: Enemy = {
+            name: 'Territorial Gazelle',
+            health: 88,
+            str:  11, int:  6,
+            dex:  13, wis:  3,
+            con:  12, cha:  8,
+            weapon: {
+              physical: -75,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: -18,
+              magical: 0,
+              elemental: -10,
+            },
+            state,
+            events: [
+              {
+                name: 'Territorialness',
+                weight: 1,
+                action: (game: Game) => {
+                  game.log(rollChoice([
+                    'Territorial Gazelle rears on its hind legs.',
+                    'Territorial Gazelle chomps its teeth at your party.',
+                    'Territorial Gazelle hooves at the ground in front of itself.',
+                  ]));
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(15, 20));
+              loot(game);
+            },
+          };
+
+          return self;
+        },
+      },
+      {
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert,
+        roll: (game: Game) => {
+          const state = {
+          };
+
+          const self: Enemy = {
+            name: 'Crowe\'s Sentinel',
+            health: 67,
+            str:  12, int: 11,
+            dex:  10, wis:  9,
+            con:  7,  cha:  7,
+            weapon: {
+              physical: 0,
+              magical: 40,
+              elemental: -50,
+            },
+            armor: {
+              physical: 15,
+              magical: 10,
+              elemental: 5,
+            },
+            state,
+            events: [
+              {
+                name: 'Switch Arms',
+                weight: 1,
+                action: (game: Game) => {
+                  game.log('Crowe\'s Sentinel switches arms.');
+                  self.weapon.magical = -self.weapon.magical;
+                  self.weapon.elemental = -self.weapon.elemental;
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(18, 23));
+              loot(game);
+            },
+          };
+
+          return self;
+        },
+      },
       {
         weight: 1,
         predicate: (game: Game) => !townState.partyInDesert,
