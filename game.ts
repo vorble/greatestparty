@@ -665,9 +665,28 @@ class Game {
       this.party.damage += 1;
       const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
       if (willDie > 0) {
-        this.log(willDie + ' party member' + (willDie == 1 ? '' : 's') + ' die' + (willDie == 1 ? 's' : '') + ' from bleeding.');
+        this.log(willDie + ' party member' + (willDie == 1 ? '' : 's') + ' die' + (willDie == 1 ? 's' : '') + ' from Bleeding.');
         this.party.size = Math.max(0, this.party.size - willDie);
         this.party.damage -= willDie * PARTY_MEMBER_HP;
+      }
+    }
+
+    let preventHeal = false;
+    for (const status of this.party.status.other) {
+      if (status.preventHeal) {
+        preventHeal = true;
+      }
+      if (status.damagePerTick > 0 || status.damagePerTock > 0) {
+        this.party.damage += status.damagePerTick;
+        if (this.tick == 0) {
+          this.party.damage += status.damagePerTock;
+        }
+        const willDie = Math.floor(this.party.damage / PARTY_MEMBER_HP);
+        if (willDie > 0) {
+          this.log(willDie + ' party member' + (willDie == 1 ? '' : 's') + ' die' + (willDie == 1 ? 's' : '') + ' from ' + status.name + '.');
+          this.party.size = Math.max(0, this.party.size - willDie);
+          this.party.damage -= willDie * PARTY_MEMBER_HP;
+        }
       }
     }
 
@@ -684,7 +703,7 @@ class Game {
       // Slowly heal party damage when out of battle.
       if (this.party.damage > 0) {
         // Prevent healing when poison is active.
-        if (!this.party.status.poison.active && !this.party.status.bleeding.active) {
+        if (!this.party.status.poison.active && !this.party.status.bleeding.active && !preventHeal) {
           this.party.damage -= 1;
         }
       }

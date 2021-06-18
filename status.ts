@@ -21,6 +21,10 @@ interface StatusItem extends Clock {
   intmod: number;
   wismod: number;
   chamod: number;
+
+  preventHeal: boolean;
+  damagePerTick: number;
+  damagePerTock: number;
 }
 
 interface StatusItemInput extends ClockInput {
@@ -32,6 +36,10 @@ interface StatusItemInput extends ClockInput {
   intmod?: number;
   wismod?: number;
   chamod?: number;
+
+  preventHeal?: boolean;
+  damagePerTick?: number;
+  damagePerTock?: number;
 }
 
 function statusItemInput(status: StatusItemInput) {
@@ -44,6 +52,9 @@ function statusItemInput(status: StatusItemInput) {
     intmod: status.intmod || 0,
     wismod: status.wismod || 0,
     chamod: status.chamod || 0,
+    preventHeal: status.preventHeal || false,
+    damagePerTick: status.damagePerTick || 0,
+    damagePerTock: status.damagePerTock || 0,
   };
 }
 
