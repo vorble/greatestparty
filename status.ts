@@ -1,7 +1,7 @@
 type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison' | 'bleeding' | 'outOfTown';
 const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison', 'bleeding', 'outOfTown'];
 
-interface PartyStatusItem extends ClockActions {
+interface StatusItemCore extends ClockActions {
   active: boolean;
   year: number; // Expiry time.
   season: number;
@@ -12,7 +12,7 @@ interface PartyStatusItem extends ClockActions {
   name: string;
 }
 
-interface PartyStatusItem2 extends Clock {
+interface StatusItem extends Clock {
   name: string;
 
   strmod: number;
@@ -23,7 +23,7 @@ interface PartyStatusItem2 extends Clock {
   chamod: number;
 }
 
-interface PartyStatusItem2Template extends ClockInput {
+interface StatusItemInput extends ClockInput {
   name: string;
 
   strmod?: number;
@@ -34,7 +34,7 @@ interface PartyStatusItem2Template extends ClockInput {
   chamod?: number;
 }
 
-function partyStatusItem2TemplateExpand(status: PartyStatusItem2Template) {
+function statusItemInput(status: StatusItemInput) {
   return {
     name: status.name,
     ...clockInput(status),
@@ -47,7 +47,7 @@ function partyStatusItem2TemplateExpand(status: PartyStatusItem2Template) {
   };
 }
 
-function isStatusExpired(game: Game, status: PartyStatusItem) {
+function isStatusExpired(game: Game, status: StatusItemCore) {
   if (status.year == 0 && status.term == 0 && status.tock == 0 && status.tick == 0)
     return false;
   else if (game.year < status.year) return false;
@@ -87,14 +87,14 @@ function setStatusExpiry(game: Game, status: Clock, length: {
 }
 
 class Status {
-  berzerk: PartyStatusItem;
-  islandCurse: PartyStatusItem;
-  angeredGods: PartyStatusItem;
-  poison: PartyStatusItem;
-  bleeding: PartyStatusItem;
-  outOfTown: PartyStatusItem;
+  berzerk: StatusItemCore;
+  islandCurse: StatusItemCore;
+  angeredGods: StatusItemCore;
+  poison: StatusItemCore;
+  bleeding: StatusItemCore;
+  outOfTown: StatusItemCore;
 
-  other: Array<PartyStatusItem2>;
+  other: Array<StatusItem>;
 
   constructor() {
     const defaults = { active: false, year: 0, season: 0, term: 0, tock: 0, tick: 0 };
@@ -136,7 +136,7 @@ class Status {
 
   doTickActions(game: Game) {
     // TODO: Gross, filter with side effects!
-    this.other = this.other.filter((status: PartyStatusItem2) => {
+    this.other = this.other.filter((status: StatusItem) => {
       if (clockCompare(status, game) < 0) {
         this._unapplyStatus(game, status);
         return false;
@@ -146,15 +146,15 @@ class Status {
   }
 
   // TODO: Kindof ugly to have the Game object come in this way since statuses were previously game-agnostic. Will have to see how it does in practice.
-  addStatus(game: Game, status: PartyStatusItem2Template) {
-    const s = partyStatusItem2TemplateExpand(status);
+  addStatus(game: Game, status: StatusItemInput) {
+    const s = statusItemInput(status);
     setStatusExpiry(game, s, status);
     this.other.push(s);
     this._applyStatus(game, s);
   }
 
-  // TODO: Maybe this belongs as a top level function to be nearer to the PartyStatusItem2 definition?
-  _applyStatus(game: Game, status: PartyStatusItem2) {
+  // TODO: Maybe this belongs as a top level function to be nearer to the StatusItem definition?
+  _applyStatus(game: Game, status: StatusItem) {
     game.party.strmod += status.strmod;
     game.party.dexmod += status.dexmod;
     game.party.conmod += status.conmod;
@@ -163,8 +163,8 @@ class Status {
     game.party.chamod += status.chamod;
   }
 
-  // TODO: Maybe this belongs as a top level function to be nearer to the PartyStatusItem2 definition?
-  _unapplyStatus(game: Game, status: PartyStatusItem2) {
+  // TODO: Maybe this belongs as a top level function to be nearer to the StatusItem definition?
+  _unapplyStatus(game: Game, status: StatusItem) {
     game.party.strmod -= status.strmod;
     game.party.dexmod -= status.dexmod;
     game.party.conmod -= status.conmod;
