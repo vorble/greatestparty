@@ -3,8 +3,10 @@
 .PHONY: all
 all:
 	tsc
-	cp index.html build/
-	cp LICENSE build/
+	cat index.html | sed s/{{VERSION}}/`cat VERSION`/ > build/index.html
+	cp LICENSE build/LICENSE.TXT
+	cp VERSION build/
+
 
 .PHONY: clean
 clean:
