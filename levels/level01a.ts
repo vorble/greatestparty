@@ -65,7 +65,7 @@ game.registerLevel({
         const r = rollDie(20) + mod(game.party.wis, [[0, -1], [5, 0], [14, 1]]);
         if (r <= 2) {
           game.party.status.islandCurse.active = true;
-          setStatusExpiry(game, game.party.status.islandCurse, { year: 1 });
+          statusSetExpiry(game, game.party.status.islandCurse, { year: 1 });
           game.log('A party member grabs something interesting from the ground.');
         } else if (r <= 4) {
           if (game.party.wis >= 16) {
@@ -870,7 +870,7 @@ game.registerLevel({
                   const r = rollDie(20) + modLinear(game.party.dex, 10) + modLinear(game.party.wis, 10);
                   if (r <= 10) {
                     game.party.status.bleeding.active = true;
-                    setStatusExpiry(game, game.party.status.bleeding, { tick: 5 });
+                    statusSetExpiry(game, game.party.status.bleeding, { tick: 5 });
                     game.log('Captain Stook takes a wild swing at a member of your party, slashing them deeply.');
                   } else {
                     game.log('Captain Stook takes a wild swing at a member of your party, but hits only the air.');

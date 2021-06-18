@@ -854,7 +854,7 @@ game.registerLevel({
                   } else if (r <= 10) {
                     game.log('Caravan Scorpion thrusts its stinger at a member of your party and injects them with a burning venom.');
                     game.party.status.poison.active = true;
-                    setStatusExpiry(game, game.party.status.poison, { term: 1 });
+                    statusSetExpiry(game, game.party.status.poison, { term: 1 });
                   } else {
                     game.log('Caravan Scorpion thrusts its stinger at your party, but misses.');
                   }

@@ -585,7 +585,7 @@ class Game {
     for (const status of STATUSES) {
       const s = this.party.status[status];
       if (s.active) {
-        if (isStatusExpired(game, s)) {
+        if (statusIsExpired(game, s)) {
           s.active = false;
         } else {
           doActions(s);

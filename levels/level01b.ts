@@ -72,7 +72,7 @@ game.registerLevel({
           const r = rollDie(20) + mod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
           if (r <= 4) {
             game.party.status.angeredGods.active = true;
-            setStatusExpiry(game, game.party.status.angeredGods, { term: 75 });
+            statusSetExpiry(game, game.party.status.angeredGods, { term: 75 });
             game.log('A party member commits a faux pas at a ceremony with some townsfolk.');
           } else {
             if (game.party.wis >= 14) { //Being wise tells you not to make a fool of yourself at the ceremony.

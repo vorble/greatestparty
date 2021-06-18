@@ -1,5 +1,5 @@
-type PartyStatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison' | 'bleeding' | 'outOfTown';
-const STATUSES: Array<PartyStatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison', 'bleeding', 'outOfTown'];
+type StatusType = 'berzerk' | 'islandCurse' | 'angeredGods' | 'poison' | 'bleeding' | 'outOfTown';
+const STATUSES: Array<StatusType> = ['berzerk', 'islandCurse', 'angeredGods', 'poison', 'bleeding', 'outOfTown'];
 
 interface StatusItemCore extends ClockActions {
   active: boolean;
@@ -47,7 +47,7 @@ function statusItemInput(status: StatusItemInput) {
   };
 }
 
-function isStatusExpired(game: Game, status: StatusItemCore) {
+function statusIsExpired(game: Game, status: StatusItemCore) {
   if (status.year == 0 && status.term == 0 && status.tock == 0 && status.tick == 0)
     return false;
   else if (game.year < status.year) return false;
@@ -61,7 +61,7 @@ function isStatusExpired(game: Game, status: StatusItemCore) {
   return game.tick >= status.tick;
 }
 
-function setStatusExpiry(game: Game, status: Clock, length: {
+function statusSetExpiry(game: Game, status: Clock, length: {
     tick?: number, tock?: number, term?: number, season?: number, year?: number }) {
   status.year = game.year;
   status.season = game.season;
@@ -145,15 +145,13 @@ class Status {
     });
   }
 
-  // TODO: Kindof ugly to have the Game object come in this way since statuses were previously game-agnostic. Will have to see how it does in practice.
   addStatus(game: Game, status: StatusItemInput) {
     const s = statusItemInput(status);
-    setStatusExpiry(game, s, status);
+    statusSetExpiry(game, s, status);
     this.other.push(s);
     this._applyStatus(game, s);
   }
 
-  // TODO: Maybe this belongs as a top level function to be nearer to the StatusItem definition?
   _applyStatus(game: Game, status: StatusItem) {
     game.party.strmod += status.strmod;
     game.party.dexmod += status.dexmod;
@@ -163,7 +161,6 @@ class Status {
     game.party.chamod += status.chamod;
   }
 
-  // TODO: Maybe this belongs as a top level function to be nearer to the StatusItem definition?
   _unapplyStatus(game: Game, status: StatusItem) {
     game.party.strmod -= status.strmod;
     game.party.dexmod -= status.dexmod;
