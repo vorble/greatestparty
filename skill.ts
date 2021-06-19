@@ -131,7 +131,7 @@ class Skills {
               + mod(game.party.cha, [[0, -2], [6, -1], [9, 0], [12, 1], [15, 2]])
             );
             if (r >= 20) {
-              game.log('Your acclaim produces brings out the neediest in town.');
+              game.log('Your acclaim brings out the neediest in town.');
               game.adjustTownNeed(2);
             } else {
               game.log('Your acclaim produces additional opportunities in town.');
