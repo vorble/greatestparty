@@ -137,6 +137,7 @@ game.registerLevel({
       vereesDone: false,
 
       duke2Introduced: false,
+      duke2AltarDestroyed: false,
       duke2Done: false,
     };
     town.state = townState;
@@ -181,13 +182,15 @@ game.registerLevel({
         weight: 1,
         predicate: (game: Game) => game.town.townsfolk > 0,
         action: (game: Game) => {
-          if (rollRatio() < 0.35) {
-            if (townState.duke1Done) {
-              game.log('Someone from town is abducted and forced to join Duke Wolvren\'s undead army.');
-            } else {
-              game.log('Someone from town has gone missing.');
+          if (!townState.duke2Done && !townState.duke2AltarDestroyed) {
+            if (rollRatio() < 0.35) {
+              if (townState.duke1Done) {
+                game.log('Someone from town is abducted and forced to join Duke Wolvren\'s undead army.');
+              } else {
+                game.log('Someone from town has gone missing.');
+              }
+              game.town.townsfolk -= 1;
             }
-            game.town.townsfolk -= 1;
           }
         },
       },
@@ -421,7 +424,7 @@ game.registerLevel({
               name: 'longmole',
               prefix: 'Your party explores the burrow of a longmole',
               good: ' and manage to corner and kill it collecting a long rack of ribs.',
-              bad: ', but one party member falls to his death in a vertical shaft hidden in the darkness.',
+              bad: ', but one party member falls to their death in a vertical shaft hidden in the darkness.',
               roll: () => rollDie(20) + modLinear(game.party.wis, 10),
             },
           ]);
@@ -593,7 +596,7 @@ game.registerLevel({
             {
               roll: () => rollDie(20) + modLinear(game.party.cha, 12),
               prefix: 'Your party approaches the ruffians to parley',
-              bad: ', but one party members inability to use words good leads to his tongue being cut out and they die.',
+              bad: ', but one party members inability to use words good leads to their tongue being cut out and they die.',
               good: ' and everyone involved has a good laugh and your party leaves with several clues.',
             },
           ]);
@@ -717,7 +720,48 @@ game.registerLevel({
         weight: 1,
         predicate: (game: Game) => !townState.partyInDesert && townState.wixDone && townState.vereesDone && !townState.duke2Done,
         action: (game: Game) => {
-          // general guide: use the maul to destroy the sacrificial altar and use the cloak to defend against dark magic orbs. After the altar is destroyed, chase down the duke and kill him.
+          if (!townState.duke2Introduced) {
+            const some = rollRange(2, 5);
+            game.log('Your party approaches Sam\'s Torrent with Wrigley\'s Blessed Relics in tow, ready for a fight. They push through the throngs of ruffians with some effort, but ' + some + ' die in the melee.');
+            game.killPartyMembers(some);
+            game.log('The altar used for dark magic and sacrifices lies in the open, further into the camp. As your party approaches, Duke Wolvren shouts "My undead army is the only thing keeping this land peaceful! You can not stop me!"');
+            townState.duke2Introduced = true;
+          }
+          if (!townState.duke2AltarDestroyed) {
+            const r = rollDie(20) + modLinear(game.party.str, 12);
+            if (r <= 10) {
+              game.log('Duke Wolvren propels a vibrating, magical orb at the party which disintegrates one party member completely.');
+              game.killPartyMembers(1);
+            } else if (r <= 16) {
+              game.log('Duke Wolvren propels a vibrating, magical orb at the party, but Wrigley\'s Blessed Cloak protects them.');
+
+            } else if (r <= 18) {
+              game.log('A member of your party takes a swing at the sacrificial altar with Wrigley\'s Blessed Maul, but fails to connect.');
+            } else {
+              game.log('A member of your party takes a swing at the sacrificial altar with Wrigley\'s Blessed Maul and smashes it into several large shards.');
+              game.log('Duke Wolvren falls to the ground as a magical armor protecting him disspiates, "No... you can\'t!" He stumbles to get up and begins to run away.');
+              townState.duke2AltarDestroyed = true;
+            }
+          } else {
+            const r = rollDie(20) + modLinear(game.party.dex, 10);
+            if (r <= 10) {
+              game.log('Members of your party chase Duke Wolvren through the camp, but Duke Wolvren conjures a bone spear that impales one party member, killing them.');
+              game.killPartyMembers(1);
+            } else if (r <= 18) {
+              game.log('Members of your party chase Duke Wolvren through the camp.');
+            } else {
+              game.log('Your party corners Duke Wolvren. Before he has a chance to speak between his desperate grasps for air, one party member brings Wrigley\'s Blessed Maul down upon his head, killing him instantly.');
+              game.log('Townsfolk from Spindling cheer for your party as they return to the town. An elder speaks up, "We will forever miss those who were taken from us. We owe much and more to these brave souls for delivering us from the duke\'s evil."');
+              game.adjustAlignment(50);
+              game.receiveGold(rollRange(200, 300));
+              loot(game);
+              loot(game);
+              loot(game);
+              loot(game);
+              loot(game);
+              townState.duke2Done = true;
+            }
+          }
         },
       },
     ];
