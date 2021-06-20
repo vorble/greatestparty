@@ -22,6 +22,7 @@ interface StatusItem extends Clock {
   wismod: number;
   chamod: number;
 
+  preventAttack: boolean;
   preventHeal: boolean;
   damagePerTick: number;
   damagePerTock: number;
@@ -37,6 +38,7 @@ interface StatusItemInput extends ClockInput {
   wismod?: number;
   chamod?: number;
 
+  preventAttack?: boolean;
   preventHeal?: boolean;
   damagePerTick?: number;
   damagePerTock?: number;
@@ -52,6 +54,7 @@ function statusItemInput(status: StatusItemInput) {
     intmod: status.intmod || 0,
     wismod: status.wismod || 0,
     chamod: status.chamod || 0,
+    preventAttack: status.preventAttack || false,
     preventHeal: status.preventHeal || false,
     damagePerTick: status.damagePerTick || 0,
     damagePerTock: status.damagePerTock || 0,
@@ -154,6 +157,15 @@ class Status {
       }
       return true;
     });
+  }
+
+  hasPreventAttack() {
+    for (const status of this.other) {
+      if (status.preventAttack) {
+        return true;
+      }
+    }
+    return false;
   }
 
   addStatus(game: Game, status: StatusItemInput) {

@@ -505,7 +505,7 @@ class Game {
         }
       }
 
-      const damageToEnemy = fightCalculateAttack(this.party, this.enemy);
+      const damageToEnemy = game.party.status.hasPreventAttack() ? 0 : fightCalculateAttack(this.party, this.enemy);
       const damageToParty = fightCalculateAttack(this.enemy, this.party);
       this.log('Your party trades blows with ' + this.enemy.name + '. Your party takes ' + damageToParty + ' damage and ' + this.enemy.name + ' takes ' + damageToEnemy + ' damage.');
       this.party.damage += damageToParty;
