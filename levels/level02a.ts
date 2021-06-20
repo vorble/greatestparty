@@ -1374,10 +1374,13 @@ game.registerLevel({
         weight: 1,
         roll: (game: Game) => {
           const state = {
+            burrow: false,
+            burrowTurnsLeft: 0,
+            vortex: false,
+            vortexTurnsLeft: 0,
           };
 
           return {
-            // Crowe and the Necromagicked Megaworm
             name: 'Crowe and the Necromagicked Megaworm',
             health: 6000,
             // Stats are for Crowe
@@ -1397,10 +1400,128 @@ game.registerLevel({
             state,
             events: [
               {
-                name: '', // TODO
+                name: 'Fire Bolt',
                 weight: 1,
-                predicate: (game: Game) => true,
+                predicate: (game: Game) => !state.vortex,
                 action: (game: Game) => {
+                  const r = (rollDie(20)
+                    + modLinear(game.party.con, 12)
+                  );
+                  if (r <= 10) {
+                    const count = Math.min(game.party.size, rollRange(2, 3));
+                    game.log('Crowe motions like a crossbow with his hands, propelling a flaiming bolt toward your party which consumes ' + count + ' party member' + (count == 1 ? '' : 's') + '.');
+                    game.killPartyMembers(count);
+                  } else if (r <= 17) {
+                    game.log('Crowe motions like a crossbow with his hands, propelling a flaiming bolt toward your party which nearly consumes a swathe of them.');
+                  } else {
+                    game.log('Crowe motions like a crossbow with his hands, propelling a flaiming bolt toward your party which burns in a fantastic display.');
+                  }
+                },
+              },
+              {
+                name: 'Electroburst',
+                weight: 1,
+                predicate: (game: Game) => !state.vortex,
+                action: (game: Game) => {
+                  const r = (rollDie(20)
+                    + modLinear(game.party.wis, 12)
+                  );
+                  if (r <= 8) {
+                    const count = Math.min(game.party.size, rollRange(2, 5));
+                    game.log('Crowe reaches into his robe and throws a crackling ball of light at your party which explodes in an array of electric tentacles feeling its was through the crowd killing ' + count + ' party member' + (count == 1 ? '' : 's') + '.');
+                    game.killPartyMembers(count);
+                  } else if (r <= 19) {
+                    game.log('Crowe reaches into his robe and throws a crackling ball of light at your party, but everyone has the good sense to run from it.');
+                  } else {
+                    game.log('Crowe reaches into his robe and throws a crackling ball of light at your party, but it fizzles out before it comes close.');
+                  }
+                },
+              },
+              {
+                name: 'Silk Bindings',
+                weight: 1,
+                predicate: (game: Game) => !state.vortex,
+                action: (game: Game) => {
+                  const r = (rollDie(20)
+                    + modLinear(game.party.str, 14) // Easier to breath with strength.
+                  );
+                  if (r <= 4) {
+                    const count = Math.min(game.party.size, rollRange(1, 2));
+                    game.log('Crowe realizes a web of binding silk and twists it around ' + count + ' party member' + (count == 1 ? '' : 's') + ' who suffocate from the inability to move.');
+                    game.killPartyMembers(count);
+                  } else if (r <= 16) {
+                    game.log('Crowe realizes a web of binding silk and twists it around some members of your party.');
+                    game.party.status.addStatus(game, { name: 'Bound', preventAttack: true, tock: 3 });
+                  } else {
+                    game.log('Crowe realizes a web of binding silk, but is unable to use it effectively.');
+                  }
+                },
+              },
+              {
+                name: 'Smash',
+                weight: 1,
+                predicate: (game: Game) => !state.burrow && !state.vortex,
+                action: (game: Game) => {
+                  game.log('The Necromagicked Megaworm lays its body out overtop of 1 party member, killing them.');
+                  game.killPartyMembers(1);
+                },
+              },
+              {
+                name: 'Feast',
+                weight: 1,
+                predicate: (game: Game) => !state.burrow && !state.vortex,
+                action: (game: Game) => {
+                  const r = rollDie(20);
+                  if (r <= 10) {
+                    const count = Math.min(game.party.size, r <= 4 ? rollRange(2, 3) : 1);
+                    game.log('The Necromagicked Megaworm draws ' + count + ' party member' + (count == 1 ? '' : 's') + ' into its maw.');
+                    game.killPartyMembers(1);
+                  } else {
+                    game.log('The Necromagicked Megaworm eats a dune\'s worth of sand.');
+                  }
+                },
+              },
+              {
+                name: 'Burrow',
+                weight: 1,
+                predicate: (game: Game) => !state.burrow && !state.vortex,
+                action: (game: Game) => {
+                  game.log('The Necromagicked Megaworm pushes itself into the underground.');
+                  state.burrow = true;
+                  state.burrowTurnsLeft = rollRange(2, 3);
+                },
+              },
+              {
+                name: 'Peristalsis',
+                weight: 1,
+                predicate: (game: Game) => state.burrow,
+                action: (game: Game) => {
+                  game.log('The ground shifts as the Necromagicked Megaworm stirs undefoot.');
+                  if (--state.burrowTurnsLeft <= 0) {
+                    state.burrow = false;
+                    state.vortex = true;
+                    state.vortexTurnsLeft = rollRange(3, 4);
+                  }
+                },
+              },
+              {
+                name: 'Sand Vortex',
+                weight: 1,
+                predicate: (game: Game) => state.vortex,
+                action: (game: Game) => {
+                  const r = (rollDie(20)
+                    + modLinear(game.party.con, 12)
+                  );
+                  if (r <= 10) {
+                    const count = Math.min(game.party.size, rollRange(2, 3));
+                    game.log('The Necromagicked Megaworm creates a sand vortex undefoot and pulls ' + count + ' party member' + (count == 1 ? '': 's') + ' into it.');
+                    game.killPartyMembers(count);
+                  } else {
+                    game.log('The Necromagicked Megaworm creates a sand vortex undefoot, but your party is able to scramble to the sides through the waves of heavy sand.');
+                  }
+                  if (--state.vortexTurnsLeft <= 0) {
+                    state.vortex = false;
+                  }
                 },
               },
             ],
