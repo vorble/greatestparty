@@ -1288,12 +1288,13 @@ game.registerLevel({
       {
         weight: 1,
         roll: (game: Game) => {
+          const MAX_CHARGE = 5;
           const state = {
+            chargeLevel: 0,
           };
 
           return {
-            // Xo - Guardian of Destruction
-            name: 'Xo',
+            name: 'Xo', // Guardian of Destruction
             health: 5000,
             str: 25, int: 12,
             dex:  5, wis: 10,
@@ -1311,15 +1312,60 @@ game.registerLevel({
             state,
             events: [
               {
-                name: '', // TODO
+                name: 'Charge',
+                weight: 1,
+                predicate: (game: Game) => state.chargeLevel < MAX_CHARGE,
+                action: (game: Game) => {
+                  game.log('Xo focuses its energy into itself.');
+                  state.chargeLevel += 1;
+                },
+              },
+              {
+                name: 'Erase',
+                weight: 1,
+                predicate: (game: Game) => state.chargeLevel >= MAX_CHARGE,
+                action: (game: Game) => {
+                  const count = Math.min(game.party.size, rollRange(4, 8));
+                  game.log('Xo opens its chest cavity and unleashes a ray of energy at your party erasing ' + count + ' party member' + (count == 1 ? '' : 's') + ' from existance.');
+                  state.chargeLevel = 0;
+                },
+              },
+              {
+                name: 'Lunge',
                 weight: 1,
                 predicate: (game: Game) => true,
                 action: (game: Game) => {
+                  const r = rollDie(20) + modLinear(game.party.dex, 12);
+                  if (r <= 6) {
+                    const count = Math.min(game.party.size, rollRange(1, 2));
+                    game.log('Xo lunges forward with unreal quickness, smashing ' + count + ' party member' + (count == 1 ? '' : 's') + ' into a mass of gore.');
+                    game.killPartyMembers(count);
+                  } else {
+                    game.log('Xo lunges forward with unreal quickness, but not quick enough to hit any members of your party.');
+                  }
+                },
+              },
+              {
+                name: 'Sing',
+                weight: 1,
+                predicate: (game: Game) => true,
+                action: (game: Game) => {
+                  const r = rollDie(20) + modLinear(game.party.int, 12);
+                  if (r <= 6) {
+                    const count = Math.min(game.party.size, rollRange(1, 2));
+                    game.log('Xo\'s exterior begins to resonate in a deafening showcase of musicality, ' + count + ' party member' + (count == 1 ? '' : 's') + ' grab their heads in unbearable pain and drain their brain matter from every orifice.');
+                    game.killPartyMembers(count);
+                  } else {
+                    game.log('Xo\'s exterior begins to resonate in a deafening showcase of musicality. Several party members clutch their heads in pain, but they recover quickly after the sound dissipates.');
+                  }
                 },
               },
             ],
             win: (game: Game) => {
               game.receiveGold(800);
+              for (let i = 0; i < 10; ++i) {
+                loot(game);
+              }
             },
           };
         },
