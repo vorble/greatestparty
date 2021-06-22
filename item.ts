@@ -40,7 +40,7 @@ class ItemInventory {
       name: 'Potion of STR',
       use: (game: Game) => {
         game.party.status.addStatus(game, {
-          name: '+STR',
+          name: 'STR+',
           tock: 50,
           strmod: 1,
         });
@@ -51,7 +51,7 @@ class ItemInventory {
       name: 'Potion of DEX',
       use: (game: Game) => {
         game.party.status.addStatus(game, {
-          name: '+DEX',
+          name: 'DEX+',
           tock: 50,
           dexmod: 1,
         });
@@ -62,7 +62,7 @@ class ItemInventory {
       name: 'Potion of CON',
       use: (game: Game) => {
         game.party.status.addStatus(game, {
-          name: '+CON',
+          name: 'CON+',
           tock: 50,
           conmod: 1,
         });
@@ -73,7 +73,7 @@ class ItemInventory {
       name: 'Potion of INT',
       use: (game: Game) => {
         game.party.status.addStatus(game, {
-          name: '+INT',
+          name: 'INT+',
           tock: 50,
           intmod: 1,
         });
@@ -84,7 +84,7 @@ class ItemInventory {
       name: 'Potion of WIS',
       use: (game: Game) => {
         game.party.status.addStatus(game, {
-          name: '+WIS',
+          name: 'WIS+',
           tock: 50,
           wismod: 1,
         });
@@ -95,7 +95,7 @@ class ItemInventory {
       name: 'Potion of CHA',
       use: (game: Game) => {
         game.party.status.addStatus(game, {
-          name: '+CHA',
+          name: 'CHA+',
           tock: 50,
           chamod: 1,
         });
