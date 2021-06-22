@@ -428,6 +428,7 @@ class UITown {
   conscript: HTMLButtonElement;
   takeQuest: HTMLButtonElement;
   fightBoss: HTMLButtonElement;
+  pause: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -453,6 +454,10 @@ class UITown {
     this.fightBoss.onclick = (e) => {
       game.fightBoss();
     };
+    this.pause = getElementByIdAsType('panel-town-pause-button', HTMLButtonElement);
+    this.pause.onclick = (e) => {
+      game.togglePause();
+    };
   }
 
   show() {
@@ -468,6 +473,8 @@ class UITown {
     this.conscript.style.display = game.party.skills.conscript.level > 0 ? '' : 'none';
     this.takeQuest.disabled = game.town.need <= 0 || game.party.quests >= game.party.size;
     this.fightBoss.disabled = game.enemy != null;
+    this.pause.disabled = !game.running && !game.paused;
+    this.pause.innerText = game.paused ? 'Resume' : 'Pause';
   }
 }
 

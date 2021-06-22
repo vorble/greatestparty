@@ -26,6 +26,7 @@ class Game {
   playtime: Clock;
   fightingBoss: boolean;
   running: boolean;
+  paused: boolean;
   textLog: Array<string>;
   levels: Array<Level>;
   level: number;
@@ -46,6 +47,7 @@ class Game {
     this.playtime = { year: 0, season: 0, term: 0, tock: 0, tick: 0 };
     this.fightingBoss = false;
     this.running = false;
+    this.paused = false;
     this.textLog = [];
     this.levels = [];
     this.level = 0;
@@ -67,7 +69,9 @@ class Game {
     this.tock = 0;
     this.tick = 0;
     this.fightingBoss = false;
+    // TODO: running and paused could be combined into a 3-state indicator: playing, paused, finished
     this.running = true;
+    this.paused = false;
     this.textLog = [];
     this.level = 1;
     this.timeouts = [];
@@ -483,6 +487,13 @@ class Game {
       this.fightingBoss = true;
       this.enemy = this.boss;
       this.log('You pick a fight with ' + this.boss.name + '.');
+    }
+  }
+
+  togglePause() {
+    if (this.running || this.paused) {
+      this.running = this.paused;
+      this.paused = !this.paused;
     }
   }
 
