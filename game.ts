@@ -74,6 +74,27 @@ class Game {
     this.enemy = null;
     this.events = [
       {
+        name: 'Err\'s Whisper',
+        weight: 1,
+        predicate: (game: Game) => clockIsSign(game, Sign.Err),
+        action: (game: Game) => {
+          const TERMS = 5;
+          const positive = rollBoolean();
+          const sign = positive ? '+' : '-';
+          const amount = positive ? 1 : -1;
+          const action = rollChoice([
+            () => game.party.status.addStatus(game, { name: 'STR' + sign, strmod: amount, term: TERMS }),
+            () => game.party.status.addStatus(game, { name: 'DEX' + sign, dexmod: amount, term: TERMS }),
+            () => game.party.status.addStatus(game, { name: 'CON' + sign, conmod: amount, term: TERMS }),
+            () => game.party.status.addStatus(game, { name: 'INT' + sign, intmod: amount, term: TERMS }),
+            () => game.party.status.addStatus(game, { name: 'WIS' + sign, wismod: amount, term: TERMS }),
+            () => game.party.status.addStatus(game, { name: 'CHA' + sign, chamod: amount, term: TERMS }),
+          ]);
+          action();
+          game.log('Your party feels differently abled.');
+        },
+      },
+      {
         name: 'Goh\'s Whisper',
         weight: 1,
         predicate: (game: Game) => clockIsSign(game, Sign.Goh),
@@ -91,6 +112,82 @@ class Game {
                 game.joinTownFromParty(1);
               }
             }
+          }
+        },
+      },
+      {
+        name: 'Yurn\'s Whisper',
+        weight: 1,
+        predicate: (game: Game) => clockIsSign(game, Sign.Yurn),
+        action: (game: Game) => {
+          const positive = rollBoolean();
+          const amount = (positive ? 1 : -1) * rollRange(1, Math.max(1, Math.ceil(game.party.gold / 2)));
+          if (positive) {
+            game.log('Blessings are upon your party.');
+          } else {
+            game.log('Misfortunes are upon your party.');
+          }
+          game.receiveGold(amount);
+        },
+      },
+      {
+        name: 'Joyn\'s Whisper',
+        weight: 1,
+        predicate: (game: Game) => clockIsSign(game, Sign.Joyn),
+        action: (game: Game) => {
+          const swing = rollRange(0, game.party.food + game.party.water);
+          if (swing == 0) {
+            // Nothing.
+          } else if (swing <= game.party.food) {
+            game.log('Your party\'s stores rearrange themselves.');
+            game.party.food -= swing;
+            game.party.water += swing;
+          } else {
+            game.log('Your party\'s stores rearrange themselves.');
+            const amount = swing - game.party.food;
+            game.party.food += amount;
+            game.party.water -= amount;
+          }
+        },
+      },
+      {
+        name: 'Ryna\'s Whisper',
+        weight: 1,
+        predicate: (game: Game) => clockIsSign(game, Sign.Ryna),
+        action: (game: Game) => {
+          const which = rollBoolean();
+          const size = which ? game.party.weaponPoints : game.party.armorPoints;
+          const config = which ? game.party.weaponConfig : game.party.armorConfig;
+          const stuff = which ? 'weapons' : 'armor';
+          while (true) {
+            let total = 0;
+            let physical = rollRange(-3, 3);
+            total += Math.abs(physical);
+            if (total > size) continue;
+            let magical = rollRange(-3, 3);
+            total += Math.abs(magical);
+            if (total > size) continue;
+            let elemental = rollRange(-3, 3);
+            total += Math.abs(elemental);
+            if (total > size) continue;
+            config.physical = physical;
+            config.magical = magical;
+            config.elemental = elemental;
+            game.calculateEquipment();
+            game.log('Your party scrambles to pick up their ' + stuff + '.');
+            break;
+          }
+        },
+      },
+      {
+        name: 'Sil\'s Whisper',
+        weight: 1,
+        predicate: (game: Game) => clockIsSign(game, Sign.Sil),
+        action: (game: Game) => {
+          const count = Math.min(game.town.townsfolk, Math.max(5, Math.ceil(game.town.townsfolk / 20)));
+          if (count > 0) {
+            const message = 'Sil reaps ' + count + ' soul' + (count == 1 ? '' : 's') + ' from among the townsfolk.';
+            game.killTownsfolkWithMessage(count, message);
           }
         },
       },
@@ -223,6 +320,18 @@ class Game {
         this.town.townsfolk = 0;
       }
       this.log(count + ' townsfolk ' + (count == 1 ? 'is dead' : 'are dead') + '.');
+    }
+  }
+
+  killTownsfolkWithMessage(count: number, message: string) {
+    if (count > 0) {
+      if (this.town.townsfolk >= count) {
+        this.town.townsfolk -= count;
+      } else {
+        count = this.town.townsfolk;
+        this.town.townsfolk = 0;
+      }
+      this.log(message);
     }
   }
 
