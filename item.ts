@@ -41,7 +41,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: 'STR+',
-          tock: 50,
+          tock: 100,
           strmod: 1,
         });
       },
@@ -52,7 +52,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: 'DEX+',
-          tock: 50,
+          tock: 100,
           dexmod: 1,
         });
       },
@@ -63,7 +63,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: 'CON+',
-          tock: 50,
+          tock: 100,
           conmod: 1,
         });
       },
@@ -74,7 +74,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: 'INT+',
-          tock: 50,
+          tock: 100,
           intmod: 1,
         });
       },
@@ -85,7 +85,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: 'WIS+',
-          tock: 50,
+          tock: 100,
           wismod: 1,
         });
       },
@@ -96,7 +96,7 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.status.addStatus(game, {
           name: 'CHA+',
-          tock: 50,
+          tock: 100,
           chamod: 1,
         });
       },
