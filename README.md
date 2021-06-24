@@ -38,7 +38,7 @@ Each category has two mutually exclusive, complementary damage types:
 * Dark vs. Light
 * Fire vs. Ice
 
-Each check mark in the weapons and armors panels allocates an equipment power equal
+Each check mark in the weapons and armors grids allocates an equipment power equal
 to about one third of your party size. Increase your party size to further increase
 weapon and armor power.
 
