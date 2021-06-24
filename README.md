@@ -22,8 +22,8 @@ The general flow of the game is as follows:
 
 ### Weapons and Armor
 
-Weapons and armor are equipped by allocating points in the weapons and armor grids.
-Your party begins with three points that may be allocated in each of the weapons
+Weapons and armor are equipped by allocating points in the weapon and armor grids.
+Your party begins with three points that may be allocated in each of the weapon
 and armor grids.
 
 Weapons and armor have three broad damage categories:
@@ -38,7 +38,7 @@ Each category has two mutually exclusive, complementary damage types:
 * Dark vs. Light
 * Fire vs. Ice
 
-Each check mark in the weapons and armors grids allocates an equipment power equal
+Each check mark in the weapons and armor grids allocates an equipment power equal
 to about one third of your party size. Increase your party size to further increase
 weapon and armor power.
 
