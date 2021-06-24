@@ -44,7 +44,7 @@ equipment power.
 
 ### Skills
 
-* Initiative - Your party automatically take quests.
+* Initiative - Your party automatically takes quests.
 * Inspire - Townsfolk join your party.
 * Sacrifice - Sacrifice members of your party to acquire blood (for Animate skill).
 * Conscript - Allow townsfolk to be forcibly added to your party.
