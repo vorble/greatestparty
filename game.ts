@@ -287,6 +287,12 @@ class Game {
 
   winLevel() {
     this.log(this.town.name + ' wishes you the best on your adventures!');
+    const payout = this.town.goldPerQuest * this.party.quests;
+    if (payout > 0) {
+      this.log('You receive ' + payout + ' gold for your party\'s ' + this.party.quests + ' remaining quest' + (this.party.quests == 1 ? '' : 's') + '.');
+      this.party.gold += payout;
+    }
+    this.party.quests = 0;
     this.nextLevel();
   }
 
