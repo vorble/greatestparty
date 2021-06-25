@@ -1,13 +1,13 @@
 # Greatest Party
 
-Build your party, embark on quests, experience misadventure, and fight powerful foes to prove
-that your party is the greatest party.
+Build your party, embark on quests, experience misadventure, and fight powerful
+foes to prove that your party is the greatest party.
 
 ## Player Guide
 
-Greatest Party embraces the idea that losing the game can still be a fun experience.
-Playtime is intended to be about 1.5 hours for a victory.
-The general flow of the game is as follows:
+Greatest Party embraces the idea that losing the game can still be a fun
+experience. Playtime is intended to be about 1.5 hours for a victory. The
+general flow of the game is as follows:
 
 * Press "Take Quest" to take a quest.
 * Complete quests to unlock new skills.
@@ -22,9 +22,9 @@ The general flow of the game is as follows:
 
 ### Weapons and Armor
 
-Weapons and armor are equipped by allocating points in the weapon and armor grids.
-Your party begins with three points that may be allocated in each of the weapon
-and armor grids.
+Weapons and armor are equipped by allocating points in the weapon and armor
+grids. Your party begins with three points that may be allocated in each of the
+weapon and armor grids.
 
 Weapons and armor have three broad damage categories:
 
@@ -38,15 +38,15 @@ Each category has two mutually exclusive, complementary damage types:
 * Dark vs. Light
 * Fire vs. Ice
 
-Each check mark in the weapon and armor grids allocates an equipment power equal
-to about one third of your party size. Increase your party size to further increase
-equipment power.
+Each point assigned in the weapon and armor grids allocates an equipment power
+equal to about one third of your party size. Increase your party size to further
+increase equipment power.
 
 ### Skills
 
 * Initiative - Your party automatically takes quests.
 * Inspire - Townsfolk join your party.
-* Sacrifice - Sacrifice members of your party to acquire blood (for Animate skill).
+* Sacrifice - Sacrifice members of your party to acquire blood (for Animate).
 * Conscript - Allow townsfolk to be forcibly added to your party.
 * Animate - Reanimate a party member from acquired blood.
 * Sabotage - Create additional need for quests in town by sabotaging the town.

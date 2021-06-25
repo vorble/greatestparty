@@ -7,6 +7,7 @@ all:
 	cp LICENSE build/LICENSE.txt
 	cp COPYRIGHT build/COPYRIGHT.txt
 	cp VERSION build/VERSION.txt
+	grep -B 99999 '## Developer Guide' README.md | sed '$$ d' | sed '$$ d' > build/README.txt
 
 .PHONY: clean
 clean:
