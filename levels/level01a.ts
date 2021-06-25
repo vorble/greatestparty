@@ -4,7 +4,7 @@ game.registerLevel({
     const town = new Town();
 
     // A small, yet functional town by the sea. Named after the Saint Rumaa who settled here in
-    // 112 after being dismissed from the church order after the new rules took over after the war.
+    // 112 after being dismissed from the church order after the new rulers took over after the war.
     town.name = 'Saint Rumaa';
     town.townsfolk = 100;
     town.hireCost = 200;
