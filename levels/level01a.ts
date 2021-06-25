@@ -208,7 +208,7 @@ game.registerLevel({
         predicate: (game: Game) => clockIsFall(game),
         action: (game: Game) => {
           const r = rollDie(20) + modLinear(game.party.con, 8);
-          if (r <= 10) {
+          if (r <= 8) {
             game.log('Dark clouds roll in from the sea whipping up raging winds that carry one party member into the sky.');
             game.killPartyMembers(1);
             ++townState.bodiesInTheAir;
