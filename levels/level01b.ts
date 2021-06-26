@@ -3,19 +3,22 @@ game.registerLevel({
   newTown: (game: Game) => {
     const town = new Town();
 
+    // As the town began to form just a short while ago, before it had a name,
+    // the townsfolk got busy with the volcano so they named it after what
+    // they had an abundance of, magma.
     town.name = 'Magma Town';
     town.townsfolk = 200;
     town.hireCost = 200;
     town.conscriptRatio = 0.4;
-    town.conscriptViolenceRatio = 0.5;
+    town.conscriptViolenceRatio = 0.65;
     town.foodStock = 150;
-    town.foodSupport = [3, 4, 3, 1];
-    town.foodCostBuy = [3, 3, 4, 6];
-    town.foodCostSell = [1, 1, 1, 4];
+    town.foodSupport = [3, 3, 4, 3];
+    town.foodCostBuy = [4, 5, 3, 3];
+    town.foodCostSell = [2, 3, 1, 1];
     town.waterStock = 150;
-    town.waterSupport = [4, 5, 5, 4];
-    town.waterCostBuy = [3, 3, 3, 3];
-    town.waterCostSell = [2, 2, 2, 2];
+    town.waterSupport = [2, 2, 1, 2];
+    town.waterCostBuy = [3, 3, 5, 3];
+    town.waterCostSell = [1, 2, 3, 2];
     for (const cat of EQ_FINE_CATEGORIES) {
       town.inventoryWeapon[cat] = 100;
       town.inventoryWeaponBuy[cat] = 5;
@@ -25,7 +28,7 @@ game.registerLevel({
       town.inventoryArmorSell[cat] = 3;
     }
     town.need = 10;
-    town.needMax = 20;
+    town.needMax = 15;
     town.needRatio = 0.010;
     town.enemyRatio = 0.05;
     town.goldPerQuest = 10;
@@ -58,11 +61,9 @@ game.registerLevel({
 
     town.events = [
       {
-        name: "A Faux Pas",
+        name: 'A Faux Pas',
         weight: 3,
-        predicate: (game: Game) => {
-          return !game.party.status.angeredGods.active
-        },
+        predicate: (game: Game) => !game.party.status.angeredGods.active,
         action: (game: Game) => {
           // Being charasmatic helps you avoid making a faux pas at a local ceremony.
           const r = rollDie(20) + mod(game.party.cha, [[0, -1], [5, 0], [14, 1]]);
@@ -84,9 +85,7 @@ game.registerLevel({
       {
         name: 'Angered Gods',
         weight: 50,
-        predicate: (game: Game) => {
-          return game.party.status.angeredGods.active;
-        },
+        predicate: (game: Game) => game.party.status.angeredGods.active,
         action: (game: Game) => {
           const r = rollDie(20); // random chance that the angry volcano gods will kill a party member
           if (r <= 2) {
@@ -94,32 +93,6 @@ game.registerLevel({
             game.killPartyMembers(1);
           } else {
             game.log('The volcano rumbles in the distance.');
-          }
-          loot(game);
-        },
-      },
-      {
-        name: 'Digging lava irrigation',
-        weight: 5,
-        action: (game: Game) => {
-          const wis = rollDie(20) + mod(game.party.wis, [[0, -1], [6, 0],[12, +1]]); // Wisdom tells you not to stand in the way of pyroclastic flow
-          const dex = rollDie(20) + mod(game.party.dex, [[0, -1], [6, 0],[12, +1],[16, +2]]); // Dexterity helps you get out of the way when you do stand in the way of pyroclastic flow
-          if ( wis <= 7) {
-            if ( dex <= 12 ) {
-              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is overcome by pyroclastic flow and dies.');
-              game.killPartyMembers(1);
-            } else {
-              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is nearly overcome by pyroclastic flow, but manages to escape with their life.');
-            }
-          } else if ( wis > 7 && wis <= 18 ) {
-            game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town.');
-          } else {
-            if ( dex <= 13 ) {
-              game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town.');
-            } else {
-              game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town. One party member tries to outrun the pyroclastic flow, but is overcome and dies.');
-              game.killPartyMembers(1);
-            }
           }
           loot(game);
         },
@@ -143,21 +116,6 @@ game.registerLevel({
               game.fightBoss();
             }
           }
-          loot(game);
-        },
-      },
-      {
-        name: 'Farm Aid',
-        weight: 5,
-        action: (game: Game) => {
-            if ( game.town.alignment <= 30 ) {
-              game.log('Your party dedicates some time to help local farmers.');
-              game.adjustAlignment(1);
-            } else {
-              const r = (rollDie(4) + mod(game.town.alignment, [[30, 0], [40, 1], [50, 2]]));
-              game.log('Your party dedicates some time to help local farmers. They donate ' + r + ' food to your party as thanks!');
-              game.party.food += r;
-            }
           loot(game);
         },
       },
@@ -214,6 +172,109 @@ game.registerLevel({
       },
     ];
 
+    // Questline guide:
+    // Another party is helping to usher in the eruption of the volcano and your party
+    // is trying to stop them.
+    // * Stop them from collecting blazing shards.
+    // * Stop them from climbing the volcano.
+    // * Stop them during a summoning ritual.
+    // * Stomp out their camp for good.
+    town.quests = [
+      {
+        name: 'Digging lava irrigation',
+        weight: 1,
+        action: (game: Game) => {
+          const wis = rollDie(20) + mod(game.party.wis, [[0, -1], [6, 0],[12, +1]]); // Wisdom tells you not to stand in the way of pyroclastic flow
+          const dex = rollDie(20) + mod(game.party.dex, [[0, -1], [6, 0],[12, +1],[16, +2]]); // Dexterity helps you get out of the way when you do stand in the way of pyroclastic flow
+          if ( wis <= 7) {
+            if ( dex <= 12 ) {
+              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is overcome by pyroclastic flow and dies.');
+              game.killPartyMembers(1);
+            } else {
+              game.log('Some members of your party dig an irrigation ditch to divert some of the lava flow away from the town. One party member is nearly overcome by pyroclastic flow, but manages to escape with their life.');
+            }
+          } else if ( wis > 7 && wis <= 18 ) {
+            game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town.');
+          } else {
+            if ( dex <= 13 ) {
+              game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town.');
+            } else {
+              game.log('Some members of your party dig an irrigation ditch to divirt some of the lava flow away from the town. One party member tries to outrun the pyroclastic flow, but is overcome and dies.');
+              game.killPartyMembers(1);
+            }
+          }
+          loot(game);
+        },
+      },
+      {
+        name: 'Farm Aid',
+        weight: 5,
+        action: (game: Game) => {
+            if ( game.town.alignment <= 30 ) {
+              game.log('Your party dedicates some time to help local farmers.');
+              game.adjustAlignment(1);
+            } else {
+              const r = (rollDie(4) + mod(game.town.alignment, [[30, 0], [40, 1], [50, 2]]));
+              game.log('Your party dedicates some time to help local farmers. They donate ' + r + ' food to your party as thanks!');
+              game.party.food += r;
+            }
+          loot(game);
+        },
+      },
+      // TODO: Blazing Shards
+      // TODO: Scaling the Cliffs
+      // TODO: Summoning Pyre
+      // TODO: Snuffing Out the Flame
+      /*
+      {
+        name: '', // TODO
+        weight: 1,
+        action: (game: Game) => {
+        },
+      },
+      */
+    ];
+
+    town.enemies = [
+      // TODO: Wild Dog
+      // TODO: The Opposing Party
+      // TODO: Baked Clay Golem
+      // TODO: Blight Wing (Super Vulture)
+      // TODO: Ash Skeleton
+      {
+        weight: 1,
+        predicate: (game: Game) => {
+          return true;
+        },
+        roll: (game: Game) => {
+          return {
+            name: '', // TODO
+            health: 25,
+            str: 8,  int: 5,
+            dex: 11, wis: 7,
+            con: 7,  cha: 2,
+            weapon: {
+              physical: 8,
+              magical: 0,
+              elemental: 4,
+            },
+            armor: {
+              physical: -1,
+              magical: -1,
+              elemental: 0,
+            },
+            state: {},
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(8, 12));
+              loot(game);
+            },
+          };
+        },
+      },
+    ];
+
     town.bosses = [
       {
         weight: 1,
@@ -225,19 +286,19 @@ game.registerLevel({
 
           return {
             name: 'Magma Elemental',
-            health: 4000,
+            health: 650,
             str: 14, int: 8,
             dex: 15, wis: 8,
             con:  9, cha: 7,
             weapon: {
-              physical: -1, // blunt
-              magical: 0,
-              elemental: -1, // fire
+              physical: -20, // blunt
+              magical: -1, // dark
+              elemental: -45, // fire
             },
             armor: {
-              physical: -1, // blunt
+              physical: -18, // blunt
               magical: 0,
-              elemental: -1, // fire
+              elemental: -18, // fire
             },
             state,
             events: [
