@@ -31,10 +31,3 @@ function modLinear(value: number, zero: number) {
 function modLinearStep(value: number, zero: number, step: number) {
   return Math.floor((value - zero) / step);
 }
-
-
-// Linear modifier for stat ranges 0 to 20 with modifier 0 at stat value 10.
-const MOD_LINEAR_10: ModTable = [
-  [0, -5], [2, -4], [4, -3], [6, -2], [8, -1], [10, 0],
-  [12, 1], [14, 2], [16, 3], [18, 4], [20, 5]
-];

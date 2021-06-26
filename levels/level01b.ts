@@ -44,10 +44,6 @@ game.registerLevel({
       }
     }
 
-    function linearMod(number: number) {
-      return mod(number, MOD_LINEAR_10);
-    }
-
     function rollLoseEquipment (game: Game) {
       const weaponChoices = EQ_FINE_CATEGORIES
         .filter((cat) => game.party.inventoryWeapon[cat] > 0)
@@ -177,11 +173,11 @@ game.registerLevel({
         weight: 3,
         action: (game: Game) => {
           game.log('Your party takes on some outlaws that have been harrasing the townfolks.');
-          if ( rollDie(20) + linearMod(game.party.int) <= 15 ) {       //Being smart helps you trap the outlaws
+          if ( rollDie(20) + modLinear(game.party.int, 10) <= 15 ) {       //Being smart helps you trap the outlaws
             game.log('Your party tries to ambush the outlaws, but the outlaws escape and regroup.');
                                                                        //You must be strong and dexterous
                                                                        //to defeat the outlaws in a brawl
-            if ( rollDie(20) + linearMod(game.party.str) <= 10 && rollDie(20) + linearMod(game.party.dex) <= 10 ) {
+            if ( rollDie(20) + modLinear(game.party.str, 10) <= 10 && rollDie(20) + modLinear(game.party.dex, 10) <= 10 ) {
               game.log('The outlaws return and start a brawl, making off with some gold and equipment.');
               game.adjustAlignment(-3);                                //but you lost and now the towns people dislike you
               let gold = 0;                                            //and the outlaws will take the next 7 lines to rob you
@@ -201,7 +197,7 @@ game.registerLevel({
               for (let i = rollDie(3); i >= 0; --i) { loot(game); }     // at least you walk off with some equipment
             }
           } else {                                                      //If you had  been smart about the ambush
-            if ( rollDie(20) + linearMod(game.party.str) <= 6 ) {       //theres still a chance they could over power you
+            if ( rollDie(20) + modLinear(game.party.str, 10) <= 6 ) {       //theres still a chance they could over power you
               const dead = rollDie(3);
               game.log('Your party ambushes the outlaws, but they over power the party members and escape. '+dead+' party members are killed.');
               game.killPartyMembers(dead);
