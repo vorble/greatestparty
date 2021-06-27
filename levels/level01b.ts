@@ -220,7 +220,7 @@ game.registerLevel({
       },
       {
         name: 'Farm Aid',
-        weight: 5,
+        weight: 1,
         action: (game: Game) => {
             if ( game.town.alignment <= 30 ) {
               game.log('Your party dedicates some time to help local farmers.');
@@ -235,7 +235,7 @@ game.registerLevel({
       },
       {
         name: 'Blazing Shards',
-        weight: 1,
+        weight: 2,
         predicate: (game: Game) => !townState.blazingShardsDone,
         action: (game: Game) => {
           if (!townState.blazingShardsIntroduced) {
@@ -263,7 +263,7 @@ game.registerLevel({
       },
       {
         name: 'Scaling the Cliffs',
-        weight: 1,
+        weight: 2,
         predicate: (game: Game) => townState.blazingShardsDone && !townState.cliffsDone,
         action: (game: Game) => {
           if (!townState.cliffsIntroduced) {
@@ -296,7 +296,7 @@ game.registerLevel({
       },
       {
         name: 'Summoning Pyre',
-        weight: 1,
+        weight: 2,
         predicate: (game: Game) => townState.cliffsDone && !townState.pyreDone,
         action: (game: Game) => {
           if (!townState.pyreIntroduced) {
@@ -332,7 +332,7 @@ game.registerLevel({
       },
       {
         name: 'Scaling the Cliffs',
-        weight: 1,
+        weight: 2,
         predicate: (game: Game) => townState.pyreDone && !townState.snuffDone,
         action: (game: Game) => {
           if (!townState.snuffIntroduced) {
