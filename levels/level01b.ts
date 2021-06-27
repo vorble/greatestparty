@@ -529,7 +529,7 @@ game.registerLevel({
                     game.log('Baked Clay Golem takes a big swing at your party and bashes one party member to death, others are left scrambling to regain composure.');
                     game.killPartyMembers(1);
                     game.party.status.addStatus(game, {
-                      name: '',
+                      name: 'Scrambling',
                       tock: 10,
                       dexmod: -3,
                       conmod: -2,
