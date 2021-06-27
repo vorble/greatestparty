@@ -207,6 +207,30 @@ class Game {
     this.party.water = 30;
     this.party.weaponPoints = 3;
     this.party.armorPoints = 3;
+    const stats = this.rollPartyStats();
+    this.party.strbase = stats.str;
+    this.party.dexbase = stats.dex;
+    this.party.conbase = stats.con;
+    this.party.intbase = stats.int;
+    this.party.wisbase = stats.wis;
+    this.party.chabase = stats.cha;
+    this.party.inventoryWeapon.blunt = 3;
+    this.party.inventoryWeapon.slice = 3;
+    this.party.inventoryWeapon.dark = 3;
+    this.party.inventoryWeapon.light = 3;
+    this.party.inventoryWeapon.fire = 3;
+    this.party.inventoryWeapon.ice = 3;
+    this.party.inventoryArmor.blunt = 3;
+    this.party.inventoryArmor.slice = 3;
+    this.party.inventoryArmor.dark = 3;
+    this.party.inventoryArmor.light = 3;
+    this.party.inventoryArmor.fire = 3;
+    this.party.inventoryArmor.ice = 3;
+
+    this.startLevel();
+  }
+
+  rollPartyStats(): { str: number, dex: number, con: number, int: number, wis: number, cha: number } {
     function topThreeOfFourD6() {
       let a = rollDie(6);
       let b = rollDie(6);
@@ -244,26 +268,11 @@ class Game {
     //const roller = bottomThreeOfFourD6;
     const roller = threeD6No5;
     //const roller = twoD8;
-    this.party.strbase = roller();
-    this.party.dexbase = roller();
-    this.party.conbase = roller();
-    this.party.intbase = roller();
-    this.party.wisbase = roller();
-    this.party.chabase = roller();
-    this.party.inventoryWeapon.blunt = 3;
-    this.party.inventoryWeapon.slice = 3;
-    this.party.inventoryWeapon.dark = 3;
-    this.party.inventoryWeapon.light = 3;
-    this.party.inventoryWeapon.fire = 3;
-    this.party.inventoryWeapon.ice = 3;
-    this.party.inventoryArmor.blunt = 3;
-    this.party.inventoryArmor.slice = 3;
-    this.party.inventoryArmor.dark = 3;
-    this.party.inventoryArmor.light = 3;
-    this.party.inventoryArmor.fire = 3;
-    this.party.inventoryArmor.ice = 3;
-
-    this.startLevel();
+    return {
+      str: roller(), int: roller(),
+      dex: roller(), wis: roller(),
+      con: roller(), cha: roller(),
+    };
   }
 
   startLevel() {

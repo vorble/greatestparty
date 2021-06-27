@@ -33,7 +33,11 @@ game.registerLevel({
     town.enemyRatio = 0.05;
     town.goldPerQuest = 10;
 
+    const OPPOSITION_STATS = game.rollPartyStats();
+
     const townState = {
+      OPPOSITION_STATS,
+
       blazingShardsIntroduced: false,
       blazingShardsCollected: 0,
       blazingShardsDone: false,
@@ -307,9 +311,7 @@ game.registerLevel({
           return {
             name: 'Opposing Party Member',
             health: 28,
-            str: 0,  int: 7,
-            dex: 0, wis: 5,
-            con: 0,  cha: 12,
+            ...OPPOSITION_STATS,
             weapon: {
               physical: 5,
               magical: -5,
