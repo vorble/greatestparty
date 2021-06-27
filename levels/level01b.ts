@@ -51,6 +51,7 @@ game.registerLevel({
       pyreDone: false,
 
       snuffIntroduced: false,
+      snuffSuccess: 0,
       snuffDone: false,
     };
     town.state = townState;
@@ -190,13 +191,6 @@ game.registerLevel({
       },
     ];
 
-    // Questline guide:
-    // Another party is helping to usher in the eruption of the volcano and your party
-    // is trying to stop them.
-    // * Stop them from collecting blazing shards.
-    // * Stop them from climbing the volcano.
-    // * Stop them during a summoning ritual.
-    // * Stomp out their camp for good.
     town.quests = [
       {
         name: 'Digging lava irrigation',
@@ -336,12 +330,77 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Snuffing Out the Flame
+      {
+        name: 'Scaling the Cliffs',
+        weight: 1,
+        predicate: (game: Game) => townState.pyreDone && !townState.snuffDone,
+        action: (game: Game) => {
+          if (!townState.snuffIntroduced) {
+            game.log('Your party comes upon the opposing party\'s camp nestled between the faces of a mountainous cleft boulder.');
+            townState.snuffIntroduced = true;
+          }
+          const action = rollChoice([
+            {
+              stat: game.party.str,
+              prefix: 'Your party pushes on the unsecured wall of a makeshift structure',
+              good: ' and it falls down into a heap.',
+              bad: ', but your party is not able to stop the falling debris from burying and killing one party member.',
+            },
+            {
+              stat: game.party.dex,
+              prefix: 'Your party chases several opposing party members around the camp',
+              good: ' and strikes one down into a pool of blood.',
+              bad: ', but a member of your party trips and falls onto their weapon.',
+            },
+            {
+              stat: game.party.con,
+              prefix: 'Your party encircles a wounded opposing party member to put them out of their misery',
+              good: '.',
+              bad: ', but a member of your party hesistates leaving an opportunity for the other the strike and kill them.',
+            },
+            {
+              stat: game.party.int,
+              prefix: 'Your party chases an opposing party member up a long pole in the camp',
+              good: ' and set it on fire to get them down.',
+              bad: ' and set it on fire to get them down, but the fire spreads too quickly and consumes one member of your party.',
+            },
+            {
+              stat: game.party.wis,
+              prefix: 'Your party rummages through the various tents in the camp',
+              good: ' and carefully check that no ambushers are lying in wait.',
+              bad: ', but in the bustle one party member is attacked to death by am ambusher lying in wait.',
+            },
+            {
+              stat: game.party.cha,
+              prefix: 'Your party corners some opposing party members in a narrow cave',
+              good: ' and your party manages to talk them out to be captured.',
+              bad: ', but a member of your party gets impatient and goes in after them, but is stabbed to death.',
+            },
+          ]);
+          const r = (rollDie(20)
+            + modLinear(action.stat, 10)
+          );
+          if (r <= 10) {
+            game.log(action.prefix + action.bad);
+            game.killPartyMembers(1);
+          } else {
+            game.log(action.prefix + action.good);
+            if (++townState.snuffSuccess >= 10) {
+              game.log('Your party takes a look around at the destroyed camp. The opposing party has been vanquished.');
+              loot(game);
+              loot(game);
+              loot(game);
+              loot(game);
+              loot(game);
+              game.receiveGold(rollRange(20, 30));
+              townState.snuffDone = true;
+            }
+          }
+        },
+      },
     ];
 
     town.enemies = [
-      // TODO: Blight Wing (Super Vulture)
-      // TODO: Ash Skeleton
       {
         weight: 1,
         predicate: (game: Game) => townState.blazingShardsDone && !townState.snuffDone,
@@ -484,6 +543,83 @@ game.registerLevel({
             ],
             win: (game: Game) => {
               game.receiveGold(rollRange(9, 11));
+              loot(game);
+            },
+          };
+        },
+      },
+      {
+        weight: 1,
+        predicate: (game: Game) => true,
+        roll: (game: Game) => {
+          return {
+            name: 'Blight Wing',
+            health: 19,
+            str: 5,  int: 9,
+            dex: 17, wis: 4,
+            con: 14, cha: 6,
+            weapon: {
+              physical: -10,
+              magical: -10,
+              elemental: 0,
+            },
+            armor: {
+              physical: 4,
+              magical: -1,
+              elemental: 1,
+            },
+            state: {},
+            events: [
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(12, 13));
+              loot(game);
+            },
+          };
+        },
+      },
+      {
+        weight: 1,
+        predicate: (game: Game) => true,
+        roll: (game: Game) => {
+          return {
+            name: 'Ash Skeleton',
+            health: 22,
+            str:  8, int:  4,
+            dex:  4, wis:  2,
+            con: 30, cha: 14, // Always smiling.
+            weapon: {
+              physical: -12,
+              magical: -5,
+              elemental: -2,
+            },
+            armor: {
+              physical: 5,
+              magical: 0,
+              elemental: -20,
+            },
+            state: {},
+            events: [
+              {
+                name: 'Void Socket',
+                weight: 1,
+                action: (game: Game) => {
+                  game.log('Ash Skeleton stares at your party silently with its pair of void sockets. Your party feels weak.');
+                  game.party.status.addStatus(game, {
+                    name: 'Anemia',
+                    tock: 17, // Enough for 3 stacks
+                    strmod: -1,
+                    dexmod: -1,
+                    conmod: -1,
+                    intmod: -1,
+                    wismod: -1,
+                    chamod: -1,
+                  });
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(13, 17));
               loot(game);
             },
           };
