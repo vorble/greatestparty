@@ -34,6 +34,9 @@ game.registerLevel({
     town.goldPerQuest = 10;
 
     const townState = {
+      blazingShardsIntroduced: false,
+      blazingShardsCollected: 0,
+      blazingShardsDone: false,
     };
     town.state = townState;
 
@@ -221,53 +224,76 @@ game.registerLevel({
           loot(game);
         },
       },
-      // TODO: Blazing Shards
+      {
+        name: 'Blazing Shards',
+        weight: 1,
+        predicate: (game: Game) => !townState.blazingShardsDone,
+        action: (game: Game) => {
+          if (!townState.blazingShardsIntroduced) {
+            game.log('While some of your party members walk through a freshly dug diversion ditch, they notice a gathering up on a vegetagted hill outside oftown. Your party goes to inspect.');
+            townState.blazingShardsIntroduced = true;
+          }
+          const r = (rollDie(20)
+            + modLinear(game.party.int, 10) // Be smart to sneak quietly.
+          );
+          if (r <= 6) {
+            game.log('Your party makes its way quite loudly through the ruffage toward the suspicious gathering and one party member disturbs a trip wire and is bludgeoned to death by a swinging log.');
+            game.killPartyMembers(1);
+          } else if (r <= 15) {
+            game.log('Your party makes its way quite loudly through the ruffage toward the suspicious gathering and the others notice and clear out before your party can arrive.');
+          } else {
+            game.log('Your party makes its way through the ruffage toward the suspicious gathering and they manage to take the others by surprise. The others flee, leaving behind a pile of glowind red blazing shards which your party collects.');
+            if (++townState.blazingShardsCollected >= 3) {
+              game.log('Your party takes all of the blazing shards back to Magma Town and show them to scholars. "These shards have been used through history to summon titanic beasts from the land. This must be why the volcano is threatening to erupt. Who is behind this? Another party, you say?"');
+              loot(game);
+              game.receiveGold(rollRange(6, 12));
+              townState.blazingShardsDone = true;
+            }
+          }
+        },
+      },
       // TODO: Scaling the Cliffs
       // TODO: Summoning Pyre
       // TODO: Snuffing Out the Flame
-      /*
-      {
-        name: '', // TODO
-        weight: 1,
-        action: (game: Game) => {
-        },
-      },
-      */
     ];
 
     town.enemies = [
-      // TODO: Wild Dog
       // TODO: The Opposing Party
       // TODO: Baked Clay Golem
       // TODO: Blight Wing (Super Vulture)
       // TODO: Ash Skeleton
       {
         weight: 1,
-        predicate: (game: Game) => {
-          return true;
-        },
+        predicate: (game: Game) => true,
         roll: (game: Game) => {
           return {
-            name: '', // TODO
-            health: 25,
-            str: 8,  int: 5,
-            dex: 11, wis: 7,
-            con: 7,  cha: 2,
+            name: 'Wild Dog',
+            health: 24,
+            str: 9,  int: 7,
+            dex: 13, wis: 5,
+            con: 9,  cha: 12, // Doggo can get pets when it wants
             weapon: {
-              physical: 8,
+              physical: 13,
               magical: 0,
-              elemental: 4,
+              elemental: 0,
             },
             armor: {
-              physical: -1,
-              magical: -1,
+              physical: -2,
+              magical: 0,
               elemental: 0,
             },
             state: {},
             events: [
+              {
+                name: 'Yip',
+                weight: 1,
+                action: (game: Game) => {
+                  game.log('Wild Dog lets out a yip.');
+                },
+              },
             ],
             win: (game: Game) => {
-              game.receiveGold(rollRange(8, 12));
+              game.receiveGold(rollRange(9, 11));
               loot(game);
             },
           };
