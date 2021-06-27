@@ -46,6 +46,10 @@ game.registerLevel({
       cliffsMurders: 0,
       cliffsDone: false,
 
+      pyreIntroduced: false,
+      pyreMurders: 0,
+      pyreDone: false,
+
       snuffIntroduced: false,
       snuffDone: false,
     };
@@ -296,12 +300,46 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Summoning Pyre
+      {
+        name: 'Summoning Pyre',
+        weight: 1,
+        predicate: (game: Game) => townState.cliffsDone && !townState.pyreDone,
+        action: (game: Game) => {
+          if (!townState.pyreIntroduced) {
+            game.log('A great flame shoots up into the ashy sky from the summit of the volcano, causing the sky to glow and flicker in orange. The summoning ritual has started.');
+            townState.pyreIntroduced = true;
+          }
+          const r = rollDie(20);
+          if (r <= 5) {
+            game.log('Your party confronts the opposing party on the summit, but flames from the summoning pyre obey their masters and consume one of your party members.');
+            game.killPartyMembers(1);
+          } else if (r <= 16) {
+            switch (rollRange(1, 2)) {
+              case 1:
+                game.log('Your party confronts the opposing party on the summit and a member of your party jumps out of the way of a poison aerosol.');
+                break;
+              case 2:
+                game.log('Your party confronts the opposing party on the summit and a member of your party dodges a moving column of fire.');
+                break;
+              default:
+                game.log('ERR');
+                break;
+            }
+          } else {
+            game.log('Your party confronts the opposing party on the summit and a member of your party cuts down an opposition member participating in the ritual.');
+            if (++townState.pyreMurders >= 5) {
+              game.log('As the final summoner falls to the ground, spilling their blood they mutter, "He... let... us... die..."');
+              loot(game);
+              game.receiveGold(rollRange(14, 20));
+              townState.pyreDone = true;
+            }
+          }
+        },
+      },
       // TODO: Snuffing Out the Flame
     ];
 
     town.enemies = [
-      // TODO: Baked Clay Golem
       // TODO: Blight Wing (Super Vulture)
       // TODO: Ash Skeleton
       {
@@ -376,6 +414,71 @@ game.registerLevel({
                 weight: 1,
                 action: (game: Game) => {
                   game.log('Wild Dog lets out a yip.');
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(9, 11));
+              loot(game);
+            },
+          };
+        },
+      },
+      {
+        weight: 1,
+        predicate: (game: Game) => true,
+        roll: (game: Game) => {
+          const state = {
+            windUp: false,
+          };
+          return {
+            name: 'Baked Clay Golem',
+            health: 45,
+            str: 14, int: 5,
+            dex:  6, wis: 3,
+            con: 20, cha: 2,
+            weapon: {
+              physical: -17,
+              magical: 0,
+              elemental: 0,
+            },
+            armor: {
+              physical: 0,
+              magical: 0,
+              elemental: 0,
+            },
+            state: {},
+            events: [
+              {
+                name: 'Wind Up',
+                weight: 1,
+                predicate: (game: Game) => !state.windUp,
+                action: (game: Game) => {
+                  game.log('Baked Clay Golem winds up for a big swing of its fist.');
+                  state.windUp = true;
+                },
+              },
+              {
+                name: 'Big Swing',
+                weight: 1,
+                predicate: (game: Game) => state.windUp,
+                action: (game: Game) => {
+                  const r = (rollDie(20)
+                    + modLinear(game.party.dex, 14)
+                  );
+                  if (r <= 10) {
+                    game.log('Baked Clay Golem takes a big swing at your party and bashes one party member to death, others are left scrambling to regain composure.');
+                    game.killPartyMembers(1);
+                    game.party.status.addStatus(game, {
+                      name: '',
+                      tock: 10,
+                      dexmod: -3,
+                      conmod: -2,
+                    });
+                  } else {
+                    game.log('Baked Clay Golem takes a big swing at your party, but fails to connect.');
+                  }
+                  state.windUp = false;
                 },
               },
             ],
