@@ -37,6 +37,13 @@ game.registerLevel({
       blazingShardsIntroduced: false,
       blazingShardsCollected: 0,
       blazingShardsDone: false,
+
+      cliffsIntroduced: false,
+      cliffsMurders: 0,
+      cliffsDone: false,
+
+      snuffIntroduced: false,
+      snuffDone: false,
     };
     town.state = townState;
 
@@ -252,16 +259,94 @@ game.registerLevel({
           }
         },
       },
-      // TODO: Scaling the Cliffs
+      {
+        name: 'Scaling the Cliffs',
+        weight: 1,
+        predicate: (game: Game) => townState.blazingShardsDone && !townState.cliffsDone,
+        action: (game: Game) => {
+          if (!townState.cliffsIntroduced) {
+            game.log('Your party takes notice of a precession, lead by another party, heading up the cliffs of the volcanic mountain. Glowing red shards can be seen in tow, undoubtedly intended to be used in a summoning ritual.');
+            townState.cliffsIntroduced = true;
+          }
+          const r = (rollDie(20)
+            + modLinear(game.party.str, 10) // Be strong to scale the cliffs with ease
+            + modLinear(game.party.con, 10) // Have constitution to keep your cool on the cliffs
+          );
+          if (r <= 6) {
+            if (rollBoolean()) {
+              game.log('Members of your party pull themselves up the side of the steep cliffs, but one party member loses their grip and falls to their death.');
+            } else {
+              game.log('Members of your party pull themselves up the side of the steep cliffs, but one party member loses their nerve and their grip, falling to their death.');
+            }
+            game.killPartyMembers(1);
+          } else if (r <= 14) {
+            game.log('Members of your party pull themselves up the side of the steep cliffs, getting closer to members of the other party.');
+          } else {
+            game.log('Members of your party pull themselves up the side the steep cliffs and grab hold of the ankle of one of the other party\'s members, releasing them from the cliff.');
+            if (++townState.cliffsMurders >= 6) {
+              game.log('As the other party\'s member falls to their death, they shout "You\'re too late! You can\'t stop us! They\'re already at the summit!"');
+              loot(game);
+              game.receiveGold(rollRange(8, 14));
+              townState.cliffsDone = true;
+            }
+          }
+        },
+      },
       // TODO: Summoning Pyre
       // TODO: Snuffing Out the Flame
     ];
 
     town.enemies = [
-      // TODO: The Opposing Party
       // TODO: Baked Clay Golem
       // TODO: Blight Wing (Super Vulture)
       // TODO: Ash Skeleton
+      {
+        weight: 1,
+        predicate: (game: Game) => townState.blazingShardsDone && !townState.snuffDone,
+        roll: (game: Game) => {
+          return {
+            name: 'Opposing Party Member',
+            health: 28,
+            str: 0,  int: 7,
+            dex: 0, wis: 5,
+            con: 0,  cha: 12,
+            weapon: {
+              physical: 5,
+              magical: -5,
+              elemental: 3,
+            },
+            armor: {
+              physical: -1,
+              magical: 1,
+              elemental: -1,
+            },
+            state: {},
+            events: [
+              {
+                name: 'Poison Aerosol',
+                weight: 1,
+                action: (game: Game) => {
+                  const r = (rollDie(20)
+                    + modLinear(game.party.con, 8)
+                  );
+                  if (r <= 6) {
+                    game.log('Opposing Party Member sprays an aerosol of poison from their mouth and your party members breath it in.');
+                    game.party.status.poison.active = true;
+                    statusSetExpiry(game, game.party.status.poison, { tock: 15 });
+
+                  } else {
+                    game.log('Opposing Party Member sprays an aerosol of poison from their mouth and your party members breath it in, but it doesn\'t seem to be effective.');
+                  }
+                },
+              },
+            ],
+            win: (game: Game) => {
+              game.receiveGold(rollRange(9, 11));
+              loot(game);
+            },
+          };
+        },
+      },
       {
         weight: 1,
         predicate: (game: Game) => true,
