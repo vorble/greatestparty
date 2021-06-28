@@ -83,9 +83,7 @@ class UIParty {
     {
       let text = SEASONS[game.season];
       text += ' ' + game.year;
-      if (FLAGS.SHOW_TICKS) {
-        text += ` (${ SIGNS[clockToSign(game)] } ${ fmt02d(game.term) }:${ fmt02d(game.tock) }:${ fmt02d(game.tick) })`;
-      }
+      text += ` (${ SIGNS[clockToSign(game)] } ${ fmt02d(game.term) }:${ fmt02d(game.tock) }:${ fmt02d(game.tick) })`;
       this.date.innerText = text;
     }
 
@@ -97,10 +95,6 @@ class UIParty {
     this.blood.innerText = '' + game.party.blood;
     this.food.innerText = '' + game.party.food;
     this.water.innerText = '' + game.party.water;
-    if (FLAGS.SHOW_HUNGER_THIRST) {
-      this.food.innerText += ' (' + game.party.hunger + ')';
-      this.water.innerText += ' (' + game.party.thirst + ')';
-    }
 
     this.str.innerText = '' + this.game.party.str;
     this.dex.innerText = '' + this.game.party.dex;
@@ -326,13 +320,8 @@ class UIEquipment {
     const weaponSize = Math.abs(weapon.physical) + Math.abs(weapon.magical) + Math.abs(weapon.elemental);
     const armorSize = Math.abs(armor.physical) + Math.abs(armor.magical) + Math.abs(armor.elemental);
 
-    this.weapon.innerText = '' + weaponSize;
-    this.armor.innerText = '' + armorSize;
-
-    if (FLAGS.SHOW_EQ_DETAILS) {
-      this.weapon.innerText += ` (${ weapon.physical }/${ weapon.magical }/${ weapon.elemental })`;
-      this.armor.innerText += ` (${ armor.physical }/${ armor.magical }/${ armor.elemental })`;
-    }
+    this.weapon.innerText = `${ weaponSize } (${ weapon.physical }/${ weapon.magical }/${ weapon.elemental })`;
+    this.armor.innerText = `${ armorSize} (${ armor.physical }/${ armor.magical }/${ armor.elemental })`;
 
     let weaponPhysicalMax = game.party.weaponPoints - Math.abs(weaponConfig.magical) - Math.abs(weaponConfig.elemental);
     let weaponMagicalMax = game.party.weaponPoints - Math.abs(weaponConfig.physical) - Math.abs(weaponConfig.elemental);

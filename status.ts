@@ -117,9 +117,7 @@ class Status {
       name: 'Berzerk',
       doTickActions: (game: Game) => {
         if (!game.fightingBoss) {
-          if (FLAGS.DEBUG.STATUS.BERZERK) {
-            game.log('Berzerk: I didn\'t hear a bell! You fight the boss.');
-          }
+          game.log('Your party is berzerk and fights the boss, "I didn\'t hear a bell!"');
           game.fightBoss();
         }
       },
