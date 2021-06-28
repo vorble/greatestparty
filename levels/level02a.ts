@@ -49,12 +49,19 @@ game.registerLevel({
 
     function loot(game: Game) {
       const r = rollRatio();
-      if (r < 0.01) {
-        const name = rollChoice(ITEM_NAMES_BOOST);
+      if (r <= 0.001) {
+        const name = rollChoice(ITEM_NAMES_STAT_BOOST);
+        game.party.items[name].quantity += 1;
+        game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+      } else if (r < 0.01) {
+        const name = rollChoice(ITEM_NAMES_EQUIPMENT_BOOST);
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
       } else if (r < 0.16) {
-        const name = rollChoice(ITEM_NAMES_POTION);
+        const name = rollChoice([
+          ...ITEM_NAMES_STAT_BUFF,
+          ...ITEM_NAMES_CONSUMABLE,
+        ]);
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
       } else if (r < 0.50) {

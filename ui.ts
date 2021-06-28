@@ -945,14 +945,20 @@ class UIItems {
   potionIntUp1: UIItemsEntry;
   potionWisUp1: UIItemsEntry;
   potionChaUp1: UIItemsEntry;
+
+  tomeStrUp: UIItemsEntry;
+  tomeDexUp: UIItemsEntry;
+  tomeConUp: UIItemsEntry;
+  tomeIntUp: UIItemsEntry;
+  tomeWisUp: UIItemsEntry;
+  tomeChaUp: UIItemsEntry;
+
   potionAntidote: UIItemsEntry;
   potionHealth: UIItemsEntry;
-
   clericRobes: UIItemsEntry;
 
   boostWeapon: UIItemsEntry;
   boostArmor: UIItemsEntry;
-  tomeOfKnowledge: UIItemsEntry;
 
   constructor(game: Game) {
     this.game = game;
@@ -963,14 +969,20 @@ class UIItems {
     this.potionIntUp1 = new UIItemsEntry('potionIntUp1');
     this.potionWisUp1 = new UIItemsEntry('potionWisUp1');
     this.potionChaUp1 = new UIItemsEntry('potionChaUp1');
+
+    this.tomeStrUp = new UIItemsEntry('tomeStrUp');
+    this.tomeDexUp = new UIItemsEntry('tomeDexUp');
+    this.tomeConUp = new UIItemsEntry('tomeConUp');
+    this.tomeIntUp = new UIItemsEntry('tomeIntUp');
+    this.tomeWisUp = new UIItemsEntry('tomeWisUp');
+    this.tomeChaUp = new UIItemsEntry('tomeChaUp');
+
     this.potionAntidote = new UIItemsEntry('potionAntidote');
     this.potionHealth = new UIItemsEntry('potionHealth');
-
     this.clericRobes = new UIItemsEntry('clericRobes');
 
     this.boostWeapon = new UIItemsEntry('boostWeapon');
     this.boostArmor = new UIItemsEntry('boostArmor');
-    this.tomeOfKnowledge = new UIItemsEntry('tomeOfKnowledge');
 
     for (const name of ITEM_NAMES) {
       this[name].use.onclick = (e) => {
@@ -984,7 +996,6 @@ class UIItems {
       const item = this.game.party.items[name];
       const entry = this[name];
       entry.quantity.innerText = '' + item.quantity;
-      // TODO: Change default style on these in the html file to display: none
       entry.entry.style.display = item.quantity > 0 ? '' : 'none';
     }
   }

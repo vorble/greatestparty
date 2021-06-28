@@ -1,14 +1,17 @@
-type ItemNameType_Potion = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1' | 'potionAntidote' | 'potionHealth';
-const ITEM_NAMES_POTION: Array<ItemNameType_Potion> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1', 'potionAntidote', 'potionHealth'];
+type ItemNameType_StatBuff = 'potionStrUp1' | 'potionDexUp1' | 'potionConUp1' | 'potionIntUp1' | 'potionWisUp1' | 'potionChaUp1';
+const ITEM_NAMES_STAT_BUFF: Array<ItemNameType_StatBuff> = ['potionStrUp1', 'potionDexUp1', 'potionConUp1', 'potionIntUp1', 'potionWisUp1', 'potionChaUp1'];
 
-type ItemNameType_Consumable = 'clericRobes';
-const ITEM_NAMES_CONSUMABLE: Array<ItemNameType_Consumable> = ['clericRobes'];
+type ItemNameType_StatBoost = 'tomeStrUp' | 'tomeDexUp' | 'tomeConUp' | 'tomeIntUp' | 'tomeWisUp' | 'tomeChaUp';
+const ITEM_NAMES_STAT_BOOST: Array<ItemNameType_StatBoost> = ['tomeStrUp', 'tomeDexUp', 'tomeConUp', 'tomeIntUp', 'tomeWisUp', 'tomeChaUp'];
 
-type ItemNameType_Boost = 'boostWeapon' | 'boostArmor' | 'tomeOfKnowledge';
-const ITEM_NAMES_BOOST: Array<ItemNameType_Boost> = ['boostWeapon', 'boostArmor', 'tomeOfKnowledge'];
+type ItemNameType_Consumable = 'potionAntidote' | 'potionHealth' | 'clericRobes';
+const ITEM_NAMES_CONSUMABLE: Array<ItemNameType_Consumable> = ['potionAntidote', 'potionHealth', 'clericRobes'];
 
-type ItemNameType = ItemNameType_Potion | ItemNameType_Consumable | ItemNameType_Boost;
-const ITEM_NAMES: Array<ItemNameType> = [...ITEM_NAMES_POTION, ...ITEM_NAMES_CONSUMABLE, ...ITEM_NAMES_BOOST];
+type ItemNameType_EquipmentBoost = 'boostWeapon' | 'boostArmor';
+const ITEM_NAMES_EQUIPMENT_BOOST: Array<ItemNameType_EquipmentBoost> = ['boostWeapon', 'boostArmor'];
+
+type ItemNameType = ItemNameType_StatBuff | ItemNameType_StatBoost | ItemNameType_Consumable | ItemNameType_EquipmentBoost;
+const ITEM_NAMES: Array<ItemNameType> = [...ITEM_NAMES_STAT_BUFF, ...ITEM_NAMES_STAT_BOOST, ...ITEM_NAMES_CONSUMABLE, ...ITEM_NAMES_EQUIPMENT_BOOST];
 
 interface Item {
   name: string;
@@ -24,14 +27,20 @@ class ItemInventory {
   potionIntUp1: Item;
   potionWisUp1: Item;
   potionChaUp1: Item;
+
+  tomeStrUp: Item;
+  tomeDexUp: Item;
+  tomeConUp: Item;
+  tomeIntUp: Item;
+  tomeWisUp: Item;
+  tomeChaUp: Item;
+
   potionAntidote: Item;
   potionHealth: Item;
-
   clericRobes: Item;
 
   boostWeapon: Item;
   boostArmor: Item;
-  tomeOfKnowledge: Item;
 
   constructor() {
     const defaults = { quantity: 0 };
@@ -101,6 +110,54 @@ class ItemInventory {
         });
       },
     };
+    this.tomeStrUp = {
+      ...defaults,
+      name: 'Tome of STR',
+      use: (game: Game) => {
+        game.party.strbase += 1;
+        game.log('Your party\'s STR has increased!');
+      },
+    };
+    this.tomeDexUp = {
+      ...defaults,
+      name: 'Tome of DEX',
+      use: (game: Game) => {
+        game.party.dexbase += 1;
+        game.log('Your party\'s DEX has increased!');
+      },
+    };
+    this.tomeConUp = {
+      ...defaults,
+      name: 'Tome of CON',
+      use: (game: Game) => {
+        game.party.conbase += 1;
+        game.log('Your party\'s CON has increased!');
+      },
+    };
+    this.tomeIntUp = {
+      ...defaults,
+      name: 'Tome of INT',
+      use: (game: Game) => {
+        game.party.intbase += 1;
+        game.log('Your party\'s INT has increased!');
+      },
+    };
+    this.tomeWisUp = {
+      ...defaults,
+      name: 'Tome of WIS',
+      use: (game: Game) => {
+        game.party.wisbase += 1;
+        game.log('Your party\'s WIS has increased!');
+      },
+    };
+    this.tomeChaUp = {
+      ...defaults,
+      name: 'Tome of CHA',
+      use: (game: Game) => {
+        game.party.chabase += 1;
+        game.log('Your party\'s CHA has increased!');
+      },
+    };
     this.potionAntidote = {
       ...defaults,
       name: 'Antidote',
@@ -137,14 +194,6 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.armorPoints += 1;
         game.log('Your party may now allocate ' + game.party.armorPoints + ' armor points.');
-      },
-    };
-    this.tomeOfKnowledge = {
-      ...defaults,
-      name: 'Tome of Knowledge',
-      use: (game: Game) => {
-        game.party.intbase += 1;
-        game.log('Your party\'s intelligence has increased.');
       },
     };
   }
