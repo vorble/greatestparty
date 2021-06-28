@@ -204,18 +204,37 @@ game.registerLevel({
       {
         name: 'Unwelcome Here',
         weight: 1,
-        predicate: (game: Game) => game.town.alignment <= -20,
+        predicate: (game: Game) => !townState.partyInDesert && game.town.alignment <= -20,
         action: (game: Game) => {
           const roll = (rollDie(20)
             + mod(game.town.alignment, [[-100, -19], [-50, -5], [-20, 0]])
           );
-          if (roll <= 3) {
+          if (roll <= 6) {
             game.log('The townsfolk chase a member of your party through the streets and kill them.');
             game.killPartyMembers(1);
-            game.adjustAlignment(4);
+            game.adjustAlignment(8);
           } else {
             game.log('The townsfolk chase a member of your party through the streets.');
-            game.adjustAlignment(1);
+            game.adjustAlignment(5);
+          }
+        },
+      },
+      {
+        name: 'Beloved Heroes',
+        weight: 1,
+        predicate: (game: Game) => !townState.partyInDesert && game.town.alignment >= 40,
+        action: (game: Game) => {
+          const roll = (rollDie(20)
+            + mod(game.town.alignment, [[40, 0], [70, 5], [100, 10]])
+          );
+          if (roll <= 17) {
+            game.log('The townsfolk cheer you on as you make your way through town.');
+          } else {
+            game.log('The townsfolk shower you with gold and items as you make your way through town.');
+            game.receiveGold(rollRange(12, 20));
+            loot(game);
+            loot(game);
+            game.adjustAlignment(-5);
           }
         },
       },
