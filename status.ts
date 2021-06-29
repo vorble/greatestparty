@@ -75,29 +75,14 @@ function statusIsExpired(game: Game, status: StatusItemCore) {
   return game.tick >= status.tick;
 }
 
-function statusSetExpiry(game: Game, status: Clock, length: {
-    tick?: number, tock?: number, term?: number, season?: number, year?: number }) {
-  status.year = game.year;
-  status.season = game.season;
-  status.term = game.term;
-  status.tock = game.tock;
-  status.tick = game.tick;
-  if (length.year != null) {
-    status.year += length.year;
-  }
-  if (length.season != null) {
-    status.season += length.season;
-  }
-  if (length.term != null) {
-    status.term += length.term;
-  }
-  if (length.tock != null) {
-    status.tock += length.tock;
-  }
-  if (length.tick != null) {
-    status.tick += length.tick;
-  }
-  unwrapClock(status);
+function statusSetExpiry(game: Game, status: Clock, length: ClockInput) {
+  const clock = clockAdd(game, clockInput(length))
+  status.year = clock.year;
+  status.season = clock.season;
+  status.term = clock.term;
+  status.tock = clock.tock;
+  status.tick = clock.tick;
+  clockUnwrap(status);
 }
 
 class Status {

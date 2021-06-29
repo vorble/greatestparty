@@ -673,9 +673,9 @@ class Game {
     // TIME KEEPING
     // ----------------------------------------------------
     this.tick += 1;
-    unwrapClock(this);
+    clockUnwrap(this);
     this.playtime.tick += 1;
-    unwrapClock(this.playtime);
+    clockUnwrap(this.playtime);
 
     this.calculateEquipment();
 

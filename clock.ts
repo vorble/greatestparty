@@ -41,7 +41,7 @@ interface ClockInput {
 }
 
 function clockInput(clock: ClockInput): Clock {
-  return unwrapClock({
+  return clockUnwrap({
     year: clock.year == null ? 0 : clock.year,
     season: clock.season == null ? 0 : clock.season,
     term: clock.term == null ? 0 : clock.term,
@@ -51,7 +51,7 @@ function clockInput(clock: ClockInput): Clock {
 }
 
 function clockAdd(a: Clock, b: Clock): Clock {
-  return unwrapClock({
+  return clockUnwrap({
     year: a.year + b.year,
     season: a.season + b.season,
     term: a.term + b.term,
@@ -72,7 +72,6 @@ function clockCompare(a: Clock, b: Clock): -1 | 0 | 1 {
   else if (a.tick < b.tick) return -1
   else if (a.tick > b.tick) return 1;
   return 0;
-
 }
 
 function clockIsSeason(clock: Clock, season: Season): boolean {
@@ -111,22 +110,22 @@ interface ClockActions {
   doYearActions?: (game: Game) => void;
 }
 
-function unwrapClock(clock: Clock): Clock {
+function clockUnwrap(clock: Clock): Clock {
   while (clock.tick >= TICKS_PER_TOCK) {
     clock.tick -= TICKS_PER_TOCK;
     clock.tock += 1;
-    while (clock.tock >= TOCKS_PER_TERM) {
-      clock.tock -= TOCKS_PER_TERM;
-      clock.term += 1;
-      while (clock.term >= TERMS_PER_SEASON) {
-        clock.term -= TERMS_PER_SEASON;
-        clock.season += 1;
-        while (clock.season >= SEASONS_PER_YEAR) {
-          clock.season -= SEASONS_PER_YEAR;
-          clock.year += 1
-        }
-      }
-    }
+  }
+  while (clock.tock >= TOCKS_PER_TERM) {
+    clock.tock -= TOCKS_PER_TERM;
+    clock.term += 1;
+  }
+  while (clock.term >= TERMS_PER_SEASON) {
+    clock.term -= TERMS_PER_SEASON;
+    clock.season += 1;
+  }
+  while (clock.season >= SEASONS_PER_YEAR) {
+    clock.season -= SEASONS_PER_YEAR;
+    clock.year += 1;
   }
   return clock;
 }
