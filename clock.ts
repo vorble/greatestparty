@@ -23,6 +23,12 @@ const TICKS_PER_TOCK = 20;
 const TOCKS_PER_TERM = 20;
 const TERMS_PER_SEASON = 25;
 const SEASONS_PER_YEAR = SEASONS.length;
+// The SEMITERM isn't part of the normal clock, it's a distinguishable period of
+// time between a TOCK and a TERM.
+const TOCKS_PER_SEMITERM = 5;
+if (TOCKS_PER_TERM % TOCKS_PER_SEMITERM != 0) {
+  throw new Error('TOCKS_PER_TERM must be a multiple of ' + TOCKS_PER_SEMITERM + '!');
+}
 
 interface Clock {
   year: number;

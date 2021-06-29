@@ -875,12 +875,6 @@ class Game {
         this.party.questPoints -= POINTS_PER_QUEST * questsCompleted;
         this.adjustAlignment(questsCompleted);
       }
-      // If it was possible to complete additional quests
-      // this round, the quest points are abandoned since
-      // there is nothing left for the party to do.
-      if (this.party.questPoints >= POINTS_PER_QUEST) {
-        this.party.questPoints = this.party.questPoints % POINTS_PER_QUEST;
-      }
     }
 
     // If you run out of quests, then any progress toward
@@ -903,7 +897,7 @@ class Game {
     // ----------------------------------------------------
     // TOWN EVENTS
     // ----------------------------------------------------
-    if (this.tick == 0 && this.tock % 5 == 0) { // TODO: tock % 5, what if tock max isn't multiple of 5?
+    if (this.tick == 0 && this.tock % TOCKS_PER_SEMITERM == 0) {
       const event = this.pickTownEvent();
       if (event != null) {
         event.action(this);
