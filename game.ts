@@ -878,7 +878,6 @@ class Game {
       // If it was possible to complete additional quests
       // this round, the quest points are abandoned since
       // there is nothing left for the party to do.
-      // TODO: Does this overlap with what's in QWERRRERE?
       if (this.party.questPoints >= POINTS_PER_QUEST) {
         this.party.questPoints = this.party.questPoints % POINTS_PER_QUEST;
       }
@@ -887,7 +886,6 @@ class Game {
     // If you run out of quests, then any progress toward
     // quests is abandoned since there is nothing left
     // for the party to do.
-    // TODO: Does this overlap with what's in QWERRRERE?
     if (this.party.quests <= 0) {
       this.party.questPoints = 0;
     }
