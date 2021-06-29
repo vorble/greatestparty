@@ -27,10 +27,16 @@ function cheatGold() {
   game.receiveGold(100000);
 }
 
+function cheatSupplies() {
+  game.party.food += 1000;
+  game.party.water += 1000;
+}
+
 function cheatStuff() {
   cheatItems();
   cheatArms();
   cheatGold();
+  cheatSupplies();
 }
 
 function cheatParty() {
