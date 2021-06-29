@@ -9,7 +9,6 @@ interface Skill extends ClockActions {
   costTier: number;
   unlockAtCompletedQuests: number;
 
-  // TODO: Do I want an action for when the level goes up and down?
   doBuyActions?: (game: Game) => void;
 }
 
