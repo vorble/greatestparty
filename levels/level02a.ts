@@ -1189,7 +1189,6 @@ game.registerLevel({
           };
 
           function changeWeapon(game: Game) {
-            // TODO: Should the left/rightness be based on the party's perspective or the eyes'?
             self.weapon.physical = 0;
             self.weapon.magical = 0;
             self.weapon.elemental = 0;
@@ -1200,6 +1199,10 @@ game.registerLevel({
             const amount = sideRoll == 0 ? -WEP : WEP;
             const stat = EQ_BROAD_CATEGORIES[directionRoll];
             self.weapon[stat] = amount;
+            // Left eye: player should configure left armor grid.
+            // Right eye: player should configure right armor grid.
+            // Looking up, ahead, down: player should put points in physical,
+            // magical, or elemental respectively.
             game.log('The ' + side + ' eye looks ' + direction + '.');
           }
 
