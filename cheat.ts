@@ -54,6 +54,7 @@ function cheatStats(value?: number) {
 
 function cheatNextLevel() {
   game.nextLevel();
+  ui.show();
 }
 
 function cheatLevel2() {
