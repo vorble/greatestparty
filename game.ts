@@ -984,23 +984,22 @@ class Game {
       this.party.weapon.elemental = 0;
     } else {
       const physicalUse = Math.floor((Math.abs(weapon.physical) / weaponTotal) * weaponMax);
-      // TODO: Flip condition so they're in the usual order.
-      if (weapon.physical > 0) {
-        this.party.weapon.physical = Math.min(this.party.inventoryWeapon.slice, physicalUse);
-      } else {
+      if (weapon.physical < 0) {
         this.party.weapon.physical = -Math.min(this.party.inventoryWeapon.blunt, physicalUse);
+      } else {
+        this.party.weapon.physical = Math.min(this.party.inventoryWeapon.slice, physicalUse);
       }
       const magicalUse = Math.floor((Math.abs(weapon.magical) / weaponTotal) * weaponMax);
-      if (weapon.magical > 0) {
-        this.party.weapon.magical = Math.min(this.party.inventoryWeapon.light, magicalUse);
-      } else {
+      if (weapon.magical < 0) {
         this.party.weapon.magical = -Math.min(this.party.inventoryWeapon.dark, magicalUse);
+      } else {
+        this.party.weapon.magical = Math.min(this.party.inventoryWeapon.light, magicalUse);
       }
       const elementalUse = Math.floor((Math.abs(weapon.elemental) / weaponTotal) * weaponMax);
-      if (weapon.elemental > 0) {
-        this.party.weapon.elemental = Math.min(this.party.inventoryWeapon.ice, elementalUse);
-      } else {
+      if (weapon.elemental < 0) {
         this.party.weapon.elemental = -Math.min(this.party.inventoryWeapon.fire, elementalUse);
+      } else {
+        this.party.weapon.elemental = Math.min(this.party.inventoryWeapon.ice, elementalUse);
       }
     }
     if (armorTotal == 0) {
@@ -1009,23 +1008,22 @@ class Game {
       this.party.armor.elemental = 0;
     } else {
       const physicalUse = Math.floor((Math.abs(armor.physical) / armorTotal) * armorMax);
-      // TODO: Flip condition so they're in the usual order.
-      if (armor.physical > 0) {
-        this.party.armor.physical = Math.min(this.party.inventoryArmor.slice, physicalUse);
-      } else {
+      if (armor.physical < 0) {
         this.party.armor.physical = -Math.min(this.party.inventoryArmor.blunt, physicalUse);
+      } else {
+        this.party.armor.physical = Math.min(this.party.inventoryArmor.slice, physicalUse);
       }
       const magicalUse = Math.floor((Math.abs(armor.magical) / armorTotal) * armorMax);
-      if (armor.magical > 0) {
-        this.party.armor.magical = Math.min(this.party.inventoryArmor.light, magicalUse);
-      } else {
+      if (armor.magical < 0) {
         this.party.armor.magical = -Math.min(this.party.inventoryArmor.dark, magicalUse);
+      } else {
+        this.party.armor.magical = Math.min(this.party.inventoryArmor.light, magicalUse);
       }
       const elementalUse = Math.floor((Math.abs(armor.elemental) / armorTotal) * armorMax);
-      if (armor.elemental > 0) {
-        this.party.armor.elemental = Math.min(this.party.inventoryArmor.ice, elementalUse);
-      } else {
+      if (armor.elemental < 0) {
         this.party.armor.elemental = -Math.min(this.party.inventoryArmor.fire, elementalUse);
+      } else {
+        this.party.armor.elemental = Math.min(this.party.inventoryArmor.ice, elementalUse);
       }
     }
   }
