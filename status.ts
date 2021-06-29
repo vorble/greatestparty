@@ -123,7 +123,6 @@ class Status {
       ...defaults,
       name: 'Bleeding',
     };
-    // TODO: Should out of town prevent all buy/sell activity instead of just hire?
     this.outOfTown = {
       ...defaults,
       name: 'Out of Town',
