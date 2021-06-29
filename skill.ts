@@ -32,8 +32,6 @@ class Skills {
       unlockAtCompletedQuests: 10,
       doTickActions: (game: Game) => {
         // Party members show initiative and will pick up quests on their own periodically.
-        // TODO: How will this handle really high levels where multiple quests should be
-        //       taken per tick?
         if (rollRatio() < 0.01 * this.initiative.level) {
           if (game.town.need > 0) {
             game.takeQuest();
