@@ -544,7 +544,6 @@ class Game {
   }
 
   buyEquipment(equipmentType: 'weapon' | 'armor', name: EqFineCategory) {
-    // TODO: I don't like the argument names.
     const { townInventory, townInventoryBuy, partyInventory } = (() => {
       switch (equipmentType) {
         case 'weapon': return {
@@ -568,7 +567,6 @@ class Game {
   }
 
   sellEquipment(equipmentType: 'weapon' | 'armor', name: EqFineCategory) {
-    // TODO: I don't like the argument names.
     const { townInventory, townInventorySell, partyInventory } = (() => {
       switch (equipmentType) {
         case 'weapon': return {
