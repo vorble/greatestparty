@@ -131,14 +131,15 @@ class Status {
   }
 
   doTickActions(game: Game) {
-    // TODO: Gross, filter with side effects!
-    this.other = this.other.filter((status: StatusItem) => {
-      if (clockCompare(status, game) < 0) {
+    const nextOther = [];
+    for (const status of this.other) {
+      if (clockCompare(game, status) >= 0) {
         this._unapplyStatus(game, status);
-        return false;
+      } else {
+        nextOther.push(status);
       }
-      return true;
-    });
+    }
+    this.other = nextOther;
   }
 
   hasPreventAttack() {

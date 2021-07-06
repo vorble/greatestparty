@@ -12,9 +12,6 @@ interface GameEvent {
   action: (game: Game) => void;
 }
 
-interface GameHooks extends ClockActions {
-}
-
 class Game {
   party: Party;
   town: Town;
@@ -34,7 +31,6 @@ class Game {
   boss: null | Enemy;
   enemy: null | Enemy;
   events: Array<GameEvent>;
-  hooks: GameHooks;
 
   constructor() {
     this.party = new Party();
@@ -55,7 +51,6 @@ class Game {
     this.boss = null;
     this.enemy = null;
     this.events = [];
-    this.hooks = {};
   }
 
   registerLevel(level: Level) {
@@ -196,8 +191,6 @@ class Game {
         },
       },
     ];
-    this.hooks = {
-    };
 
     this.party = new Party();
     this.party.size = 4;
@@ -705,14 +698,15 @@ class Game {
       }
     };
 
-    // TODO: Gross, filter with side effects.
-    this.timeouts = this.timeouts.filter((timeout) => {
+    const nextTimeouts = [];
+    for (const timeout of this.timeouts) {
       if (clockCompare(this, timeout.clock) >= 0) {
         timeout.callback();
-        return false;
+      } else {
+        nextTimeouts.push(timeout);
       }
-      return true;
-    });
+    }
+    this.timeouts = nextTimeouts;
 
     for (const status of STATUSES) {
       const s = this.party.status[status];
@@ -734,7 +728,6 @@ class Game {
     }
 
     doActions(this.town.hooks);
-    doActions(this.hooks);
 
     // ----------------------------------------------------
     // EATING AND DRINKING
