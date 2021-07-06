@@ -42,6 +42,7 @@ class UIParty {
 
   status: HTMLElement;
 
+  pauseButton: HTMLButtonElement;
   sacrificeButton: HTMLButtonElement;
   animateButton: HTMLButtonElement;
 
@@ -74,6 +75,10 @@ class UIParty {
     this.animateButton = getElementByIdAsType('panel-party-animate-button', HTMLButtonElement);
     this.animateButton.onclick = (e) => {
       game.animate();
+    };
+    this.pauseButton = getElementByIdAsType('panel-party-pause-button', HTMLButtonElement);
+    this.pauseButton.onclick = (e) => {
+      game.togglePause();
     };
   }
 
@@ -124,6 +129,8 @@ class UIParty {
     this.sacrificeButton.style.display = game.party.skills.sacrifice.level > 0 ? '' : 'none';
     this.animateButton.disabled = !game.canAnimate();
     this.animateButton.style.display = game.party.skills.animate.level > 0 ? '' : 'none';
+    this.pauseButton.disabled = !game.running && !game.paused;
+    this.pauseButton.innerText = game.paused ? 'Resume' : 'Pause';
   }
 }
 
@@ -423,7 +430,6 @@ class UITown {
   conscript: HTMLButtonElement;
   takeQuest: HTMLButtonElement;
   fightBoss: HTMLButtonElement;
-  pause: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -450,10 +456,6 @@ class UITown {
     this.fightBoss.onclick = (e) => {
       game.fightBoss();
     };
-    this.pause = getElementByIdAsType('panel-town-pause-button', HTMLButtonElement);
-    this.pause.onclick = (e) => {
-      game.togglePause();
-    };
   }
 
   show() {
@@ -470,8 +472,6 @@ class UITown {
     this.conscript.style.display = game.party.skills.conscript.level > 0 ? '' : 'none';
     this.takeQuest.disabled = game.town.need <= 0 || game.party.quests >= game.party.size;
     this.fightBoss.disabled = game.enemy != null;
-    this.pause.disabled = !game.running && !game.paused;
-    this.pause.innerText = game.paused ? 'Resume' : 'Pause';
   }
 }
 
