@@ -413,6 +413,7 @@ class UIEquipment {
 class UITown {
   game: Game;
 
+  name: HTMLElement;
   townsfolk: HTMLElement;
   hireCost: HTMLElement;
   need: HTMLElement;
@@ -427,6 +428,7 @@ class UITown {
   constructor(game: Game) {
     this.game = game;
 
+    this.name = getElementById('panel-town-name');
     this.townsfolk = getElementById('panel-town-townsfolk-value');
     this.hireCost = getElementById('panel-town-hire-cost-value');
     this.need = getElementById('panel-town-need-value');
@@ -457,6 +459,7 @@ class UITown {
   show() {
     const game = this.game;
 
+    this.name.innerText = game.town.name;
     this.townsfolk.innerText = '' + game.town.townsfolk;
     this.hireCost.innerText = '' + game.town.hireCost;
     this.need.innerText = '' + game.town.need;
