@@ -23,8 +23,12 @@ const TICKS_PER_TOCK = 20;
 const TOCKS_PER_TERM = 20;
 const TERMS_PER_SEASON = 25;
 const SEASONS_PER_YEAR = SEASONS.length;
-// The SEMITERM isn't part of the normal clock, it's a distinguishable period of
-// time between a TOCK and a TERM.
+// The SEMITOCK and SEMITERM aren't part of the normal clock, they are distinguishable
+// periods of time between the tick/tock and tock/term.
+const TICKS_PER_SEMITOCK = 5;
+if (TICKS_PER_TOCK % TICKS_PER_SEMITOCK != 0) {
+  throw new Error('TICKS_PER_TOCK must be a multiple of ' + TICKS_PER_SEMITOCK + '!');
+}
 const TOCKS_PER_SEMITERM = 5;
 if (TOCKS_PER_TERM % TOCKS_PER_SEMITERM != 0) {
   throw new Error('TOCKS_PER_TERM must be a multiple of ' + TOCKS_PER_SEMITERM + '!');

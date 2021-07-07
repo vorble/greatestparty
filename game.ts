@@ -622,8 +622,11 @@ class Game {
   }
 
   fight() {
-    if (this.enemy != null && this.tick == 0) {
-      if (this.tock % 5 == 0) {
+    const fightTime = this.tick == 0 || (
+      this.party.status.hasEnrage() && this.tick % TICKS_PER_SEMITOCK == 0
+    );
+    if (this.enemy != null && fightTime) {
+      if (this.tock % TOCKS_PER_SEMITERM == 0) {
         const event = this.pickEnemyEvent(this.enemy);
         if (event != null) {
           event.action(this);

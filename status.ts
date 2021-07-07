@@ -26,6 +26,7 @@ interface StatusItem extends Clock {
   preventHeal: boolean;
   damagePerTick: number;
   damagePerTock: number;
+  enrage: boolean;
 }
 
 interface StatusItemInput extends ClockInput {
@@ -42,6 +43,7 @@ interface StatusItemInput extends ClockInput {
   preventHeal?: boolean;
   damagePerTick?: number;
   damagePerTock?: number;
+  enrage?: boolean;
 }
 
 function statusItemInput(status: StatusItemInput) {
@@ -58,6 +60,7 @@ function statusItemInput(status: StatusItemInput) {
     preventHeal: status.preventHeal || false,
     damagePerTick: status.damagePerTick || 0,
     damagePerTock: status.damagePerTock || 0,
+    enrage: status.enrage || false,
   };
 }
 
@@ -145,6 +148,15 @@ class Status {
   hasPreventAttack() {
     for (const status of this.other) {
       if (status.preventAttack) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  hasEnrage() {
+    for (const status of this.other) {
+      if (status.enrage) {
         return true;
       }
     }
