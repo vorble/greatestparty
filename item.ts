@@ -4,8 +4,8 @@ const ITEM_NAMES_STAT_BUFF: Array<ItemNameType_StatBuff> = ['potionStrUp1', 'pot
 type ItemNameType_StatBoost = 'tomeStrUp' | 'tomeDexUp' | 'tomeConUp' | 'tomeIntUp' | 'tomeWisUp' | 'tomeChaUp';
 const ITEM_NAMES_STAT_BOOST: Array<ItemNameType_StatBoost> = ['tomeStrUp', 'tomeDexUp', 'tomeConUp', 'tomeIntUp', 'tomeWisUp', 'tomeChaUp'];
 
-type ItemNameType_Consumable = 'potionAntidote' | 'potionHealth' | 'clericRobes';
-const ITEM_NAMES_CONSUMABLE: Array<ItemNameType_Consumable> = ['potionAntidote', 'potionHealth', 'clericRobes'];
+type ItemNameType_Consumable = 'potionAntidote' | 'potionHealth' | 'clericRobes' | 'potionEnrage';
+const ITEM_NAMES_CONSUMABLE: Array<ItemNameType_Consumable> = ['potionAntidote', 'potionHealth', 'clericRobes', 'potionEnrage'];
 
 type ItemNameType_EquipmentBoost = 'boostWeapon' | 'boostArmor';
 const ITEM_NAMES_EQUIPMENT_BOOST: Array<ItemNameType_EquipmentBoost> = ['boostWeapon', 'boostArmor'];
@@ -38,6 +38,7 @@ class ItemInventory {
   potionAntidote: Item;
   potionHealth: Item;
   clericRobes: Item;
+  potionEnrage: Item;
 
   boostWeapon: Item;
   boostArmor: Item;
@@ -178,6 +179,17 @@ class ItemInventory {
       use: (game: Game) => {
         game.party.dealignmentProtection += 50;
         game.log('Your party is temporarily protected from dealignment.');
+      },
+    };
+    this.potionEnrage = {
+      ...defaults,
+      name: 'Enrage Potion',
+      use: (game: Game) => {
+        game.party.status.addStatus(game, {
+          name: 'Enrage',
+          enrage: true,
+          tock: 2,
+        });
       },
     };
     this.boostWeapon = {
