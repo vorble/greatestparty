@@ -49,22 +49,22 @@ game.registerLevel({
 
     function loot(game: Game) {
       const r = rollRatio();
-      if (r <= 0.001) {
+      if (r <= 0.04) {
         const name = rollChoice(ITEM_NAMES_STAT_BOOST);
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
-      } else if (r < 0.01) {
+      } else if (r < 0.07) {
         const name = rollChoice(ITEM_NAMES_EQUIPMENT_BOOST);
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
-      } else if (r < 0.16) {
+      } else if (r < 0.40) {
         const name = rollChoice([
           ...ITEM_NAMES_STAT_BUFF,
           ...ITEM_NAMES_CONSUMABLE,
         ]);
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
-      } else if (r < 0.50) {
+      } else if (r < 0.65) {
         const typ = rollChoice(['weapon', 'armor']);
         const fine = rollChoice(EQ_FINE_CATEGORIES);
         const inv = typ == 'weapon' ? game.party.inventoryWeapon : game.party.inventoryArmor;

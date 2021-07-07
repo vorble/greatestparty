@@ -101,7 +101,7 @@ game.registerLevel({
         inv[fine] += 1;
         game.log('Your party receives 1 ' + fine + ' ' + typ + '.');
       }
-      if (rollRatio() <= 0.1) {
+      if (rollRatio() <= 0.4) {
         const name = rollChoice([
           ...ITEM_NAMES_STAT_BUFF,
           ...ITEM_NAMES_CONSUMABLE,
@@ -109,12 +109,12 @@ game.registerLevel({
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
       }
-      if (rollRatio() <= 0.01) {
+      if (rollRatio() <= 0.05) {
         const name = rollChoice(ITEM_NAMES_EQUIPMENT_BOOST);
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
       }
-      if (rollRatio() <= 0.005) {
+      if (rollRatio() <= 0.04) {
         const name = rollChoice(ITEM_NAMES_STAT_BOOST);
         game.party.items[name].quantity += 1;
         game.log('Your party receives 1 ' + game.party.items[name].name + '.');
