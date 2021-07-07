@@ -633,8 +633,12 @@ class Game {
         }
       }
 
-      const damageToEnemy = game.party.status.hasPreventAttack() ? 0 : fightCalculateAttack(this.party, this.enemy);
-      const damageToParty = fightCalculateAttack(this.enemy, this.party);
+      let damageToEnemy = game.party.status.hasPreventAttack() ? 0 : fightCalculateAttack(this.party, this.enemy);
+      let damageToParty = fightCalculateAttack(this.enemy, this.party);
+      if (game.party.status.hasEnrage()) {
+        damageToEnemy = Math.round(1.5 * damageToEnemy);
+        damageToParty = Math.round(0.75 * damageToParty);
+      }
       this.log('Your party trades blows with ' + this.enemy.name + '. Your party takes ' + damageToParty + ' damage and ' + this.enemy.name + ' takes ' + damageToEnemy + ' damage.');
       this.party.damage += damageToParty;
       this.enemy.health = Math.max(0, this.enemy.health - damageToEnemy);
