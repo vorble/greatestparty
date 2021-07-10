@@ -954,6 +954,8 @@ class UIItems {
   potionHealth: UIItemsEntry;
   clericRobes: UIItemsEntry;
   potionEnrage: UIItemsEntry;
+  gobletBlood: UIItemsEntry;
+  pocketAutomaton: UIItemsEntry;
 
   boostWeapon: UIItemsEntry;
   boostArmor: UIItemsEntry;
@@ -979,6 +981,8 @@ class UIItems {
     this.potionHealth = new UIItemsEntry('potionHealth');
     this.clericRobes = new UIItemsEntry('clericRobes');
     this.potionEnrage = new UIItemsEntry('potionEnrage');
+    this.gobletBlood = new UIItemsEntry('gobletBlood');
+    this.pocketAutomaton = new UIItemsEntry('pocketAutomaton');
 
     this.boostWeapon = new UIItemsEntry('boostWeapon');
     this.boostArmor = new UIItemsEntry('boostArmor');

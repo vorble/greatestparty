@@ -4,8 +4,8 @@ const ITEM_NAMES_STAT_BUFF: Array<ItemNameType_StatBuff> = ['potionStrUp1', 'pot
 type ItemNameType_StatBoost = 'tomeStrUp' | 'tomeDexUp' | 'tomeConUp' | 'tomeIntUp' | 'tomeWisUp' | 'tomeChaUp';
 const ITEM_NAMES_STAT_BOOST: Array<ItemNameType_StatBoost> = ['tomeStrUp', 'tomeDexUp', 'tomeConUp', 'tomeIntUp', 'tomeWisUp', 'tomeChaUp'];
 
-type ItemNameType_Consumable = 'potionAntidote' | 'potionHealth' | 'clericRobes' | 'potionEnrage';
-const ITEM_NAMES_CONSUMABLE: Array<ItemNameType_Consumable> = ['potionAntidote', 'potionHealth', 'clericRobes', 'potionEnrage'];
+type ItemNameType_Consumable = 'potionAntidote' | 'potionHealth' | 'clericRobes' | 'potionEnrage' | 'gobletBlood' | 'pocketAutomaton';
+const ITEM_NAMES_CONSUMABLE: Array<ItemNameType_Consumable> = ['potionAntidote', 'potionHealth', 'clericRobes', 'potionEnrage', 'gobletBlood', 'pocketAutomaton'];
 
 type ItemNameType_EquipmentBoost = 'boostWeapon' | 'boostArmor';
 const ITEM_NAMES_EQUIPMENT_BOOST: Array<ItemNameType_EquipmentBoost> = ['boostWeapon', 'boostArmor'];
@@ -39,6 +39,8 @@ class ItemInventory {
   potionHealth: Item;
   clericRobes: Item;
   potionEnrage: Item;
+  gobletBlood: Item;
+  pocketAutomaton: Item;
 
   boostWeapon: Item;
   boostArmor: Item;
@@ -190,6 +192,23 @@ class ItemInventory {
           enrage: true,
           tock: 2,
         });
+      },
+    };
+    this.gobletBlood = {
+      ...defaults,
+      name: 'Goblet of Blood',
+      use: (game: Game) => {
+        const amount = rollRange(1, 3);
+        game.party.blood += amount;
+        game.log('Your party receives ' + amount + ' unit' + (amount == 1 ? '' : 's') + ' of blood.');
+      },
+    };
+    this.pocketAutomaton = {
+      ...defaults,
+      name: 'Pocket Automaton',
+      use: (game: Game) => {
+        game.party.size += 1;
+        game.log('The automaton springs to life. Your party grows.');
       },
     };
     this.boostWeapon = {
