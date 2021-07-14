@@ -207,6 +207,24 @@ game.registerLevel({
           }
         },
       },
+      {
+        name: 'Unwelcome Here',
+        weight: 1,
+        predicate: (game: Game) => game.town.alignment <= -20,
+        action: (game: Game) => {
+          const roll = (rollDie(20)
+            + mod(game.town.alignment, [[-100, -19], [-50, -5], [-20, 0]])
+          );
+          if (roll <= 3) {
+            game.log('The townsfolk chase a member of your party through the streets and kill them.');
+            game.killPartyMembers(1);
+            game.adjustAlignment(4);
+          } else {
+            game.log('The townsfolk chase a member of your party through the streets.');
+            game.adjustAlignment(1);
+          }
+        },
+      },
     ];
 
     town.quests = [
