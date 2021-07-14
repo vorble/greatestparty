@@ -196,7 +196,7 @@ game.registerLevel({
         predicate: (game: Game) => game.town.alignment >= 40,
         action: (game: Game) => {
           const roll = (rollDie(20)
-            + mod(game.town.alignment, [[40, 0], [70, 5], [100, 10]])
+            + mod(game.town.alignment, [[40, 4], [50, 5], [60, 6], [70, 7], [80, 8], [90, 9], [100, 10]])
           );
           if (roll <= 17) {
             game.log('The townsfolk cheer you on as you make your way through town.');
