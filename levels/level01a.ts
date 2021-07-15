@@ -148,6 +148,20 @@ game.registerLevel({
           townState.ticksMaybeInflictIslandCurse -= TICKS_PER_TOCK * 5;
         }
       },
+      onSacrifice: (game: Game) => {
+        game.adjustAlignment(-2);
+        if (rollDie(20) <= 5) {
+          game.log('The townsfolk notice the sacrificial ritual and vehemently disapprove.');
+          game.adjustAlignment(-3);
+        }
+      },
+      onAnimate: (game: Game) => {
+        game.adjustAlignment(-1);
+        if (rollDie(20) <= 5) {
+          game.log('The townsfolk are disgusted with your party\'s use of dark magic.');
+          game.adjustAlignment(-3);
+        }
+      },
     };
 
     // Town events occur periodically on their own, independly from quest events.

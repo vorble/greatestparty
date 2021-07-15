@@ -96,6 +96,23 @@ game.registerLevel({
       game.log('You lose 1 ' + c.cat + ' ' + c.typ + '.');
     }
 
+    town.hooks = {
+      onSacrifice: (game: Game) => {
+        game.adjustAlignment(1); // The town has a rich history of sacrificial activity.
+        if (rollDie(20) <= 5) {
+          game.log('The townsfolk notice your activities and quietly approve.');
+          game.adjustAlignment(3);
+        }
+      },
+      onAnimate: (game: Game) => {
+        game.adjustAlignment(-3); // But the town frowns upon dark magic.
+        if (rollDie(20) <= 4) {
+          game.log('The townsfolk are disgusted with your party\'s use of dark magic.');
+          game.adjustAlignment(-4);
+        }
+      },
+    };
+
     town.events = [
       {
         name: 'A Faux Pas',
@@ -209,7 +226,7 @@ game.registerLevel({
       },
       {
         name: 'Unwelcome Here',
-        weight: 1,
+        weight: 5,
         predicate: (game: Game) => game.town.alignment <= -20,
         action: (game: Game) => {
           const roll = (rollDie(20)

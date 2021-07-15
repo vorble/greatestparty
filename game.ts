@@ -435,6 +435,9 @@ class Game {
       } else {
         game.log('The blood from the sacrifice of one party member is spilled upon the ground.');
       }
+      if (game.town.hooks.onSacrifice) {
+        game.town.hooks.onSacrifice(game);
+      }
     }
   }
 
@@ -454,6 +457,9 @@ class Game {
         game.log('A party member emerges from the pool of blood.');
       } else {
         game.log('A disfigured horror emerges from the pool of blood, but it dies soon after.');
+      }
+      if (game.town.hooks.onAnimate) {
+        game.town.hooks.onAnimate(game);
       }
     }
   }

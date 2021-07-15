@@ -1,6 +1,8 @@
 interface TownHooks extends ClockActions {
   onTownArrive?: (game: Game) => void;
   onTownDepart?: (game: Game) => void;
+  onSacrifice?: (game: Game) => void;
+  onAnimate?: (game: Game) => void;
 }
 
 interface TownEvent {
