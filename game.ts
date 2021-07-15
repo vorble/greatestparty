@@ -398,20 +398,20 @@ class Game {
   conscript() {
     if (this.canConscript()) {
       if (rollRatio() < this.town.conscriptRatio + 0.01 * this.party.skills.conscript.level) {
-        game.log('Your party conscripts someone from town forcefully.');
+        this.log('Your party conscripts someone from town forcefully.');
         this.joinPartyFromTown(1);
         this.adjustAlignment(-5);
       } else {
-        game.log('Your party tries to forcefully conscript someone from town, but fail.');
+        this.log('Your party tries to forcefully conscript someone from town, but fail.');
         this.adjustAlignment(-4);
       }
       if (this.town.townsfolk > 0 && rollRatio() < this.town.conscriptViolenceRatio - 0.02 * this.party.skills.conscript.level) {
         if (rollDie(2) == 1) {
-          game.log('A townsperson dies in the violence.');
+          this.log('A townsperson dies in the violence.');
           this.town.townsfolk -= 1;
           this.adjustAlignment(-2);
         } else {
-          game.log('A member of your party dies in the violence.');
+          this.log('A member of your party dies in the violence.');
           this.killPartyMembers(1);
         }
       }
@@ -427,16 +427,16 @@ class Game {
       this.killPartyMembers(1);
       const r = rollRatio();
       if (r < 0.01 * this.party.skills.sacrifice.level) {
-        game.log('You efficiently collect the blood from the sacrifice of one party member.');
+        this.log('You efficiently collect the blood from the sacrifice of one party member.');
         this.party.blood += 2;
       } else if (r < 0.70 + 0.05 * this.party.skills.sacrifice.level) {
-        game.log('You collect the blood from the sacrifice of one party member.');
+        this.log('You collect the blood from the sacrifice of one party member.');
         this.party.blood += 1;
       } else {
-        game.log('The blood from the sacrifice of one party member is spilled upon the ground.');
+        this.log('The blood from the sacrifice of one party member is spilled upon the ground.');
       }
-      if (game.town.hooks.onSacrifice) {
-        game.town.hooks.onSacrifice(game);
+      if (this.town.hooks.onSacrifice) {
+        this.town.hooks.onSacrifice(game);
       }
     }
   }
@@ -451,15 +451,15 @@ class Game {
       const r = rollRatio();
       if (r < 0.01 * this.party.skills.animate.level) {
         this.addPartyMembers(1);
-        game.log('Two party member emerge from the pool of blood.');
+        this.log('Two party member emerge from the pool of blood.');
       } else if (r < 0.65 + 0.7 * this.party.skills.animate.level) {
         this.addPartyMembers(1);
-        game.log('A party member emerges from the pool of blood.');
+        this.log('A party member emerges from the pool of blood.');
       } else {
-        game.log('A disfigured horror emerges from the pool of blood, but it dies soon after.');
+        this.log('A disfigured horror emerges from the pool of blood, but it dies soon after.');
       }
-      if (game.town.hooks.onAnimate) {
-        game.town.hooks.onAnimate(game);
+      if (this.town.hooks.onAnimate) {
+        this.town.hooks.onAnimate(game);
       }
     }
   }
@@ -489,7 +489,7 @@ class Game {
   }
 
   takeQuest() {
-    if (this.town.need > 0 && this.party.quests < game.party.size) {
+    if (this.town.need > 0 && this.party.quests < this.party.size) {
       this.town.need -= 1;
       this.party.quests += 1;
     }
@@ -639,9 +639,9 @@ class Game {
         }
       }
 
-      let damageToEnemy = game.party.status.hasPreventAttack() ? 0 : fightCalculateAttack(this.party, this.enemy);
+      let damageToEnemy = this.party.status.hasPreventAttack() ? 0 : fightCalculateAttack(this.party, this.enemy);
       let damageToParty = fightCalculateAttack(this.enemy, this.party);
-      if (game.party.status.hasEnrage()) {
+      if (this.party.status.hasEnrage()) {
         damageToEnemy = Math.round(1.5 * damageToEnemy);
         damageToParty = Math.round(0.75 * damageToParty);
       }
@@ -734,7 +734,7 @@ class Game {
     this.party.status.doTickActions(this);
 
     for (const skill of SKILLS) {
-      const s = game.party.skills[skill];
+      const s = this.party.skills[skill];
       if (s.level > 0) {
         doActions(s);
       }
@@ -786,7 +786,7 @@ class Game {
       this.party.hunger -= countStarved * HUNGER_PER_PERSON;
       this.party.thirst -= countDehydrated * THIRST_PER_PERSON;
       const phrase = '' + countDead + (countDead == 1 ? ' party member has' : ' party members have');
-      game.log(phrase + ' died from lack of basic provisions.');
+      this.log(phrase + ' died from lack of basic provisions.');
     }
 
     // ----------------------------------------------------
