@@ -279,7 +279,7 @@ game.registerLevel({
           if (!townState.crispin1Introduced) {
             game.log('As your party makes its way through the wide and well trodden streets of Spindling,'
               + ' they come across a man venting his frustrations while holding several small bits of finely laquered wood.'
-              + ' the man takes notice of your precession and waves you down.'
+              + ' The man takes notice of your precession and waves you down.'
               + ' "Could you lend me your backs for a while? Maybe pick up a few of the bigger pieces?"');
             townState.crispin1Introduced = true;
           }
@@ -380,9 +380,9 @@ game.registerLevel({
         predicate: (game: Game) => !townState.partyInDesert && !townState.dixieDone,
         action: (game: Game) => {
           if (!townState.dixieIntroduced) {
-            game.log('Along a main artery through the town of Spindling, a crown is gathered around a local eatery.'
+            game.log('Along a main artery through the town of Spindling, a crowd is gathered around a local eatery.'
               + ' The proprietress deftfully orders the staff to serve the crowd.'
-              + ' As the crown wanes, the proprietress approaches your party and says'
+              + ' As the crowd wanes, the proprietress approaches your party and says'
               + ' "These crowds will look puny compared to what I have cooked up for them next.'
               + ' I\'m Dixie and I\'m looking for exotic produce. Could you find some for me?"');
             townState.dixieIntroduced = true;
