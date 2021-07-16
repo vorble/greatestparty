@@ -1,5 +1,5 @@
-type SkillIdentifier = 'initiative' | 'inspire' | 'sacrifice' | 'conscript' | 'animate' | 'sabotage' | 'acclaim';
-const SKILLS: Array<SkillIdentifier> = ['initiative', 'inspire', 'sacrifice', 'conscript', 'animate', 'sabotage', 'acclaim'];
+type SkillIdentifier = 'initiative' | 'inspire' | 'sacrifice' | 'conscript' | 'animate' | 'sabotage' | 'acclaim' | 'rationing';
+const SKILLS: Array<SkillIdentifier> = ['initiative', 'inspire', 'sacrifice', 'conscript', 'animate', 'sabotage', 'acclaim', 'rationing'];
 
 interface Skill extends ClockActions {
   level: number;
@@ -20,6 +20,7 @@ class Skills {
   animate: Skill;
   sabotage: Skill;
   acclaim: Skill;
+  rationing: Skill;
 
   constructor() {
     const defaults = { level: 0 };
@@ -132,6 +133,14 @@ class Skills {
           }
         }
       },
+    };
+
+    this.rationing = {
+      ...defaults,
+      name: 'Rationing',
+      levelMax: 5,
+      costTier: 5,
+      unlockAtCompletedQuests: 150,
     };
   }
 }

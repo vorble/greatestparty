@@ -812,6 +812,10 @@ class UISkills {
   acclaimBuy: HTMLElement;
   acclaimLevel: HTMLElement;
   acclaimBuyButton: HTMLButtonElement;
+  rationingEntry: HTMLElement;
+  rationingBuy: HTMLElement;
+  rationingLevel: HTMLElement;
+  rationingBuyButton: HTMLButtonElement;
 
   constructor(game: Game) {
     this.game = game;
@@ -865,6 +869,13 @@ class UISkills {
     this.acclaimBuyButton.onclick = (e) => {
       game.buySkill('acclaim');
     };
+    this.rationingEntry = getElementById('panel-skills-rationing');
+    this.rationingBuy = getElementById('panel-skills-rationing-buy-cost-value');
+    this.rationingLevel = getElementById('panel-skills-rationing-level-value');
+    this.rationingBuyButton = getElementByIdAsType('panel-skills-rationing-buy-button', HTMLButtonElement);
+    this.rationingBuyButton.onclick = (e) => {
+      game.buySkill('rationing');
+    };
   }
 
   show() {
@@ -917,6 +928,13 @@ class UISkills {
       this.acclaimLevel.innerText = '' + this.game.party.skills.acclaim.level;
       this.acclaimBuyButton.disabled = !this.game.canBuySkill('acclaim');
       this.acclaimEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.acclaim.unlockAtCompletedQuests ? 'none' : '';
+    }
+    {
+      const cost = this.game.getSkillCost('rationing');
+      this.rationingBuy.innerText = '' + cost;
+      this.rationingLevel.innerText = '' + this.game.party.skills.rationing.level;
+      this.rationingBuyButton.disabled = !this.game.canBuySkill('rationing');
+      this.rationingEntry.style.display = this.game.party.questsCompleted < this.game.party.skills.rationing.unlockAtCompletedQuests ? 'none' : '';
     }
   }
 }

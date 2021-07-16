@@ -51,6 +51,7 @@ increase equipment power.
 * Animate - Reanimate a party member from acquired blood.
 * Sabotage - Create additional need for quests in town by sabotaging the town.
 * Acclaim - Your acclaim as a party creates additional need for quests in town.
+* Rationing - Your party has reduced need for food and water.
 
 ### Clock and Calendar
 

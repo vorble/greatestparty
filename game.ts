@@ -753,6 +753,11 @@ class Game {
     // contributing hunger and thirst points.
     this.party.hunger += this.party.size;
     this.party.thirst += this.party.size;
+    if (this.party.skills.rationing.level > 0) {
+      const mitigation = Math.round(this.party.size * this.party.skills.rationing.level / this.party.skills.rationing.levelMax);
+      this.party.hunger -= Math.max(this.party.skills.rationing.level, mitigation);
+      this.party.thirst -= Math.max(this.party.skills.rationing.level, mitigation);
+    }
     // Hunger and thirst points are satisfied by the land
     // first, then the party's food and water stores.
     this.party.hunger -= this.town.foodSupport[this.season];

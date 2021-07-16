@@ -66,7 +66,7 @@ function cheatNextLevel() {
 function cheatLevel2() {
   game.party.gold = 1500;
   game.party.size = 15;
-  game.party.questsCompleted = 100;
+  game.party.questsCompleted = 2000;
 
   game.party.inventoryWeapon.blunt = 10;
   game.party.inventoryWeapon.slice = 10;
