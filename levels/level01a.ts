@@ -121,6 +121,18 @@ game.registerLevel({
       }
     }
 
+    function lootEquipmentBoost(game: Game) {
+      const name = rollChoice(ITEM_NAMES_EQUIPMENT_BOOST);
+      game.party.items[name].quantity += 1;
+      game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+    }
+
+    function lootStatBoost(game: Game) {
+      const name = rollChoice(ITEM_NAMES_STAT_BOOST);
+      game.party.items[name].quantity += 1;
+      game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+    }
+
     function lootTrash(game: Game) {
       if (rollRatio() <= 0.3) {
         const typ = rollChoice(['soiled shoe', 'worn leather strap', 'ragged cap', 'mold covered slacks', 'used monocle']);
@@ -401,8 +413,8 @@ game.registerLevel({
             const found = rollRatio(); // Roll to determine if the treasure is found.
             if (found < 0.02) {
               game.log(scenario.win);
-              game.party.items.boostWeapon.quantity += 1;
-              game.party.items.boostArmor.quantity += 1;
+              lootEquipmentBoost(game);
+              lootStatBoost(game);
               loot(game);
               loot(game);
               loot(game);

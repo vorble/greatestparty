@@ -73,6 +73,18 @@ game.registerLevel({
       }
     }
 
+    function lootEquipmentBoost(game: Game) {
+      const name = rollChoice(ITEM_NAMES_EQUIPMENT_BOOST);
+      game.party.items[name].quantity += 1;
+      game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+    }
+
+    function lootStatBoost(game: Game) {
+      const name = rollChoice(ITEM_NAMES_STAT_BOOST);
+      game.party.items[name].quantity += 1;
+      game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+    }
+
     function maybeGoToDesert(game: Game) {
       const r = (rollDie(20)
         + modLinear(game.party.int, 12) // Need to be pretty smart to know the land.
@@ -794,6 +806,8 @@ game.registerLevel({
               game.log('Townsfolk from Spindling cheer for your party as they return to the town. An elder speaks up, "We will forever miss those who were taken from us. We owe much and more to these brave souls for delivering us from the duke\'s evil."');
               game.adjustAlignment(50);
               game.receiveGold(rollRange(200, 300));
+              lootEquipmentBoost(game);
+              lootStatBoost(game);
               loot(game);
               loot(game);
               loot(game);

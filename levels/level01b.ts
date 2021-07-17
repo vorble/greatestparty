@@ -84,6 +84,18 @@ game.registerLevel({
       }
     }
 
+    function lootEquipmentBoost(game: Game) {
+      const name = rollChoice(ITEM_NAMES_EQUIPMENT_BOOST);
+      game.party.items[name].quantity += 1;
+      game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+    }
+
+    function lootStatBoost(game: Game) {
+      const name = rollChoice(ITEM_NAMES_STAT_BOOST);
+      game.party.items[name].quantity += 1;
+      game.log('Your party receives 1 ' + game.party.items[name].name + '.');
+    }
+
     function rollLoseEquipment (game: Game) {
       const weaponChoices = EQ_FINE_CATEGORIES
         .filter((cat) => game.party.inventoryWeapon[cat] > 0)
@@ -440,6 +452,8 @@ game.registerLevel({
             game.log(action.prefix + action.good);
             if (++townState.snuffSuccess >= 10) {
               game.log('Your party takes a look around at the destroyed camp. The opposing party has been vanquished.');
+              lootEquipmentBoost(game);
+              lootStatBoost(game);
               loot(game);
               loot(game);
               loot(game);
