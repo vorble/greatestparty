@@ -25,11 +25,11 @@ game.registerLevel({
     town.hireCost = 100;
     town.conscriptRatio = 0.5;
     town.conscriptViolenceRatio = 0.4;
-    town.foodStock = 250;
+    town.foodStock = 5000;
     town.foodSupport = FOOD_SUPPORT_NORMAL;
     town.foodCostBuy = [4, 4, 2, 5];
     town.foodCostSell = [2, 2, 1, 4];
-    town.waterStock = 150;
+    town.waterStock = 300;
     town.waterSupport = WATER_SUPPORT_NORMAL;
     town.waterCostBuy = [4, 5, 4, 4];
     town.waterCostSell = [2, 2, 2, 2];
