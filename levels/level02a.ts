@@ -808,6 +808,9 @@ game.registerLevel({
               game.receiveGold(rollRange(200, 300));
               lootEquipmentBoost(game);
               lootStatBoost(game);
+              if (rollRatio() <= 0.5) {
+                lootStatBoost(game);
+              }
               loot(game);
               loot(game);
               loot(game);
