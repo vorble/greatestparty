@@ -287,6 +287,26 @@ game.registerLevel({
           game.receiveGold(rollRange(1, 10));
         },
       },
+      // For when the town is upset with the party.
+      {
+        name: 'Resistance',
+        weight: 2,
+        predicate: (game: Game) => game.town.alignment <= -65,
+        action: (game: Game) => {
+          const roll = (rollDie(20)
+            + mod(game.town.alignment, [[-100, -19], [-50, -5], [-20, 0]])
+          );
+          if (roll <= 3) {
+            game.log('The townsfolk corner a lone member of your party looking for work and kill them.');
+            game.killPartyMembers(1);
+            game.adjustAlignment(4);
+          } else {
+            game.log('The townsfolk corner a lone member of your party looking for work and give them a good beating.');
+            game.party.damage += 75;
+            game.adjustAlignment(1);
+          }
+        },
+      },
       {
         // Do 5 satisfactory arrangements of rocks to learn about the hermit and get access to a
         // new quest to find the Hermit's tresure on one of the islands.
