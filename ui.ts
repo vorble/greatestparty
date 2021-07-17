@@ -974,6 +974,7 @@ class UIItems {
   potionEnrage: UIItemsEntry;
   gobletBlood: UIItemsEntry;
   pocketAutomaton: UIItemsEntry;
+  basicProvisions: UIItemsEntry;
 
   boostWeapon: UIItemsEntry;
   boostArmor: UIItemsEntry;
@@ -1001,6 +1002,7 @@ class UIItems {
     this.potionEnrage = new UIItemsEntry('potionEnrage');
     this.gobletBlood = new UIItemsEntry('gobletBlood');
     this.pocketAutomaton = new UIItemsEntry('pocketAutomaton');
+    this.basicProvisions = new UIItemsEntry('basicProvisions');
 
     this.boostWeapon = new UIItemsEntry('boostWeapon');
     this.boostArmor = new UIItemsEntry('boostArmor');
