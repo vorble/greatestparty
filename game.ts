@@ -27,7 +27,6 @@ class Game {
   textLog: Array<string>;
   levels: Array<Level>;
   level: number;
-  timeouts: Array<{ callback: () => void, clock: Clock }>;
   boss: null | Enemy;
   enemy: null | Enemy;
   events: Array<GameEvent>;
@@ -47,7 +46,6 @@ class Game {
     this.textLog = [];
     this.levels = [];
     this.level = 0;
-    this.timeouts = [];
     this.boss = null;
     this.enemy = null;
     this.events = [];
@@ -69,7 +67,6 @@ class Game {
     this.paused = false;
     this.textLog = [];
     this.level = 1;
-    this.timeouts = [];
     this.enemy = null;
     this.events = [
       {
@@ -711,16 +708,6 @@ class Game {
       }
     };
 
-    const nextTimeouts = [];
-    for (const timeout of this.timeouts) {
-      if (clockCompare(this, timeout.clock) >= 0) {
-        timeout.callback();
-      } else {
-        nextTimeouts.push(timeout);
-      }
-    }
-    this.timeouts = nextTimeouts;
-
     for (const status of STATUSES) {
       const s = this.party.status[status];
       if (s.active) {
@@ -1049,13 +1036,6 @@ class Game {
         s.doBuyActions(this);
       }
     }
-  }
-
-  setTimeout(callback: () => void, clock: ClockInput) {
-    this.timeouts.push({
-      callback,
-      clock: clockAdd(this, clockInput(clock)),
-    });
   }
 }
 
