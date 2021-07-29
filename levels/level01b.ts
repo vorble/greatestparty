@@ -109,6 +109,12 @@ game.registerLevel({
     }
 
     town.hooks = {
+      onTownDepart: (game: Game) => {
+        if (game.party.status.angeredGods.active) {
+          game.log('Your party feels the anger of the gods subside.');
+          game.party.status.angeredGods.active = false;
+        }
+      },
       onSacrifice: (game: Game) => {
         game.adjustAlignment(1); // The town has a rich history of sacrificial activity.
         if (rollDie(20) <= 5) {
